@@ -180,6 +180,9 @@ class Parser
 	
 	public static function escapeXml( $string )
 	{
+        // added GS (remove CRs returned by pazpar2)
+        $string = trim($string);
+        // end GS
 		$string = str_replace('&', '&amp;', $string);
 		$string = str_replace('<', '&lt;', $string);
 		$string = str_replace('>', '&gt;', $string);
@@ -692,10 +695,19 @@ class Parser
 			{
 				$id = "object_$id";
 			}
-			
+		
+            // don't try to process empty strings GS
+            // trim first
+            $str = Parser::escapeXml($object);
+            if ($str == '')
+            {
+                return $xml;
+            }
+            
 			// just create a simple new element and return this thing
 	
-			$element = $xml->createElement($id, Parser::escapeXml($object) );
+			$element = $xml->createElement($id, $str );
+            // end GS
 			$xml->documentElement->appendChild($element);
 			return $xml;
 		}

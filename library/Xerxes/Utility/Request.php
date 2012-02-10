@@ -630,12 +630,22 @@ class Request extends ZendRequest
 				{
 					continue;
 				}
-				
+			
 				if ( $x > 0 ) // first param doesn't need & prefix
 				{
 					$url .= '&';
 				}
 				
+                // added  to manage array parameters GS 
+                // should perhaps be name[] but kept this way for consistency 
+                if ( is_array( $value ) ) 
+                { 
+                    foreach( $value as $v ) 
+                    { 
+                        $url .= $name . '=' . urlencode($v) . '&'; 
+                    } continue; 
+                } // end GS
+
 				$url .= $name . '=' . urlencode($value);
 				
 				$x++;
