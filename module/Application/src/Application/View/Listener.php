@@ -85,6 +85,13 @@ class Listener implements ListenerAggregate
 			return;
 		}
 		
+        // added GS pass content through untouched if requested
+        if ( ( $request->getParam('format') == 'json' ) && ( $request->getParam('render') == 'false' ) ) 
+        { 
+            $response->headers()->addHeaderLine("Content-type", "application/json"); 
+            return $response->getContent(); 
+        }
+        // end GS
 		
 		### get results
 		
