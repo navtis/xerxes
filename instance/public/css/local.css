@@ -6,3 +6,49 @@
 
 **********************************************************************/
 
+
+/* experimental additions for pazpar2 */
+
+/* for additional target status column on right of results page */
+
+.status {
+    float: right;
+    background-color: white;
+}
+#results li.result {
+    float: left;
+    width: 70%;
+}
+
+/** RESULTS **/
+
+.results-title {
+	font-weight: bold;
+    color: #003333; 
+}
+
+.results-holdings ul {
+  list-style-type: square;
+}
+.results-holdings li {
+	list-style: square;
+	margin-left: 3em;
+}
+.region-targets ul {
+    margin-left: 2em;
+}
+.region-targets li {
+    margin-left: 2em;
+}
+.region-targets .title {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #003366;
+    margin: 1em 1em 1em 1em; /* left margin does nothing; why? */
+    font-size: 140%;
+}
+.region-targets input {
+    margin-right: 1em;
+}
+.subjectDatabaseInfo a{
+    margin-left: 1em;
+}

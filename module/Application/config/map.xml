@@ -54,4 +54,12 @@
 		<action name="results" restricted="true" />
 		<action name="record" restricted="true" />
 	</controller>
+	<controller name="pazpar2" class="Application\Controller\Pazpar2Controller" inherits="search" >
+		<action name="index">
+			<view>pazpar2/index.xsl</view>
+		</action>
+		<action name="library">
+			<view>pazpar2/library.xsl</view>
+		</action>
+	</controller>
 </xerxes>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xerxes>
+
+	<configuration>
+	
+		<config name="url">http://localhost:8004/search.pz2</config>
+
+        <config name="basic_search_fields" xml="true" pass="true">
+            <field id="title" public="title" internal="ti" />
+            <field id="author" public="author" internal="au" />
+            <field id="subject"  public="subject" internal="su" />
+            <field id="keyword" public="all fields" internal="any" />
+        </config>
+
+        <!-- sort fields must match pazpar2 config fields -->
+        <config name="sort_options" xml="true" pass="true">
+            <option id="title" public="Title" internal="title:1" />
+            <option id="author" public="Author" internal="author:1" />
+            <option id="date" public="Latest" internal="date:0" />
+            <option id="relevance" public="Relevance" internal="relevance" />
+        </config>
+
+        <!-- facet fields must be specified as termlists in pazpar2 config -->
+        <config name="facet_fields" xml="true" pass="true">
+        <facet public="Subject Area" internal="subject" />
+        <facet public="Author" internal="author" />
+        <!-- <facet public="Year" internal="date" type="date" /> -->
+        </config>
+
+	</configuration>
+	
+</xerxes>
