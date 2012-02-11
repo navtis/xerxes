@@ -100,11 +100,11 @@ class Pazpar2
 	 * @return mixed 			if wait = false, returns group number as string; else search progress as DOMDocument
 	 */
 
-	public function search( $query, $targets=null, $facets=null, $wait = false) 
+	public function search( $query, $targets=null, $facets=null, $maxrecs, $wait = false) 
 	{
         // FIXME sort out the target list here and add to the query
 
-	    $this->pz2_search( $this->session, $query, $targets, $facets, null, null );
+	    $this->pz2_search( $this->session, $query, $targets, $facets, null, $maxrecs );
 		
 		//$this->status = $this->pz2_stat( $this->session );			
 		
@@ -125,6 +125,31 @@ class Pazpar2
             // first call
         }
 	}
+	/**
+	* Get progress fraction
+	*
+	* @return float$maxrecs<= $progress <= 1.0
+	*/ 
+
+	public function getProgress( $sid )
+	{
+        $status = $this->pz2_stat($this->session);
+        return $status["progress"];
+	}
+	
+	/**
+	* Get status
+	*
+	* @return array $status
+	*/ 
+
+	public function getStatus( $sid )
+	{
+        return $this->pz2_stat($this->session);
+	}
+	
+
+    /**
 		
 	/**
 	* Check if pazpar2 is done searching

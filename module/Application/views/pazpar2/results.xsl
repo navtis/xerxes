@@ -47,7 +47,15 @@
 			<xsl:with-param name="sidebar">none</xsl:with-param>
 		</xsl:call-template>
 	</xsl:template>
-	
+    
+    <!-- FIXME this isn't called yet GS -->
+
+    <xsl:variable name="progress" select="results/progress" />
+    <xsl:template name="progress-bar">
+        <xsl:param name="progress" />
+    <div id="progress"><img src="images/progress_small{$progress}.gif" alt="" /></div>	
+    </xsl:template>
+
 	<xsl:template name="breadcrumb">
 		<!-- TODO: FIX THIS ?   <xsl:call-template name="breadcrumb_worldcat" /> -->
 		<xsl:call-template name="page_name" />
@@ -72,8 +80,8 @@
         <ul>
         <xsl:for-each select="holdings/*">
             <li>
-                <!-- FIXME need a lookup table to expand the names -->
-                <a href="{.}"><xsl:value-of select="name(.)"/></a>
+                <!-- <a href="{.}"><xsl:value-of select="name(.)"/></a> -->
+                <xsl:value-of select="."/>
             </li>
         </xsl:for-each>
         </ul>
@@ -182,9 +190,9 @@
 
     <!-- and the new template GS -->
     <xsl:template name="status_sidebar">
-        <h2>Search Libraries Status</h2>
+        <h2>Libraries Searched</h2>
         <xsl:for-each select="//bytarget/target">
-        <h3><xsl:value-of select="./name" /></h3>
+        <h3><xsl:value-of select="./title_short" /></h3>
         <ul id="status-{./name}">
             <li>State: <span class="status-state"><xsl:value-of select="./state" /></span></li>
             <li>Hits: <span class="status-hits"><xsl:value-of select="./hits" /></span></li>

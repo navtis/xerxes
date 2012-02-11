@@ -70,9 +70,9 @@ class Pz2Session
         {
             $facets = null;
         }
+		$maxrecs = $this->config()->getConfig('MAXRECS', false);
 		// start the search
-        $this->client()->search( $query->toQuery(), $query->getTargetIDs(), $facets );
-
+        $this->client()->search( $query->toQuery(), $query->getTargetIDs(), $facets, $maxrecs );
         // save the session id for this search
 		$this->sid = $this->client->session; // Client may have created new sid
         // store the sid in $_SESSION to be available for later requests
@@ -107,8 +107,9 @@ class Pz2Session
 		}
 		
 		// see if search is finished
-		
+		// FIXME redundant call to pz2_stat - simplify
 		$status->setFinished($this->client()->isFinished($this->getId()));
+		$status->setProgress($this->client()->getProgress($this->getId()));
 		
 		return $status;
 	}
@@ -121,15 +122,14 @@ class Pz2Session
 	 * @return Status
 	 */
 	
-	public function merge($start=0, $max=500, $sort = null)
+	public function merge($start=0, $max=500, $sort = null, $targets)
 	{
          $results = $this->client->pz2_show($this->getId(), $start, $max, $sort);
          //FIXME GS
          //var_dump($results); 
-         $this->result_set = new MergedResultSet($results);
+         $this->result_set = new MergedResultSet($results, $targets);
 
 		// fetch facets
-			
 		// only if we should show facets and there are more than 15 results
 			
 		if ( $this->result_set->total > 15  && $this->config()->getConfig('FACET_FIELDS', false) == true )

@@ -61,9 +61,9 @@ class Query extends Search\Query
 	    else	
 		{
 			throw new \Exception("No libraries selected for search");
-		}		
+		}
+        return $this->targets;
 	}
-
     /** 
     * Extract query, limit and target params from the URL 
     * @return array 

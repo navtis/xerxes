@@ -3,6 +3,7 @@
 namespace Application\Controller;
 
 use Application\Model\Pazpar2\Engine,
+    Application\Model\DataMap\Pz2Targets,
     Zend\Debug,
     Application\Model\Pazpar2\Pz2Session;
 
@@ -53,7 +54,7 @@ class Pazpar2Controller extends SearchController
 		$sid = (string) Pz2Session::getSavedId();
 		$status = $this->engine->getSearchStatus();
         // keep the session number for the AJAX code in the output HTML
-	    $this->request->setSessionData('pz2session', (string) Pz2Session::getSavedId());
+	    $this->request->setSessionData('pz2session', $sid);
         // tell jquery whether to start the timer
 	    $this->request->setSessionData('completed', (string) $status->isFinished());
         // do the same with the query string
@@ -75,8 +76,10 @@ class Pazpar2Controller extends SearchController
         $query_string = implode('&amp;', $pairs);
         // needed for the javascript redirect
         $this->request->setSessionData('querystring', $query_string); 
-		
-        $result['status'] = $status->getTargetStatuses();
+        $this->query->fillTargetInfo();
+        $result['status'] = $status->getTargetStatuses($this->query->getTargets());
+        //Debug::dump($result);// exit;
+        //Debug::dump($this->request); exit;
         return $result;
 	}
 

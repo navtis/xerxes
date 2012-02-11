@@ -2,6 +2,7 @@
 
 namespace Application\Model\Pazpar2;
 
+use Zend\Debug;
 /**
  * Pazpar2 Search Status
  *
@@ -19,6 +20,7 @@ class Status
 	protected $stats = array(); // individual target statuses
 	protected $timestamp = 0; // timestamp of status check
 	protected $finished = false; // whether search is complete
+    protected $progress = 0; // integer 0 - 10
     protected $result_set;
     protected $xml;
 
@@ -37,9 +39,38 @@ class Status
 		return $this->stats[$tid];
 	}
 	
-	public function getTargetStatuses()
+    /**
+     * Merge target display info with status results
+     * @param array of Targets $db_targets
+     */
+	public function getTargetStatuses($db_targets=null)
 	{
-		return $this->stats;
+        if (is_null( $db_targets ))
+        {
+            return $this->stats;
+        }
+        // otherwise...
+        $news = $this->stats;
+        $s = $news['xml'];
+        $targets = $s->getElementsByTagName('target');
+        foreach($targets as $target)
+        {
+            $name = $target->getElementsByTagName('name')->item(0)->nodeValue;
+            $name = strtoupper($name);
+            # FIXME Get local rule out of here
+            if ($name == 'COPAC')
+            {
+                $node = $s->createElement('title_short', 'COPAC');
+            }
+            else
+            {
+                $node = $s->createElement('title_short', $db_targets[$name]->title_short);
+            }
+            $target->appendChild($node);
+        }
+        $news['xml'] = $s;
+        //echo($s->saveXML());
+		return $news;
 	}
 
 	public function SetResultSet( $rs )
@@ -62,6 +93,17 @@ class Status
 	{
 		return $this->finished;
 	}
+	
+    public function setProgress($p)
+	{
+        // 0.0 <= $p <= 1.0
+		$this->progress = intval( $p * 10 );
+	}
+    public function getProgress()
+    {
+        return $this->progress;
+    }
+
     /**
     * @param DomDocument $xml
     */

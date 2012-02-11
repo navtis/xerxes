@@ -21,7 +21,7 @@ class ShortRecord extends Xerxes\Record
 {
 	protected $source = "pazpar2";
     protected $responsible; // munged list of editors etc
-
+/*
     // add extra fields to parent Record
     public function toXml()
     {
@@ -38,22 +38,24 @@ class ShortRecord extends Xerxes\Record
         }
         return $objXml;
     }
-
+*/
 	public function map()
 	{
 		
         $record = $this->document->documentElement->getElementsByTagName("hit")->item(0);
-
+//var_dump($this->document->saveXML());
 		$this->score = (string) $this->getElementValue($record, "relevance");
 		//$this->database_name = $this->getElement($record, "location")->getAttribute("name");
-		$this->holdings = $this->getElementValuesAttributePairs($record, "location", "name", "id");
+		//$this->holdings = $this->getElementValuesAttributePairs($record, "location", "name", "id");
+		$this->holdings = array_unique( $this->getElementValues($record, "location_title") );
 
+/*
         if ($this->database_name == 'COPAC' )
         { // COPAC are an aggregator themselves
 		    $sources = $this->getElementValuesAttributes($record, "md-copaclocation", "code");
             $this->source = 'COPAC: ' . implode(",", $sources);
         }
-
+*/
             
 		
 		// description

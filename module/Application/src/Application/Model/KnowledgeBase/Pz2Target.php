@@ -25,6 +25,8 @@ class Pz2Target extends DataValue
 	public $target_id; 
     public $pz2_key;
     public $pz2_zurl;
+    public $title_short;
+    public $_title_long;
 //    public $copac_key;
 //    public $z3950_location;
 //    public $catalogue_url;
@@ -47,6 +49,8 @@ class Pz2Target extends DataValue
         $this->vars = $arrResult; // keep for use later
         $this->pz2_key = $this->vars['target_pz2_key'];
         $this->pz2_zurl = $this->vars['target_z3950_location'];
+        $this->title_short = $this->vars['target_title_short'];
+        $this->title_long = $this->vars['target_title_display'];
 		parent::load($arrResult);
 	}
 	

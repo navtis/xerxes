@@ -4,6 +4,7 @@ namespace Application\Model\Pazpar2;
 
 use Application\Model\DataMap\Pz2Targets,
     Application\Model\Search,
+    Zend\Debug,
 	Xerxes\Pazpar2,
 	Xerxes\Utility\Factory,
 	Xerxes\Utility\Cache,
@@ -54,7 +55,8 @@ class Engine extends Search\Engine
         $sid = Pz2Session::getSavedId();
         // and use it to recover the Session from cache
         $session = unserialize( $this->cache()->get($sid) );
-        return $session->merge($start, $max, $sort);
+        $targets  = $search->fillTargetInfo();
+        return $session->merge($start, $max, $sort, $targets);
     }
 
 	/**
@@ -199,7 +201,7 @@ class Engine extends Search\Engine
         $session = unserialize( $this->cache()->get($sid) );
 
         $status = $session->getSearchStatus($sid);
-
+Debug::dump($this); Debug::dump($status); exit;
         $status->setResultSet($session->merge());
         
 		return $status;

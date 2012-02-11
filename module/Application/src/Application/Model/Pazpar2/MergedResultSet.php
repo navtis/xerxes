@@ -2,7 +2,8 @@
 
 namespace Application\Model\Pazpar2;
 
-use Application\Model\Search\ResultSet;
+use Zend\Debug,
+    Application\Model\Search\ResultSet;
 
 /**
  * Pazpar2 Merged Result Set
@@ -22,9 +23,10 @@ class MergedResultSet extends ResultSet
     public $num; // number of merged results in this MergedResultSet
     protected $config; // local config
 
-    public function __construct($results)
+    public function __construct($results, $targets)
     {
     //var_dump($results);
+//    Debug::dump($targets);
         $this->config = Config::getInstance();
         $this->start = $results['start'];
         $this->num = sizeof($results["hits"]); // should be = num
@@ -32,6 +34,27 @@ class MergedResultSet extends ResultSet
         $final = array();
         foreach ( $results["hits"] as $record )
         {
+        //Debug::dump($record);
+            // merge the human-readable location name with the pz2 record
+            $doc = new \DOMDocument();
+            $doc->loadXML($record);
+            $locs = $doc->getElementsByTagName('location');
+            foreach($locs as $loc )
+            {
+                $name = $loc->getAttribute('name');
+                $name = strtoupper($name);
+                if ($name == 'COPAC')
+                {
+                    $node = $doc->createElement('location_title', 'COPAC');
+                }   
+                else
+                {
+                    $node = $doc->createElement('location_title', $targets[$name]->title_short);
+                }
+                $loc->appendChild($node);
+            }
+            $record = $doc->saveXML();
+//Debug::dump($record);
             $xerxes_record = new ShortRecord();
             $xerxes_record->loadXML( $record );
             $this->addRecord( $xerxes_record );

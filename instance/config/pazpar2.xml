@@ -27,6 +27,8 @@
         <!-- <facet public="Year" internal="date" type="date" /> -->
         </config>
 
+        <config name="maxrecs">500</config>
+
 	</configuration>
 	
 </xerxes>

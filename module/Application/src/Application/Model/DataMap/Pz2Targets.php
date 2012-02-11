@@ -342,7 +342,8 @@ class Pz2Targets extends DataMap
 			{
 				$objTarget = new Pz2Target();
 				$objTarget->load( $arrResult );
-				array_push($arrTargets, $objTarget);
+				//array_push($arrTargets, $objTarget);
+				$arrTargets[$objTarget->pz2_key] = $objTarget;
 			}
 		}
 		return $arrTargets;
