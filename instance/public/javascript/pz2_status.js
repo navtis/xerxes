@@ -36,6 +36,9 @@ $(document).ready(function(){
                         window.location = url;
                     }
                     // if we're still waiting, display the status details
+                    // progress bar first
+                    $('#progress').width(data['global']['progress']+'%');
+
                     for (var i = 0; i < data['status'].length; i++) 
                     {
                         var target = data['status'][i];

@@ -41,17 +41,26 @@ class Status
 	
     /**
      * Merge target display info with status results
+     * and progress info
      * @param array of Targets $db_targets
      */
 	public function getTargetStatuses($db_targets=null)
 	{
-        if (is_null( $db_targets ))
-        {
-            return $this->stats;
-        }
-        // otherwise...
         $news = $this->stats;
         $s = $news['xml'];
+
+        $bt = $s->getElementsByTagName('bytarget')->item(0);
+        $node = $s->createElement('progress', $this->progress);
+        $bt->appendChild($node);
+        $node = $s->createElement('finished', $this->finished);
+        $bt->appendChild($node);
+
+        if (is_null( $db_targets ))
+        {
+            $news['xml'] = $s;
+            return $news;
+        }
+        // otherwise...
         $targets = $s->getElementsByTagName('target');
         foreach($targets as $target)
         {
@@ -97,7 +106,7 @@ class Status
     public function setProgress($p)
 	{
         // 0.0 <= $p <= 1.0
-		$this->progress = intval( $p * 10 );
+		$this->progress = intval( $p * 100 );
 	}
     public function getProgress()
     {

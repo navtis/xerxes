@@ -195,18 +195,18 @@ class Engine extends Search\Engine
 //        }
 		return $status;
 	}
-
+/*
     public function getSearchResults($sid)
     {
         $session = unserialize( $this->cache()->get($sid) );
 
         $status = $session->getSearchStatus($sid);
-Debug::dump($this); Debug::dump($status); exit;
+//Debug::dump($this); Debug::dump($status); exit;
         $status->setResultSet($session->merge());
         
 		return $status;
 	}
-
+*/
     /* called from pingAction */
     /* return boolean live or not */
     public function ping($sid)

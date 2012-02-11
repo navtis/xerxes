@@ -78,7 +78,8 @@ class Pazpar2Controller extends SearchController
         $this->request->setSessionData('querystring', $query_string); 
         $this->query->fillTargetInfo();
         $result['status'] = $status->getTargetStatuses($this->query->getTargets());
-        //Debug::dump($result);// exit;
+        //Debug::dump($result['status']);// exit;
+        //echo($result['status']['xml']->saveXML());
         //Debug::dump($this->request); exit;
         return $result;
 	}
@@ -113,6 +114,7 @@ class Pazpar2Controller extends SearchController
         unset($mystatus['status']['xml']);
         $mystatus['global'] = array();
         $mystatus['global']['finished'] = false;
+        $mystatus['global']['progress'] = $status->getProgress();
         // set status to finished and add redirect address if needed
         if ($status->isFinished())
         {

@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xsl:stylesheet  [
+	<!ENTITY nbsp   "&#160;">
+	<!ENTITY copy   "&#169;">
+	<!ENTITY reg    "&#174;">
+	<!ENTITY trade  "&#8482;">
+	<!ENTITY mdash  "&#8212;">
+	<!ENTITY ldquo  "&#8220;">
+	<!ENTITY rdquo  "&#8221;"> 
+	<!ENTITY pound  "&#163;">
+	<!ENTITY yen    "&#165;">
+	<!ENTITY euro   "&#8364;">
+]>
 
 <!--
 
@@ -87,6 +99,68 @@
         </ul>
         </span>
     </xsl:template>
+
+
+	<!--
+		TEMPLATE: SORT BAR
+        overriding version from search/results.xsl to allow for progress bar GS
+	-->
+
+	<xsl:template name="sort_bar">
+	
+		<xsl:choose>
+            <!-- when finished as well -->
+			<xsl:when test="//bytarget/finished=1 and results/total = '0'">
+				<xsl:call-template name="no_hits" />
+			</xsl:when>
+            <!-- when not finished and progress less than 1 -->
+            <xsl:when test="//bytarget/progress &lt; 10" >
+                <div id="progress_container">
+                    <div id="progress" style="width:0%"></div>
+                </div>
+            </xsl:when>
+			<xsl:otherwise>
+	
+				<div id="sort">
+					<div class="yui-g" style="width: 100%">
+						<div class="yui-u first">
+							<xsl:copy-of select="$text_metasearch_results_summary" />
+						</div>
+						<div class="yui-u">
+							<xsl:choose>
+								<xsl:when test="//sort_display">
+									<div id="sort-options">
+										<xsl:copy-of select="$text_results_sort_by" /><xsl:text>: </xsl:text>
+										<xsl:for-each select="//sort_display/option">
+											<xsl:choose>
+												<xsl:when test="@active = 'true'">
+													<strong><xsl:value-of select="text()" /></strong>
+												</xsl:when>
+												<xsl:otherwise>
+													<xsl:variable name="link" select="@link" />
+													<a href="{$link}">
+														<xsl:value-of select="text()" />
+													</a>
+												</xsl:otherwise>
+											</xsl:choose>
+											<xsl:if test="following-sibling::option">
+												<xsl:text> | </xsl:text>
+											</xsl:if>
+										</xsl:for-each>
+									</div>
+								</xsl:when>
+								<xsl:otherwise>&nbsp;</xsl:otherwise>
+							</xsl:choose>
+						</div>
+					</div>
+				</div>
+				
+			</xsl:otherwise>
+		</xsl:choose>
+	
+	</xsl:template>
+
+
 
     <!-- overriding search_page from ../search/results.xsl to add right sidebar
          for status display. FIXME this is overkill just to do that GS -->
