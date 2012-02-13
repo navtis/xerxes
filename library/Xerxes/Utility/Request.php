@@ -579,7 +579,7 @@ class Request extends ZendRequest
 		
 		
 		// this only returns the route, no querystring
-		
+	
 		$url = $this->router->assemble($params, $options);
 		
 		// remove trailing '/index' from generated URLs.

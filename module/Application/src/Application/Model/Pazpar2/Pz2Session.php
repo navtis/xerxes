@@ -142,7 +142,7 @@ class Pz2Session
 		}
 		
 		// update search status
-		
+	//Debug::dump($this->result_set);	
 		return $this->result_set;
 	}
 
@@ -234,7 +234,8 @@ class Pz2Session
                     $public_value = $this->config->getValuePublicName($group_internal_name, $key); 
                     $facet = new Search\Facet(); 
                     $facet->name = $public_value; 
-                    $facet->count = $value; 
+                    $facet->count = $value;
+                    $facet->action = 'search'; // FIXME nasty constant
                     // dates are different 
                     if ( $is_date == true ) 
                     { 

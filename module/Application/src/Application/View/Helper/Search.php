@@ -307,7 +307,7 @@ class Search
 				{
 					// existing url
 						
-					$url = $this->currentParams();
+					$url = $this->facetParams($facet->action);
 							
 					// now add the new one
 							
@@ -499,6 +499,27 @@ class Search
 	######################
 	#  PARAMS FOR LINKS  #
 	######################
+	
+	/**
+	 * The parameters for facets, with selectable action
+	 * @return array
+	 */
+	
+	public function facetParams($action=null)
+	{
+		$params = $this->query->getAllSearchParams();
+		$params['controller'] = $this->request->getParam('controller');
+		$params["sort"] = $this->request->getParam("sort");
+        if ( is_null( $action ) )
+        {
+		    $params["action"] = $this->request->getParam("action");
+        }
+        else
+        {
+		    $params["action"] = $action;
+	    }	
+		return $params;
+	}	
 	
 	
 	/**

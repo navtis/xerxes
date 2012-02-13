@@ -78,7 +78,7 @@ class Pazpar2Controller extends SearchController
         $this->request->setSessionData('querystring', $query_string); 
         $this->query->fillTargetInfo();
         $result['status'] = $status->getTargetStatuses($this->query->getTargets());
-        //Debug::dump($result['status']);// exit;
+        //Debug::dump($result['FACET_FIELDS']);// exit;
         //echo($result['status']['xml']->saveXML());
         //Debug::dump($this->request); exit;
         return $result;

@@ -276,4 +276,21 @@
         </xsl:for-each>
     </xsl:template>
 
+    <!-- TEMPLATE: FACET OPTION -->
+    <!-- Overrides version in ../search/results.xsl to alter link GS -->
+
+    <xsl:template name="facet_option"> 
+        <li><value-of select="url" /> 
+            <xsl:choose> 
+                <xsl:when test="url"> 
+                    <a href="{url}"><xsl:value-of select="name" /></a> 
+                </xsl:when> 
+                <xsl:otherwise> 
+                    <xsl:value-of select="name" /> 
+                </xsl:otherwise> 
+            </xsl:choose> 
+            <xsl:if test="count"> &nbsp;(<xsl:value-of select="count" />) </xsl:if> 
+         </li> 
+     </xsl:template> 
+
 </xsl:stylesheet>
