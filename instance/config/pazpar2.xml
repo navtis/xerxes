@@ -26,8 +26,9 @@
         <facet public="Author" internal="author" />
         <!-- <facet public="Year" internal="date" type="date" /> -->
         </config>
-
-        <config name="maxrecs">500</config>
+        
+        <!-- max no of records to be returned per target -->
+        <config name="maxrecs">100</config>
 
 	</configuration>
 	

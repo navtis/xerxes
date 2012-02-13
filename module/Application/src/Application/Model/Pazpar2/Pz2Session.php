@@ -122,11 +122,11 @@ class Pz2Session
 	 * @return Status
 	 */
 	
-	public function merge($start=0, $max=500, $sort = null, $targets)
+	public function merge($start=0, $max=100, $sort = null, $targets)
 	{
          $results = $this->client->pz2_show($this->getId(), $start, $max, $sort);
-         //FIXME GS
-         //var_dump($results); 
+         //Debug::dump($results);
+         
          $this->result_set = new MergedResultSet($results, $targets);
 
 		// fetch facets
@@ -201,8 +201,10 @@ class Pz2Session
                 $facet_array = array(); 
                 foreach ( $facet_values as $facet_value ) 
                 { 
-                    $names = $facet_value->getElementsByTagName("name");
-                    $name = $names->item(0)->nodeValue;
+                    $name = $facet_value->getElementsByTagName("name")->item(0)->nodeValue;
+                    // for some reason pz2 returns authors with a trailing comma
+                    // sometime also get unwanted fullstop
+                    $name = trim($name, ",. "); 
                     $counts = $facet_value->getElementsByTagName("frequency");
                     $count = $counts->item(0)->nodeValue;
                     $facet_array[$name] = $count;

@@ -317,7 +317,8 @@ class Pazpar2
         {
             // we always add COPAC in
             // FIXME this should be a local setting, not in the main code
-            $targets[] = 'z3950.copac.ac.uk:210/COPAC';
+ //FIXME TAKEN OUT FOR NOW - DO FOR INDIVIDUAL RECORDS ONLY
+ //           $targets[] = 'z3950.copac.ac.uk:210/COPAC';
 
             $alltargs = implode('|', $targets);
             $alltargs = 'pz:id=' . $alltargs;
@@ -327,8 +328,13 @@ class Pazpar2
         if ( !is_null( $facets ) )
         {
             // escape any commas inside limits
-            $facets = preg_replace('/\,/', '\\,', $facets);
-            $allfacets = implode(',', $facets);
+            foreach( $facets as &$f )
+            {
+                $f = urldecode( $f );
+                $f = preg_replace( '/\,/', '\\\,', $f );
+                $f = urlencode( $f );
+            }
+            $allfacets = implode( ',', $facets );
             $url .= "&limit=$allfacets";
         }
         if ( !is_null( $startrecs ) )
@@ -384,10 +390,10 @@ class Pazpar2
             else
                 $url .= '&sort=' . $sorts;
         }
-
+//echo($url);
         $response = $this->getRawResponse( $url, "show", $session );
 
-		//echo( $response->saveXML() ); exit;
+//echo( $response->saveXML() ); //exit;
         $result = array();
         $hits = array();
         $nodes = $response->getElementsByTagName("show")->item(0)->childNodes;

@@ -49,13 +49,15 @@ class Engine extends Search\Engine
 	 * @return Results
 	 */
 	
-	public function searchRetrieve( Search\Query $search, $start = 1, $max = 500, $sort = "" )
+	public function searchRetrieve( Search\Query $search, $start = 0, $max = 100, $sort = "" )
     {
         // recover sid from Zend session
         $sid = Pz2Session::getSavedId();
         // and use it to recover the Session from cache
         $session = unserialize( $this->cache()->get($sid) );
         $targets  = $search->fillTargetInfo();
+        $start = $start - 1; // allow for pz2 starting from 0
+        $max = $max - 1;
         return $session->merge($start, $max, $sort, $targets);
     }
 

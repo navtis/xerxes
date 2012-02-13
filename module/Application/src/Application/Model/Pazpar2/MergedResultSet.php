@@ -20,7 +20,7 @@ class MergedResultSet extends ResultSet
 {
 	public $total; // number of merged records in full search results
     public $start; // start number of first result in this set
-    public $num; // number of merged results in this MergedResultSet
+    public $num; // number of hits in this MergedResultSet
     protected $config; // local config
 
     public function __construct($results, $targets)
@@ -30,7 +30,7 @@ class MergedResultSet extends ResultSet
         $this->config = Config::getInstance();
         $this->start = $results['start'];
         $this->num = sizeof($results["hits"]); // should be = num
-        $this->total = $results['total'];
+        $this->total = $results['merged']; 
         $final = array();
         foreach ( $results["hits"] as $record )
         {
