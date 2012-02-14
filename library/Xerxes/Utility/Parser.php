@@ -695,19 +695,19 @@ class Parser
 			{
 				$id = "object_$id";
 			}
-		
-            // don't try to process empty strings GS
-            // trim first
-            $str = Parser::escapeXml($object);
-            if ($str == '')
-            {
-                return $xml;
-            }
-            
+			
+			// don't try to process empty strings 
+			
+			$str = Parser::escapeXml($object);
+			
+			if ($str == '')
+			{
+				return $xml;
+			}
+			
 			// just create a simple new element and return this thing
-	
-			$element = $xml->createElement($id, $str );
-            // end GS
+			
+			$element = $xml->createElement($id, $str);
 			$xml->documentElement->appendChild($element);
 			return $xml;
 		}
