@@ -4,6 +4,8 @@ namespace Application\Controller;
 
 use Application\Model\Pazpar2\Engine,
     Application\Model\DataMap\Pz2Targets,
+    Application\View\Helper\Pazpar2 as SearchHelper,
+    Zend\Mvc\MvcEvent,
     Zend\Debug,
     Application\Model\Pazpar2\Pz2Session;
 
@@ -11,6 +13,12 @@ class Pazpar2Controller extends SearchController
 {
 	protected $id = "pazpar2";
 	
+    protected function init(MvcEvent $e)
+    {
+        parent::init($e);
+        $this->helper = new SearchHelper($e, $this->id, $this->engine);
+    }
+
 	protected function getEngine()
 	{
 		return new Engine();
@@ -83,6 +91,18 @@ class Pazpar2Controller extends SearchController
         //Debug::dump($this->request); exit;
         return $result;
 	}
+
+    public function recordAction()
+    {
+        $id = $this->request->getParam('id'); 
+        // get the record 
+        $results = $this->engine->getRecord($id); 
+        // set links 
+        $this->helper->addRecordLinks($results); 
+        // add to response 
+        $this->data["results"] = $results; 
+        return $this->data; 
+    }
 
     /**
      *  Called by AJAX from results page to keep session alive 

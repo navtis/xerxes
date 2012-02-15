@@ -180,9 +180,8 @@ class Parser
 	
 	public static function escapeXml( $string )
 	{
-        // added GS (remove CRs returned by pazpar2)
-        $string = trim($string);
-        // end GS
+		$string = trim($string);
+		
 		$string = str_replace('&', '&amp;', $string);
 		$string = str_replace('<', '&lt;', $string);
 		$string = str_replace('>', '&gt;', $string);

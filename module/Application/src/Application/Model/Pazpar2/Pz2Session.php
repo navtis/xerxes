@@ -237,7 +237,6 @@ class Pz2Session
                     $facet = new Search\Facet(); 
                     $facet->name = $public_value; 
                     $facet->count = $value;
-                    $facet->action = 'search'; // FIXME nasty constant
                     // dates are different 
                     if ( $is_date == true ) 
                     { 
