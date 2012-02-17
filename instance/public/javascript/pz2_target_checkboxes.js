@@ -13,7 +13,6 @@
 
 
 $(document).ready(addCheckboxHandler);
-$(document).ready(setSearchStatus());
 
 function setSearchStatus()
 {
@@ -25,7 +24,7 @@ function setSearchStatus()
     else
     {
         $('input[type="submit"]').attr("value", "GO");
-        $('input[type="submit"]').attr("disabled", "false");
+        $('input[type="submit"]').removeAttr('disabled');
     }
 }
 
@@ -36,6 +35,7 @@ function addCheckboxHandler()
         setSearchStatus();
         return res;
 });
+    setSearchStatus();
 }
 
 /** Called onChange of any checkbox 
