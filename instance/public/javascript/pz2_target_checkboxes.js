@@ -13,11 +13,28 @@
 
 
 $(document).ready(addCheckboxHandler);
+$(document).ready(setSearchStatus());
+
+function setSearchStatus()
+{
+    if ($("input.subjectDatabaseCheckbox:checked").length == 0)
+    {
+        $('input[type="submit"]').attr("value", "Select library first..");
+        $('input[type="submit"]').attr("disabled", "true");
+    }
+    else
+    {
+        $('input[type="submit"]').attr("value", "GO");
+        $('input[type="submit"]').attr("disabled", "false");
+    }
+}
 
 function addCheckboxHandler()
 {
     $('input[type="checkbox"]').click(function() {
-		return target_checkboxes(this.name, this);
+		var res = target_checkboxes(this.name, this);
+        setSearchStatus();
+        return res;
 });
 }
 
