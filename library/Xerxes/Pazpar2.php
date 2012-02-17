@@ -429,12 +429,16 @@ class Pazpar2
      * @param int $num          number of records to show (default 20)
      * @returns DomDocument     single dom record
 	 */
-	public function pz2_record( $session, $recordid, $offset=null, $syntax=null, $esn=null, $binary=null )
+	public function pz2_record( $session, $recordid, $offset_arr=null, $syntax=null, $esn=null, $binary=null )
     {
         $url = $this->baseurl . "?command=record&session=$session";
         $url .= "&id=$recordid";
-        if ( !is_null( $offset ) )
+        if ( !is_null( $offset_arr ) )
         {
+            // FIXME need to loop for each holding?
+            // FIXME just taking first one for now
+            $offset = array_shift($offset_arr);
+
             $url .= "&offset=$offset";
             // remaining options depend on knowing the offset
             if ( !is_null( $syntax ) )

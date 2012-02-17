@@ -9,6 +9,14 @@
 
 /* experimental additions for pazpar2 */
 
+/* new short record field */
+
+.results-edition {
+    display: block;
+    margin-bottom: 0.35em;
+}
+
+
 /* for additional target status column on right of results page */
 
 .status {

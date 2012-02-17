@@ -141,8 +141,6 @@ class Pz2Session
             $this->result_set->setFacets($facets);
 		}
 		
-		// update search status
-	//Debug::dump($this->result_set);	
 		return $this->result_set;
 	}
 
@@ -209,8 +207,6 @@ class Pz2Session
                     $count = $counts->item(0)->nodeValue;
                     $facet_array[$name] = $count;
                 } 
-// FIXME date section not modified for pazpar2
-// FIXME need to add target source facet? To be handled differently
                 // date 
                 $decade_display = array(); 
                 $is_date = $this->config->isDateType($group_internal_name); 
@@ -257,22 +253,34 @@ class Pz2Session
 	 * Return an individual record
      *
 	 * @param string	record identifier
+     * @param array     offset values for each holding
+     * @param target    pz2_key for target
 	 * @return Results
 	 */
 	
-	public function getRecord( $id )
+	public function getRecord( $id, $offset=null, $targets )
     {
         // recover sid from Zend session
         $sid = Pz2Session::getSavedId();
-        $record = $this->client()->pz2_record( $sid, $id, 0 ); // offset=0 for Marc??
-        // $record = $this->client()->pz2_record( $sid, $id);  // FIXME no offset while testing
+        $record = $this->client()->pz2_record( $sid, $id, $offset ); 
         // need to return a ResultSet, record is a DomDocument
-        // FIXME will be a MarcRecord when offset set
-        $xerxes_record = new MarcRecord(); // convert to xerxes record format first
-        $xerxes_record->loadXML( $record );
-        $results = new Result($xerxes_record); // then to a Result
-        var_dump($results);
-        return $results;
+        if ( ! is_null($offset) ) 
+        {
+            $xerxes_record = new MarcRecord(); // convert to xerxes record format first
+            $xerxes_record->loadXML( $record );
+        } 
+        else
+        {
+            // keep MergedResultSet happy by making it look like single result
+            $results = array();
+            $results['hits'] = array();
+            $results['start'] = 0;
+            $results['merged'] = 1; 
+            $results['hits'][0] = $record->saveXML();
+            $result_set = new MergedResultSet($results, $targets);
+        }
+      
+        return $result_set;
     }
 
 	/**

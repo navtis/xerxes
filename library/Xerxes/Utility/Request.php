@@ -597,6 +597,7 @@ class Request extends ZendRequest
 		// figure out which of our params matched the route
 		
 		$request = new Request();
+
 		$request->setUri($url);
 		
 		$route_match = $this->router->match($request);

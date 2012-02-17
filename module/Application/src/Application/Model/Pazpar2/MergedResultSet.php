@@ -55,7 +55,7 @@ class MergedResultSet extends ResultSet
             }
             $record = $doc->saveXML();
 //Debug::dump($record);
-            $xerxes_record = new ShortRecord();
+            $xerxes_record = new Pz2Record();
             $xerxes_record->loadXML( $record );
             $this->addRecord( $xerxes_record );
         }

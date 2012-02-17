@@ -65,6 +65,8 @@ class Pazpar2Controller extends SearchController
 	    $this->request->setSessionData('pz2session', $sid);
         // tell jquery whether to start the timer
 	    $this->request->setSessionData('completed', (string) $status->isFinished());
+        $this->request->setSessionData('targetnames', $this->query->getTargetNames()); 
+        //Debug::dump($this->request); exit;
         // do the same with the query string
         $params = $this->query->getAllSearchParams(); 
         $pairs=array();
@@ -86,17 +88,16 @@ class Pazpar2Controller extends SearchController
         $this->request->setSessionData('querystring', $query_string); 
         $this->query->fillTargetInfo();
         $result['status'] = $status->getTargetStatuses($this->query->getTargets());
-        //Debug::dump($result['FACET_FIELDS']);// exit;
-        //echo($result['status']['xml']->saveXML());
-        //Debug::dump($this->request); exit;
         return $result;
 	}
 
     public function recordAction()
     {
         $id = $this->request->getParam('id'); 
+        $offset = $this->request->getParam('offset', null, true); 
+        $targets = $this->query->fillTargetInfo();
         // get the record 
-        $results = $this->engine->getRecord($id); 
+        $results = $this->engine->getRawRecord($id, $offset, $targets); 
         // set links 
         $this->helper->addRecordLinks($results); 
         // add to response 

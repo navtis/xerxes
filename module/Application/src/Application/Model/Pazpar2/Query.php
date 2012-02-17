@@ -41,16 +41,6 @@ class Query extends Search\Query
 	
 	public function fillTargetInfo()
 	{
-		// make sure we got some terms!
-		if ( count($this->getQueryTerms()) == 0 )
-		{
-			throw new \Exception("No search terms supplied");
-		}
-		
-		// libraries chosen
-		
-        // FIXME fix library/Xerxes/Utility/Request.php to handle arrays properly
-		//$targets = $this->request->getParam('target%5B%5D', null, true);
 		// populate the target information from KB
 		$this->datamap = new Pz2Targets(); // @todo: use KB model instead?
 		
@@ -119,6 +109,16 @@ class Query extends Search\Query
 	public function getTargets()
 	{
 		return $this->targets;
+	}
+	/**
+	 * Get target pz2_names
+	 * 
+	 * @return array of strings
+	 */
+	
+	public function getTargetnames()
+	{
+		return $this->targetnames;
 	}
 	/**
 	 * Get all target pazpar2 IDs

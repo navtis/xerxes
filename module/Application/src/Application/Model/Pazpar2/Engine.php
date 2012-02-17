@@ -63,20 +63,30 @@ class Engine extends Search\Engine
 
 	/**
 	 * Return an individual record
-	 * Required by abstract parent, just wraps session getRecord
+	 * Just wraps session getRecord
+     *
+	 * @param string	record identifier
+	 * @return Resultset
+	 */
+    // FIXME no error trapping if either sid or cached session has gone away
+	public function getRawRecord( $id, $offset=array(), $targets=null )
+    {
+        // recover sid from Zend session
+        $sid = Pz2Session::getSavedId();
+        $session = unserialize( $this->cache()->get($sid) );
+        return $session->getRecord( $id, $offset, $targets );
+    }
+
+	/**
+	 * Return an individual record - unused, we use getRawRecord()
+     * to avoid the constraint on the number of parameters
+	 * Required by abstract parent
      *
 	 * @param string	record identifier
 	 * @return Resultset
 	 */
 
-    // FIXME no error trapping if either sid or cached session has gone away
-	public function getRecord( $id )
-    {
-        // recover sid from Zend session
-        $sid = Pz2Session::getSavedId();
-        $session = unserialize( $this->cache()->get($sid) );
-        return $session->getRecord( $id );
-    }
+	public function getRecord( $id ){}
 
 	/**
 	 * Get record to save

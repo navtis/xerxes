@@ -616,12 +616,19 @@
 				</div>
 				
 				<!-- primary author -->
-				
-				<xsl:if test="primary_author">
-					<span class="results-author">
-						<strong><xsl:copy-of select="$text_results_author" />: </strong><xsl:value-of select="primary_author" />
-					</span>
-				</xsl:if>
+                <!-- local SEARCH25 changes GS - FIXME -->
+				<xsl:choose>
+				    <xsl:when test="primary_author">
+					    <span class="results-author">
+						    <strong><xsl:copy-of select="$text_results_author" />: </strong><xsl:value-of select="primary_author" />
+					    </span>
+                    </xsl:when>
+				    <xsl:when test="responsibility">
+					    <span class="results-author">
+						    <strong><xsl:copy-of select="$text_results_author" />: </strong><xsl:value-of select="responsibility" />
+					    </span>
+                    </xsl:when>
+				</xsl:choose>
 				
 				<!-- publication year -->
 				

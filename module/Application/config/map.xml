@@ -61,5 +61,8 @@
 		<action name="library">
 			<view>pazpar2/library.xsl</view>
 		</action>
+		<action name="record">
+			<view>pazpar2/record.xsl</view>
+		</action>
 	</controller>
 </xerxes>

@@ -16,25 +16,20 @@
 	xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
 
 <xsl:import href="../includes.xsl" />
-<!-- <xsl:import href="results.xsl" /> -->
+<xsl:import href="results.xsl" />
 <xsl:import href="../search/books.xsl" />
-<xsl:import href="../search/record.xsl" />
 
 <xsl:output method="html" />
 
 <xsl:template match="/*">
     <xsl:call-template name="surround" />
-</xsl:template>
+    </xsl:template>
 
-<xsl:template name="main">
-    <xsl:call-template name="record" />
-</xsl:template>
+    <xsl:template name="main">
 
-<!-- override javascript-include from ../includes.xsl GS -->
-<xsl:template name="javascript_include"> 
-    <xsl:call-template name="jslabels" /> 
-    <script src="javascript/jquery/jquery-1.6.2.min.js" language="javascript" type="text/javascript"></script> <script src="javascript/results.js" language="javascript" type="text/javascript"></script> <script src="javascript/pz2_ping.js" language="javascript" type="text/javascript"></script> 
-</xsl:template> 
+        <xsl:call-template name="record" />
+
+    </xsl:template>
 
 <!--
 <xsl:template match="/*">
@@ -46,7 +41,7 @@
 		</xsl:call-template>
 		
 	</xsl:for-each>
-</xsl:template>
 -->		
+</xsl:template>
 
 </xsl:stylesheet>

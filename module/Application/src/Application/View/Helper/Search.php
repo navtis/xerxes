@@ -323,7 +323,6 @@ class Search
 					{
 						$url["facet." . $group->name] = $facet->name;									
 					}
-							
 					$facet->url = $this->request->url_for($url);
 				}
 			}
@@ -511,7 +510,7 @@ class Search
 		$params['controller'] = $this->request->getParam('controller');
 		$params["action"] = $this->request->getParam("action");
 		$params["sort"] = $this->request->getParam("sort");
-		
+
 		return $params;
 	}
 	

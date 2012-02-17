@@ -27,6 +27,7 @@
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
 
+    <xsl:import href="eng.xsl" />
 	<xsl:import href="../includes.xsl" />
 	<xsl:import href="../search/results.xsl" />
 
@@ -41,18 +42,16 @@
 
     <!--  hidden field setting called from ../includes.xsl GS -->
     <xsl:template name="searchbox_hidden_fields_local">
+        <!-- see http://www.w3.org/TR/html5/elements.html#embedding-custom-non-visible-data-with-the-data-attributes -->
         <!-- this is used by javascript and not a real hidden field -->
         <span id="pz2session" data-value="{//request/session/pz2session}" data-completed="{//request/session/completed}" data-querystring="{//request/session/querystring}" />
+        <xsl:for-each select="//request/session/targetnames">
+            <input type="hidden" name="target" value="{.}" />
+        </xsl:for-each>
     </xsl:template>
 
 	<xsl:output method="html" encoding="utf-8" indent="yes" doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN" doctype-system="http://www.w3.org/TR/html4/loose.dtd"/>
 
-    <!-- make this conditional to keep refreshing status until finished.
-         Then need to switch to js for pings to keep alive GS -->
-<!--    <xsl:variable name="text_extra_meta_tags">
-        <meta http-equiv="refresh" content="6" /> 
-    </xsl:variable>
--->
 	<xsl:template match="/*">
 		<xsl:call-template name="surround">
 			<xsl:with-param name="surround_template">none</xsl:with-param>
@@ -61,13 +60,13 @@
 	</xsl:template>
     
     <!-- FIXME this isn't called yet GS -->
-
+<!--
     <xsl:variable name="progress" select="results/progress" />
     <xsl:template name="progress-bar">
         <xsl:param name="progress" />
     <div id="progress"><img src="images/progress_small{$progress}.gif" alt="" /></div>	
     </xsl:template>
-
+-->
 	<xsl:template name="breadcrumb">
 		<!-- TODO: FIX THIS ?   <xsl:call-template name="breadcrumb_worldcat" /> -->
 		<xsl:call-template name="page_name" />
@@ -87,13 +86,26 @@
 
     <xsl:template name="additional_brief_record_data" >
         <xsl:variable name="text_results_location">Copies at</xsl:variable>
+        <xsl:variable name="recid">
+            <xsl:value-of select="./record_id" />
+        </xsl:variable>
+
+        <xsl:if test="edition"> 
+            <span class="results-edition"> 
+                <strong><xsl:copy-of select="$text_results_edition" />: </strong><xsl:value-of select="edition" /> 
+            </span> 
+        </xsl:if>
+
         <strong><xsl:copy-of select="$text_results_location" />: </strong>
         <span class="results-holdings">
         <ul>
         <xsl:for-each select="holdings/*">
+            <xsl:variable name="offsets">
+                <xsl:for-each select="./*">&amp;offset=<xsl:value-of select="."/></xsl:for-each>
+            </xsl:variable>
             <li>
-                <!-- <a href="{.}"><xsl:value-of select="name(.)"/></a> -->
-                <xsl:value-of select="."/>
+                <a href="/pazpar2/record?id={$recid}&amp;target={name(.)}{$offsets}"><xsl:value-of select="name(.)"/></a> 
+                <!-- <xsl:value-of select="."/> -->
             </li>
         </xsl:for-each>
         </ul>
@@ -280,7 +292,7 @@
     <!-- Overrides version in ../search/results.xsl to alter link GS -->
 
     <xsl:template name="facet_option"> 
-        <li><value-of select="url" /> 
+        <li> 
             <xsl:choose> 
                 <xsl:when test="url"> 
                     <a href="{url}"><xsl:value-of select="name" /></a> 

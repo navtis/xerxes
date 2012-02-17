@@ -24,6 +24,6 @@ xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
 	
 	<xsl:variable name="text_libraries_search">Search by library</xsl:variable>
 	<xsl:variable name="text_region_libraries_desc">Select the regions or individual libraries you wish to search</xsl:variable>
-	
+    <xsl:variable name="text_results_edition">Edition</xsl:variable>
 	
 </xsl:stylesheet>

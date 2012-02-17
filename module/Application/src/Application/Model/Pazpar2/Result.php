@@ -3,6 +3,7 @@
 namespace Application\Model\Pazpar2;
 
 use Application\Model\Bx\Engine as BxEngine,
+    Application\Model\Search\Holdings,
     Application\Model\Search\Result as SearchResult,
 	Xerxes\Record,
 	Xerxes\Utility\Cache,
@@ -43,7 +44,7 @@ class Result extends SearchResult
 	 * @param Config $config			local config
 	 */
 	
-	public function __construct(ShortRecord $record, Config $config)
+	public function __construct(Pz2Record $record, Config $config)
 	{
 		$this->xerxes_record = $record;
 		$this->registry = Registry::getInstance();
@@ -102,12 +103,12 @@ class Result extends SearchResult
 	/**
 	 * Add holdings to this result
 	 */
-/*FIXME avoiding namespace clash	
+/* FIXME namespace clash - why?
 	public function setHoldings( Search\Holdings $holdings )
 	{
 		$this->holdings = $holdings;
 	}
-*/	
+*/
 	/**
 	 * Return item records
 	 * 
