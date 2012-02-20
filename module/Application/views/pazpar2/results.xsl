@@ -99,13 +99,19 @@
         <strong><xsl:copy-of select="$text_results_location" />: </strong>
         <span class="results-holdings">
         <ul>
+        <!--
         <xsl:for-each select="holdings/*">
             <xsl:variable name="offsets">
                 <xsl:for-each select="./*">&amp;offset=<xsl:value-of select="."/></xsl:for-each>
             </xsl:variable>
             <li>
                 <a href="/pazpar2/record?id={$recid}&amp;target={name(.)}{$offsets}"><xsl:value-of select="name(.)"/></a> 
-                <!-- <xsl:value-of select="."/> -->
+            </li>
+        </xsl:for-each>
+        -->
+        <xsl:for-each select="holdings/*">
+            <li>
+                <xsl:value-of select="."/> 
             </li>
         </xsl:for-each>
         </ul>

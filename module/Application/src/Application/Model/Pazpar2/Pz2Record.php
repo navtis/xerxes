@@ -62,10 +62,27 @@ class Pz2Record extends Xerxes\Record
         }
 //var_dump($this->document->saveXML());
 		$this->score = (string) $this->getElementValue($record, "relevance");
-        
+       
+		$this->title = (string) $this->getElementValue($record, "md-title");
+		$this->sub_title = (string) $this->getElementValue($record, "md-title-remainder");
+		$this->series_title = (string) $this->getElementValue($record, "md-series-title");
+
+        $this->isbns = array_unique($this->getElementValues($record, "md-isbn") );
+		$this->language = (string) $this->getElementValue($record, "md-language");
+
+		// format			
+		$risformat = $this->getElementValue($record,"md-medium");
+		$this->format->setFormat($risformat);
+        $this->format->setPublicFormat($this->format->getConstNameForValue($risformat));
+
+		$this->extent = $this->getElementValue($record,"md-physical-extent");		//echo("Extent: ".$this->extent);	
 		//$this->database_name = $this->getElement($record, "location")->getAttribute("name");
 		//$this->holdings = $this->getElementValuesAttributePairs($record, "location", "name", "id");
-		//$this->holdings = array_unique( $this->getElementValues($record, "location_title") );
+		$this->holdings = array_unique( $this->getElementValues($record, "location_title") );
+
+/* this was to provide unique identifiers (offset values) for each
+copy of a book, to be used by pz2_record. Not needed? */
+/*
 		$this->holdings = array();
         $hs = array_unique($this->getElementValues($record, "location_title") );
         foreach($hs as $h)
@@ -78,6 +95,8 @@ class Pz2Record extends Xerxes\Record
         {
             $this->holdings[$h][] = $i++;
         }
+        Debug::dump($this->holdings);
+*/
 /*
         if ($this->database_name == 'COPAC' )
         { // COPAC are an aggregator themselves
@@ -88,7 +107,9 @@ class Pz2Record extends Xerxes\Record
             
 		
 		// description
-	    // $this->getElement( $record, "md-description" );
+	    $this->description = $this->getElementValue( $record, "md-description" );
+        //echo("ABSTRACT: ".$this->abstract->saveXML());
+	    $this->snippet = $this->getElementValue( $record, "md-snippet" );
 			
 	    // record id
 			
@@ -114,9 +135,13 @@ class Pz2Record extends Xerxes\Record
             $this->authors[] = $author_object;
         }
 
-		// format			
-		$this->format->setFormat($this->getElementValue($record,"md-medium"));			
-		
+        // publication information
+        $this->place = $this->getElementValue($record, "md-publication-place");
+		$this->publisher = $this->getElementValue($record, "md-publication-name");
+		$this->year = $this->getElementValue($record, "md-publication-date");
+
+
+
 		// article data
         //FIXME 
         $addata = null;	

@@ -26,7 +26,7 @@ class MergedResultSet extends ResultSet
     public function __construct($results, $targets)
     {
     //var_dump($results);
-//    Debug::dump($targets);
+    //Debug::dump($targets);
         $this->config = Config::getInstance();
         $this->start = $results['start'];
         $this->num = sizeof($results["hits"]); // should be = num
