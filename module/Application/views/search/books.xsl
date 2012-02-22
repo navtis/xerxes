@@ -39,23 +39,21 @@
 	</xsl:template>
 
 	<!-- 
-		TEMPLATE: RECORD BASIC
-		This one customized for a book-like display
+		TEMPLATE: RECORD BASIC. Position of Image changed to allow float GS
 	-->
 
 	<xsl:template name="record_basic">
-	
-		<div id="book-record-book-cover" style="display:none">
-			<xsl:call-template name="book_jacket_full">
-				<xsl:with-param name="isbn" select="standard_numbers/isbn[string-length(text()) = 10]" />
-			</xsl:call-template>
-		</div>
-		
-		<div id="book-record">
-			
+
 			<!-- Title -->
-			
-			<h1><xsl:call-template name="record_title" /></h1>
+	    <h1><xsl:call-template name="record_title" /></h1>
+	
+        <div id="book-record">
+	
+		    <div id="book-record-book-cover">
+			    <xsl:call-template name="book_jacket_full">
+				    <xsl:with-param name="isbn" select="standard_numbers/isbn[string-length(text()) = 10]" />
+			    </xsl:call-template>
+		    </div>
 			
 			<!-- Basic record information (Author, Year, Format, Database, ...) -->
 			
@@ -181,14 +179,19 @@
 								</xsl:choose>
 							</div>
 						</xsl:if>
-						
-						<xsl:if test="primary_author">
+					
+                        <!-- FIXME author chunk rewritten for pz2 -->
+                        
 							<div class="results-book-summary">
 								<xsl:if test="format != 'Journal' and format != 'Newspaper'">
 								
 									<!-- author -->
-								
-									<xsl:copy-of select="$text_results_author" />: <xsl:value-of select="primary_author" /><br />
+						            <xsl:if test="primary_author">
+									    <xsl:copy-of select="$text_results_author" />: <xsl:value-of select="primary_author" /><br />
+                                    </xsl:if>
+						            <xsl:if test="responsible">
+									    <xsl:value-of select="responsible" /><br />
+                                    </xsl:if>
 								
 									<!-- publication info -->
 								
@@ -206,7 +209,6 @@
 						
 								</xsl:if>								
 							</div>				
-						</xsl:if>
 						
 					</div>
 					

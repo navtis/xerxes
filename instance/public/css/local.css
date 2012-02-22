@@ -16,6 +16,19 @@
     margin-bottom: 0.35em;
 }
 
+/* de-emphasize language */
+.results-language {
+    color: #777777;
+}
+
+/* float bookcover and record-summary side by side */
+.book-record-cover {
+    float: left;
+}
+
+#record-summary {
+    float: left;
+}
 
 /* for additional target status column on right of results page */
 

@@ -616,16 +616,16 @@
 				</div>
 				
 				<!-- primary author -->
-                <!-- local SEARCH25 changes GS - FIXME -->
+                <!-- FIXME local SEARCH25 changes GS - FIXME -->
 				<xsl:choose>
 				    <xsl:when test="primary_author">
 					    <span class="results-author">
 						    <strong><xsl:copy-of select="$text_results_author" />: </strong><xsl:value-of select="primary_author" />
 					    </span>
                     </xsl:when>
-				    <xsl:when test="responsibility">
+				    <xsl:when test="responsible">
 					    <span class="results-author">
-						    <strong><xsl:copy-of select="$text_results_author" />: </strong><xsl:value-of select="responsibility" />
+						    <strong><xsl:copy-of select="$text_results_author" />: </strong><xsl:value-of select="responsible" />
 					    </span>
                     </xsl:when>
 				</xsl:choose>

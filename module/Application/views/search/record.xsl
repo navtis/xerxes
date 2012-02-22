@@ -102,10 +102,11 @@
 	</xsl:template>
 
 	<!--
-		TEMPLATE: RECORD SUMMARY
+		TEMPLATE: RECORD SUMMARY. div added GS FIXME 
 	-->	
 	
 	<xsl:template name="record_summary">
+      <div id="record-summary">
 		<dl>
 			<xsl:call-template name="additional_full_record_data_main_top" />
 			<xsl:call-template name="record_uniform-title" /> <!-- uniform title -->
@@ -120,6 +121,7 @@
 			<xsl:call-template name="record_database" /> <!-- Database -->
 			<xsl:call-template name="additional_full_record_data_main_bottom" />
 		</dl>
+      </div>
 	</xsl:template>
 
 	<!--

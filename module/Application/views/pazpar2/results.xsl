@@ -27,9 +27,9 @@
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
 
-    <xsl:import href="eng.xsl" />
 	<xsl:import href="../includes.xsl" />
 	<xsl:import href="../search/results.xsl" />
+    <xsl:import href="eng.xsl" />
 
     <!-- override javascript-include from ../includes.xsl GS -->
     <xsl:template name="javascript_include"> 

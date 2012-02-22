@@ -4,7 +4,9 @@ namespace Application\Model\Pazpar2;
 
 use Xerxes,
     Zend\Debug,
-	Xerxes\Utility\Parser;
+	Xerxes\Utility\Parser,
+	Xerxes\Record\Chapter,
+	Xerxes\Record\Subject;
 
 /**
  * Pazpar2 Record
@@ -27,7 +29,6 @@ class Pz2Record extends Xerxes\Record
     public function toXml()
     {
         $objXml = parent::toXml();
-        Parser::addToXML($objXml, 'responsible', $this->responsible);
 //        echo($objXml->saveXML());
 /*
         # FIXME put local code like this somewhere local...
@@ -74,8 +75,27 @@ class Pz2Record extends Xerxes\Record
 		$risformat = $this->getElementValue($record,"md-medium");
 		$this->format->setFormat($risformat);
         $this->format->setPublicFormat($this->format->getConstNameForValue($risformat));
+        // extent is used in Bibliographic - what for?
+		$this->extent = $this->getElementValue($record,"md-physical-extent");
+        
+        // Xerxes doesn't seem to use this info by default, so this is a new field
+        $physical = array();
+        if (! is_null( $this->getElementValue($record,"md-physical-format") ) )
+        {
+            $physical[] = $this->getElementValue($record,"md-physical-format");
+        }
+        if (! is_null( $this->getElementValue($record,"md-physical-extent") ) )
+        {
+            $physical[] = $this->getElementValue($record,"md-physical-extent");
+        }
+        if (! is_null( $this->getElementValue($record,"md-physical-dimensions") ) )
+        {
+            $physical[] = $this->getElementValue($record,"md-physical-dimensions");
+        }
+        foreach($physical as &$p)
+            $p = trim($p, '.;,');
+        $this->physical = implode("; ", $physical);
 
-		$this->extent = $this->getElementValue($record,"md-physical-extent");		//echo("Extent: ".$this->extent);	
 		//$this->database_name = $this->getElement($record, "location")->getAttribute("name");
 		//$this->holdings = $this->getElementValuesAttributePairs($record, "location", "name", "id");
 		$this->holdings = array_unique( $this->getElementValues($record, "location_title") );
@@ -107,9 +127,9 @@ copy of a book, to be used by pz2_record. Not needed? */
             
 		
 		// description
-	    $this->description = $this->getElementValue( $record, "md-description" );
-        //echo("ABSTRACT: ".$this->abstract->saveXML());
+	    $this->description = implode(' ', $this->getElementValues( $record, "md-xerxes-note") );
 	    $this->snippet = $this->getElementValue( $record, "md-snippet" );
+	    $this->abstract = $this->getElementValue( $record, "md-abstract" );
 			
 	    // record id
 			
@@ -123,25 +143,152 @@ copy of a book, to be used by pz2_record. Not needed? */
         $this->edition = $this->getElementValue($record, "md-edition");
 
 		// authors 
-		// preformatted by pazpar2 in md-title-responsibility	
-		if ( !is_null( $this->getElementValue($record,"md-title-responsibility") ) )
-        {
-		    $this->responsibility = $this->getElementValue($record,"md-title-responsibility");
-        }
 		if (! is_null($this->getElementValue($record,"md-author") ) )
         {
 		    $author = $this->getElementValue($record,"md-author");
-            $author_object = new Xerxes\Record\Author($author, null, 'personal');
+            $this->authors[] = new Xerxes\Record\Author($author, null, 'personal');
+        }
+		if ( !is_null( $this->getElementValue($record,"md-title-responsibility") ) )
+        {
+		    $responsible = trim( $this->getElementValue($record,"md-title-responsibility") );
+            // remove fully enclosing brackets
+            $responsible = trim( preg_replace( '/^\[([^\]]*)\]$/', '$1', $responsible ) );
+            
+            // try to extract people and their roles
+            $role = ''; $persons='';
+            if ( preg_match('/^\[(.*)\](.*)$/', $responsible, $matches) )
+            {
+                $role = $matches[1];
+                $persons = $matches[2];
+            } 
+            else if ( preg_match('/^(.*) by (.*)$/', $responsible, $matches) )
+            {
+                $role = $matches[1];
+                $persons = $matches[2];
+            } 
+            else if ( preg_match('/^ed. (.*)$/i', $responsible, $matches) )
+            {
+                $role = 'Editor';
+                $persons = $matches[1];
+            } 
+            else if ( preg_match('/^editors?(.*)$/i', $responsible, $matches) )
+            {
+                $role = 'Editor';
+                $persons = $matches[1];
+            }
+            if (preg_match('/edit/i', $role) )
+            {
+                $role = 'Editor';
+            }
+            //echo("<p>role: $role people: $persons</p>");
+            // if we don't have the people in the authors, try to add them
+            // FIXME should have a 'match' function in Author
+            $people = explode(',', $persons); // may be a list
+            $found = false;
+            if ( count($this->authors) > 0 )
+            {
+                foreach ($people as $person)
+                {
+                    $title_parts = preg_split('/\W/', $person);
+                    foreach($this->authors as $author)
+                    { 
+                        // let's hope its not John and Jane Smith
+                        if ( in_array($author->last_name, $title_parts) ) 
+                        { 
+                            $found = true; 
+                            break;
+                        } 
+                    } 
+                }
+            }
+            if (! $found )
+            {
+                $this->responsible = $responsible;
+                /* too dangerous adding to primary author 
+                if ( count($this->authors) > 0 ){
+                    $additional = true;
+                }
+                else
+                {
+                    $additional = false;
+                }
+                foreach ($people as $person)
+                {
+                    $this->authors[] = new Xerxes\Record\Author($person, null, 'personal', $additional);
+                  
+                }
+                */
+            }
+
+        }
+		if (! is_null($this->getElementValue($record,"md-meeting-name") ) )
+        {
+		    $author = $this->getElementValue($record,"md-meeting-name");
+            $author_object = new Xerxes\Record\Author($author, null, 'conference');
+            $this->authors[] = $author_object;
+        }
+		if (! is_null($this->getElementValue($record,"md-corporate-name") ) )
+        {
+		    $author = $this->getElementValue($record,"md-corporate-name");
+            $author_object = new Xerxes\Record\Author($author, null, 'corporate');
             $this->authors[] = $author_object;
         }
 
         // publication information
         $this->place = $this->getElementValue($record, "md-publication-place");
 		$this->publisher = $this->getElementValue($record, "md-publication-name");
-		$this->year = $this->getElementValue($record, "md-publication-date");
+        if ( is_null($this->year) )
+        {
+		    $this->year = $this->getElementValue($record, "md-publication-date");
+        }
+        
+        // Table of Contents, if any
+		if (! is_null($this->getElementValue($record,"md-toc") ) )
+        {   
+            $this->parseTOC($this->getElementValue($record,"md-toc"));
+        }
 
+        //subjects
+		$subjects = $this->getElementValues($record, "md-subject-long");
+        // remove duplicates
+        $subjects = array_unique($subjects); 
+        // sort into ascending length
+        usort($subjects, function($a, $b) {
+            return strlen($a) - strlen($b);
+        });
 
+        /* this version keeps the original strings */
+        foreach( $subjects as $subject)
+        {
+            $subject_object = new Subject();
+            $subject_object->display = (string) $subject;
+            $subject_object->value = (string) $subject;
 
+            array_push($this->subjects, $subject_object);
+        }
+
+        /* this alternative version breaks into separate terms: not better? 
+        // Split all subjects into component parts and order by frequency
+        $subj_array = array();
+        foreach( $subjects as $subject)
+        {
+            $bits = explode(',', $subject);
+            foreach($bits as $bit)
+            {
+                $subj_array[] = trim($bit);
+            }
+        }
+        $subj_count = array_count_values($subj_array);
+        arsort($subj_count);
+        foreach( $subj_count as $subject => $count)
+        {
+            $subject_object = new Subject();
+            $subject_object->display = (string) $subject;
+            $subject_object->value = (string) $subject;
+
+            array_push($this->subjects, $subject_object);
+        }
+        */
 		// article data
         //FIXME 
         $addata = null;	
@@ -176,7 +323,33 @@ copy of a book, to be used by pz2_record. Not needed? */
 //echo("<br />");
 //exit;
 	}
-	
+
+
+    protected function parseTOC($table_of_contents)
+    {
+
+        if ( $table_of_contents != "" ) 
+        { 
+            $chapter_titles_array = explode("--", $table_of_contents); 
+            foreach ( $chapter_titles_array as $chapter ) 
+            { 
+                $chapter_obj = new Chapter($chapter); 
+                if ( strpos($chapter, "/") !== false ) 
+                { 
+                    $chapter_parts = explode("/", $chapter); 
+                    $chapter_obj->title = $chapter_parts[0]; 
+                    $chapter_obj->author = $chapter_parts[1]; 
+                } 
+                else 
+                { 
+                    $chapter_obj->statement = $chapter; 
+                } 
+                $this->toc[] = $chapter_obj;
+            }
+        }
+        //Debug::dump($this->toc);
+    }
+
 	protected function getElement($node, $name)
 	{
 		$elements = $node->getElementsByTagName($name);
@@ -216,7 +389,7 @@ copy of a book, to be used by pz2_record. Not needed? */
 			array_push($values, $node->nodeValue);
 		}
 		
-		return $values;
+		return array_unique($values);
 	}		
 	protected function getElementValuesAttributes($node, $name, $attrname)
 	{
