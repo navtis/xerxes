@@ -451,6 +451,7 @@ class Pazpar2
             }
         }
         $response = $this->getRawResponse( $url, "record", $session );
+        //var_dump($response->saveXML());
         return $response;
     }
 

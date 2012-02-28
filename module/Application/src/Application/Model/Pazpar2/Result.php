@@ -28,7 +28,8 @@ class Result extends SearchResult
 	public $openurl_kev_co;	 // just the key-encoded-values of the openurl
 	public $xerxes_record; // record
 	public $original_record; // original xml
-	public $holdings; // holdings from an ils
+	public $holdings; // NOT USED FOR PZ2
+	public $mergedHoldings; // container for holdings from LMSs
 	public $recommendations = array(); // recommendation objects	
 	public $reviews; // reviews
 	
@@ -44,7 +45,7 @@ class Result extends SearchResult
 	 * @param Config $config			local config
 	 */
 	
-	public function __construct(Pz2Record $record, Config $config)
+	public function __construct(Record $record, Config $config)
 	{
 		$this->xerxes_record = $record;
 		$this->registry = Registry::getInstance();
@@ -62,14 +63,10 @@ class Result extends SearchResult
 		
 		$this->openurl_kev_co = $record->getOpenURL(null, $this->sid);
 		
-		// holdings
+		// holdings - get data already available from Z Server
 		
-		$this->holdings = new Holdings();
+		$this->mergedHoldings = $record->getMergedHoldings();
 		
-		if ( $record->hasPhysicalHoldings() == false )
-		{
-			$this->holdings->checked = true;
-		}
 	}
 	
 	/**
@@ -99,26 +96,18 @@ class Result extends SearchResult
 			}
 		}
 	}
-	
-	/**
-	 * Add holdings to this result
-	 */
-/* FIXME namespace clash - why?
-	public function setHoldings( Search\Holdings $holdings )
-	{
-		$this->holdings = $holdings;
-	}
-*/
-	/**
-	 * Return item records
+
+    /**
+	 * Return merged holdings
 	 * 
-	 * @return array of Item
+	 * @return MergedHoldings object
 	 */
 	
-	public function getHoldings()
+	public function getMergedHoldings()
 	{
-		return $this->holdings;
+		return $this->mergedHoldings;
 	}
+
 
 	/**
 	 * Fetch item and holding records from an ILS for this record
@@ -128,91 +117,93 @@ class Result extends SearchResult
 	{
 		$xerxes_record = $this->getXerxesRecord();
 		
-		$id = $xerxes_record->getRecordID(); // id from the record
-		$cache_id = $xerxes_record->getSource() . "." . $id; // to identify this in the cache
-		$url = $this->config->getConfig("LOOKUP"); // url to availability server
+        // FIXME this comes from the targets
+		//$id = $xerxes_record->getRecordID(); // id from the record
+		//$cache_id = $xerxes_record->getSource() . "." . $id; // to identify this in the cache
+		//$url = $this->config->getConfig("LOOKUP"); // url to availability server
 		
-		// mark that we've checked holdings either way
-		
-		$this->holdings->checked = true;
-		
-		// no holdings source defined or somehow id's are blank
-		
-		if ( $xerxes_record->hasPhysicalHoldings() == false || $url == "" || $id == "" )
-		{
-			return null;
-		}		
+        $mergedHoldings = $this->mergedHoldings()->getHoldings();
 
-		// get the data
+        foreach($mergedHoldings as $holdings)
+        {
+		    // either electronic only or already have ciculation info
 		
-		$url .= "?action=status&id=" . urlencode($id);
+		    if ( $holdings->hasPhysicalHoldings() == false || $holdings->hasCirculationData() == true ) )
+		    {
+			    return null;
+		    }		
+
+		    // get the data
+/* FIXME Can't do this yet		
+		    $url .= "?action=status&id=" . urlencode($id);
 		
-		// @todo this needs to be gotten from a factory or something
+		    // @todo this needs to be gotten from a factory or something
 		
-		$client = new Client();
-		$client->setUri($url);
-		$client->setConfig(array('timeout' => 5));
+		    $client = new Client();
+		    $client->setUri($url);
+		    $client->setConfig(array('timeout' => 5));
 		
-		$data = $client->send()->getBody();
+		    $data = $client->send()->getBody();
 		
-		// echo $url; exit;
+		    // echo $url; exit;
 		
-		// no data, what's up with that?
+		    // no data, what's up with that?
 		
-		if ( $data == "" )
-		{
-			throw new \Exception("could not connect to availability server");
-		}		
+		    if ( $data == "" )
+		    {
+			    throw new \Exception("could not connect to availability server");
+		    }		
 		
 		
-		// response is (currently) an array of json objects
+		    // response is (currently) an array of json objects
 		
-		$results = json_decode($data);
+		    $results = json_decode($data);
 		
-		// parse the response
+		    // parse the response
 		
-		if ( is_array($results) )
-		{
-			if ( count($results) > 0 )
-			{
-				// now just slot them into our item object
+		    if ( is_array($results) )
+		    {
+			    if ( count($results) > 0 )
+			    {
+				    // now just slot them into our item object
 				
-				foreach ( $results as $holding )
-				{
-					$is_holding = property_exists($holding, "holding"); 
+				    foreach ( $results as $holding )
+				    {
+					    $is_holding = property_exists($holding, "holding"); 
 										
-					if ( $is_holding == true )
-					{
-						$item = new Holding();
-						$this->holdings->addHolding($item);
-					}
-					else
-					{
-						$item = new Item();
-						$this->holdings->addItem($item);
-					}
+					    if ( $is_holding == true )
+					    {
+						    $item = new Holding();
+						    $this->holdings->addHolding($item);
+					    }
+					    else
+					    {
+						    $item = new Item();
+						    $this->holdings->addItem($item);
+					    }
 					
-					foreach ( $holding as $property => $value )
-					{
-						$item->setProperty($property, $value);
-					}
-				}
-			}
-		}
+					    foreach ( $holding as $property => $value )
+					    {
+						    $item->setProperty($property, $value);
+					    }
+				    }
+			    }
+		    }
 		
-		// cache it for the future
+		    // cache it for the future
 		
-		// @todo: zend\cache
+		    // @todo: zend\cache
 		
-		$cache = new Cache();
+		    $cache = new Cache();
 		
-		$expiry = $this->config->getConfig("HOLDINGS_CACHE_EXPIRY", false, 2 * 60 * 60); // expiry set for two hours
-		$expiry += time(); 
+		    $expiry = $this->config->getConfig("HOLDINGS_CACHE_EXPIRY", false, 2 * 60 * 60); // expiry set for two hours
+		    $expiry += time(); 
 		
-		$cache->set($cache_id, serialize($this->holdings), $expiry);
-		
-		return null;
-	}
+		    $cache->set($cache_id, serialize($this->holdings), $expiry);
+        }
+*/
+    return null;
+    }
 	
 	/**
 	 * Add reviews from Good Reads

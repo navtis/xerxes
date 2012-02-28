@@ -38,24 +38,32 @@ class MergedResultSet extends ResultSet
             // merge the human-readable location name with the pz2 record
             $doc = new \DOMDocument();
             $doc->loadXML($record);
-            $locs = $doc->getElementsByTagName('location');
+            $root = $doc->documentElement;
+            $locs = $root->getElementsByTagName('location');
+            $toDrop = array();
             foreach($locs as $loc )
             {
                 $name = $loc->getAttribute('name');
                 $name = strtoupper($name);
-                if ($name == 'COPAC')
+                if ( isset( $targets[$name] ) )
                 {
-                    $node = $doc->createElement('location_title', 'COPAC');
-                }   
+                    // insert displayed target title in record
+                    $node = $doc->createElement('location_title', $targets[$name]->title_short);
+                    $loc->appendChild($node);
+                }
                 else
                 {
-                    $node = $doc->createElement('location_title', $targets[$name]->title_short);
+                    // drop records not from this target list
+                    $toDrop[] = $loc;
                 }
-                $loc->appendChild($node);
+            }
+            foreach($toDrop as $loc)
+            {
+                // can't drop directly in original foreach or breaks loop
+                $loc->parentNode->removeChild($loc);
             }
             $record = $doc->saveXML();
-//Debug::dump($record);
-            $xerxes_record = new Pz2Record();
+            $xerxes_record = new Record();
             $xerxes_record->loadXML( $record );
             $this->addRecord( $xerxes_record );
         }

@@ -6,7 +6,9 @@ use Xerxes,
     Zend\Debug,
 	Xerxes\Utility\Parser,
 	Xerxes\Record\Chapter,
-	Xerxes\Record\Subject;
+	Xerxes\Record\Subject,
+    Application\Model\Search\Item,
+    Application\Model\Search\Holding;
 
 /**
  * Pazpar2 Record
@@ -19,16 +21,20 @@ use Xerxes,
  * @package Xerxes
  */
 
-
-class Pz2Record extends Xerxes\Record
+/* FIXME inherits huge list of fields from parent; make sure these are
+populated as far as possible GS */
+class Record extends Xerxes\Record
 {
 	protected $source = "pazpar2";
     protected $responsible; // munged list of editors etc
+    protected $locations; // array of unique target names and titles
+    protected $mergedHoldings; // container for all Holdings for record
 
     // add extra fields to parent Record
     public function toXml()
     {
         $objXml = parent::toXml();
+
 //        echo($objXml->saveXML());
 /*
         # FIXME put local code like this somewhere local...
@@ -91,14 +97,22 @@ class Pz2Record extends Xerxes\Record
         if (! is_null( $this->getElementValue($record,"md-physical-dimensions") ) )
         {
             $physical[] = $this->getElementValue($record,"md-physical-dimensions");
+            foreach($physical as &$p)
+                $p = trim($p, '.;,');
+            $this->physical = implode("; ", $physical);
         }
-        foreach($physical as &$p)
-            $p = trim($p, '.;,');
-        $this->physical = implode("; ", $physical);
 
-		//$this->database_name = $this->getElement($record, "location")->getAttribute("name");
-		//$this->holdings = $this->getElementValuesAttributePairs($record, "location", "name", "id");
-		$this->holdings = array_unique( $this->getElementValues($record, "location_title") );
+        // fetch the unique target library names and keys for this record
+        // for use on results page
+		$locations = $record->getElementsByTagName('location');
+        foreach($locations as $location)
+        {
+            $this->locations[$location->getAttribute('name')] = $this->getElementValue($location, "location_title");
+        }
+        // and now get the holdings information
+        // for use on record page
+        
+        $this->populateHoldings($locations);
 
 /* this was to provide unique identifiers (offset values) for each
 copy of a book, to be used by pz2_record. Not needed? */
@@ -315,6 +329,7 @@ copy of a book, to be used by pz2_record. Not needed? */
 		{
 			$this->title = $this->getElementValue($record,"md-title");
 		}
+		
 //echo("<br />");
 //echo($this->document->saveXML());
 //echo("<br />");
@@ -324,6 +339,73 @@ copy of a book, to be used by pz2_record. Not needed? */
 //exit;
 	}
 
+    /**
+     * Populate mergedHoldings with holding/circulation information returned
+     * from Z-Servers
+     * @param elementList $locations
+     */
+    protected function populateHoldings($locations)
+    {
+        $this->mergedHoldings = new MergedHoldings();
+
+        $domxpath = new \DOMXPath($this->document);
+        
+        foreach($this->locations as $loc_name => $loc_title)
+        {
+            $hs = new Holdings();
+            $hs->setTargetName($loc_name);
+            $hs->setTargetTitle($loc_title);
+           
+            $recs = $domxpath->query("//location[@name='$loc_name']");
+            foreach( $recs as $rec ) 
+            {
+                //if an electronic url, storeit
+                $els = $rec->getElementsByTagname("md-electronic-url");
+                foreach($els as $el)
+                {
+                    $h = new Holding();
+                    $h->setProperty( '856', $el->nodeValue );
+                    $hs->addHolding($h);
+                }
+
+                $els = $rec->getElementsByTagname("md-opacholding");
+                foreach($els as $el)
+                {
+                    // a bare holding, without circulation info
+                    $i = new Item();
+                    $i->setProperty("callnumber", $el->getAttribute('callnumber'));
+                    $i->setProperty("location", $el->getAttribute('locallocation'));
+                    $hs->addItem($i);
+                }                        
+                
+                $els = $rec->getElementsByTagname("md-opacitem");
+                foreach($els as $el)
+                {
+                    // circulation data
+                    $i = new Item();
+                    $i->setProperty("bib_id", $el->getAttribute('itemid'));
+                    $i->setProperty("availability", $el->getAttribute('available'));
+                    $i->setProperty("status", $el->getAttribute('duration'));
+                    $i->setProperty("location", $el->getAttribute('locallocation'));
+                    $i->setProperty("reserve", $el->getAttribute('onhold'));
+                    $i->setProperty("duedate", $el->getAttribute('duedate'));
+                    $i->setProperty("callnumber", $el->getAttribute('callnumber'));
+                    $hs->addItem($i);
+                }
+                if ($hs->hasMembers())
+                {  // FIXME may be empty if user selected only one location - should weed out
+                   // empties earlier, but for now, kludge
+                    $this->mergedHoldings->addHoldings($hs);
+                }
+
+            }    
+        }
+    }
+
+    public function getMergedHoldings()
+    {
+        return $this->mergedHoldings;
+    }
 
     protected function parseTOC($table_of_contents)
     {

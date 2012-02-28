@@ -42,6 +42,11 @@
     <xsl:template name="record_authors">
         <xsl:choose>
             <xsl:when test="authors/author[@type = 'personal']"> 
+                <xsl:variable name="primauth">
+                    <xsl:value-of select="authors/author[@type='personal'][1]/aufirst"/> <xsl:text> </xsl:text> 
+                    <xsl:value-of select="authors/author[@type='personal'][1]/auinit"/> 
+                    <xsl:value-of select="authors/author[@type='personal'][1]/aulast"/>
+                </xsl:variable>
                 <div id="record-authors"> 
                     <dt><xsl:copy-of select="$text_results_author" />:</dt> 
                     <dd> 
@@ -54,10 +59,15 @@
                         </xsl:if> 
                     </xsl:for-each> 
                     </dd> 
+                    <xsl:variable name="resp">
+                        <xsl:value-of select="responsible"/>
+                    </xsl:variable>
                     <xsl:if test="responsible">
-                        <dt></dt>
-                        <dd><xsl:value-of select="responsible"/></dd>
-                    </xsl:if>
+                        <xsl:if test="translate($resp,'.','') != $primauth">
+                            <dt></dt>
+                            <dd><xsl:value-of select="responsible"/></dd>
+                        </xsl:if>
+                     </xsl:if>
                 </div>
             </xsl:when>
             <xsl:when test="responsible">
@@ -118,18 +128,166 @@
         </xsl:if> 
     </xsl:template>
 
+    <!--
+                 TEMPLATE: RECORD ACTIONS: OVERRIDEN FROM search/record to allow multiple holdings
+    -->
 
-<!--
-<xsl:template match="/*">
+    <xsl:template name="record_actions">
+        <div id="record-full-text" class="raised-box record-actions">
+    
+        <xsl:for-each select="//mergedHoldings/holdings/holding">
+            <xsl:call-template name="availability">
+                <xsl:with-param name="context">record</xsl:with-param>
+            </xsl:call-template>
+        </xsl:for-each>
 
-	<xsl:for-each select="//xerxes_record">
+            <xsl:call-template name="save_record" />
+        </div>
+    </xsl:template>
 
-		<xsl:call-template name="availability">
-			<xsl:with-param name="type" select="//config/lookup_display" />
-		</xsl:call-template>
+	<!-- 	
+		TEMPLATE: AVAILABILITY LOOKUPa OVERRIDEN FROM search/books.xsl
+	-->
+	
+	<xsl:template name="availability_lookup">
+		<xsl:param name="record_id" />
+		<xsl:param name="isbn" />
+		<xsl:param name="oclc" />
+		<xsl:param name="type" select="'none'" />
+		<xsl:param name="nosave" />
+		<xsl:param name="context">results</xsl:param>
+			
+		<xsl:variable name="source" select="//request/source" />
+		<xsl:variable name="target_name" select="target_name" />
+		<xsl:variable name="target_title" select="target_title" />
+	    	
+<!--		<xsl:variable name="printAvailable" select="count(../holdings/items/item[availability=1])" /> -->
+		<xsl:variable name="printAvailable" select="count(items/item)" />
+		<xsl:variable name="onlineCopies" select="count(links/link[@type != 'none'])" />
+		<xsl:variable name="totalCopies" select="$printAvailable + $onlineCopies" />
+
+		<xsl:choose>
+			
+		    <xsl:when test="1=1"> <!-- always do this for now GS -->	
 		
-	</xsl:for-each>
-</xsl:template>
--->		
+				<xsl:choose>		
+
+					<xsl:when test="items/item">
+						<!-- item and holdings data already fetched and in the XML response -->
+					
+						<!-- pick display type -->
+					
+						<xsl:choose>
+						
+							<xsl:when test="holding">
+							
+								<xsl:call-template name="availability_lookup_holdings">
+									<xsl:with-param name="context" select="$context" />
+								</xsl:call-template>
+								
+							</xsl:when>
+							
+							<xsl:when test="$type = 'summary'">
+							
+								<xsl:call-template name="availability_lookup_summary">
+									<xsl:with-param name="totalCopies" select="$totalCopies" />
+									<xsl:with-param name="printAvailable" select="$printAvailable" />
+								</xsl:call-template> 
+								
+							</xsl:when>
+							<xsl:otherwise>
+							
+								<xsl:call-template name="availability_lookup_full">
+									<xsl:with-param name="totalCopies" select="$totalCopies" />
+								</xsl:call-template>
+							
+							</xsl:otherwise>
+						</xsl:choose>
+					
+					</xsl:when>
+		
+					<!-- not here, so need to get it dynamically with ajax -->
+			
+					<xsl:otherwise>
+								
+						<div id="{//request/controller}-{$record_id}-{$type}" class="availability-load"></div>
+			
+					</xsl:otherwise>				
+				</xsl:choose>
+	
+				<!-- check for full-text -->
+				
+				<xsl:call-template name="full_text_links"/>	
+								
+			</xsl:when>
+			
+			<!-- no lookup required, thanks -->
+			
+			<xsl:otherwise>
+				<xsl:call-template name="availability_lookup_none" />	
+			</xsl:otherwise>
+		</xsl:choose>
+	
+	</xsl:template>
+
+	<!-- 	
+		TEMPLATE: AVAILABILITY LOOKUP FULL
+		A full table-view of the (print) holdings information, with full-text below
+	-->
+	
+	<xsl:template name="availability_lookup_full">
+		<xsl:param name="totalCopies" />
+	
+		<xsl:if test="count(items/item) != '0'">
+			<xsl:call-template name="availability_item_table" />
+		</xsl:if>
+		
+		<xsl:if test="$totalCopies = 0">
+			<xsl:call-template name="ill_option" />
+		</xsl:if>
+				
+	</xsl:template>
+	
+	<!-- 	
+		TEMPLATE: AVAILABILITY ITEM TABLE
+		Show the items in a table
+	-->
+	
+	<xsl:template name="availability_item_table">
+	
+		<div>
+			<xsl:attribute name="class">
+				<xsl:text>booksAvailable</xsl:text>
+				<xsl:if test="//request/action = 'record'">
+					<xsl:text> booksAvailableRecord</xsl:text>
+				</xsl:if>
+			</xsl:attribute>
+			
+			<table class="holdings-table" width="100%">
+				<xsl:if test="target_title">
+                    <tr>
+					    <th colspan="5">Institution: <span style="font-weight: bold"><xsl:value-of select="target_title"/></span></th>
+                    </tr>
+				</xsl:if>
+			<tr>
+				<th>Location</th>
+				<th>Call Number</th>
+				<th>Availability</th>
+				<th>Status</th>
+				<th>Due date</th>
+			</tr>
+			<xsl:for-each select="items/item">
+				<tr>
+					<td><xsl:value-of select="location" /></td>
+					<td><xsl:value-of select="callnumber" /></td>
+					<td><xsl:value-of select="availability" /></td>
+					<td><xsl:value-of select="status" /></td>
+					<td><xsl:value-of select="duedate" /></td>
+				</tr>
+			</xsl:for-each>
+			</table>
+		</div>
+	
+	</xsl:template>
 
 </xsl:stylesheet>

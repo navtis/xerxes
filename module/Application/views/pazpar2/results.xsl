@@ -109,9 +109,10 @@
             </li>
         </xsl:for-each>
         -->
-        <xsl:for-each select="holdings/*">
+        <xsl:for-each select="locations/*">
             <li>
-                <xsl:value-of select="."/> 
+                <a href="{../../../url_for_item}&amp;target={name(.)}"><xsl:value-of select="."/></a> 
+                <!-- <xsl:value-of select="."/>  -->
             </li>
         </xsl:for-each>
         </ul>

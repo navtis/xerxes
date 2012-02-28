@@ -258,7 +258,6 @@
 	<xsl:template name="availability">
 		<xsl:param name="context">results</xsl:param>
 		<xsl:param name="type" />
-		
 		<xsl:call-template name="availability_lookup">
 			<xsl:with-param name="record_id" select="record_id" />
 			<xsl:with-param name="context" select="$context" />
@@ -282,10 +281,11 @@
 			
 		<xsl:variable name="source" select="//request/source" />
 		
-		<xsl:variable name="printAvailable" select="count(../holdings/items/item[availability=1])" />
+		<xsl:variable name="printAvailable" select="count(../holdings/items/item[availability=1])" /> 
+		<xsl:variable name="printAvailable" select="count(../holdings/holding/items/item)" />
 		<xsl:variable name="onlineCopies" select="count(links/link[@type != 'none'])" />
 		<xsl:variable name="totalCopies" select="$printAvailable + $onlineCopies" />
-	
+
 		<xsl:choose>
 		
 			<xsl:when test="//config/lookup">

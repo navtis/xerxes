@@ -283,7 +283,7 @@ class Search
 			
 			// other links
 			
-			$this->linkOther($result);
+			$result = $this->linkOther($result);
 		}
 	}
 	
