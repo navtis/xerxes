@@ -3,6 +3,7 @@
 namespace Application\Model\Summon;
 
 use Xerxes,
+	Xerxes\Record\Format,
 	Xerxes\Utility\Parser;
 
 /**
@@ -61,9 +62,21 @@ class Record extends Xerxes\Record
 		// format
 		
 		$format = $this->extractValue($document, "ContentType/0");
+		
+		
+		
+		// @todo: proper format mapping
+		
 		if ( $format == "Journal Article") $format = "Article";
 		
 		$this->format->setFormat($format);
+		
+		$this->format->setInternalFormat(Format::Article);
+		if ( $format == "Conference Proceeding") $this->format->setInternalFormat(Format::ConferenceProceeding);
+		if ( $format == "Dissertation") $this->format->setInternalFormat(Format::Thesis);
+		
+		
+		
 		
 		// summary
 		
