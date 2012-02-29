@@ -281,7 +281,6 @@
 			
 		<xsl:variable name="source" select="//request/source" />
 		
-		<xsl:variable name="printAvailable" select="count(../holdings/items/item[availability=1])" /> 
 		<xsl:variable name="printAvailable" select="count(../holdings/holding/items/item)" />
 		<xsl:variable name="onlineCopies" select="count(links/link[@type != 'none'])" />
 		<xsl:variable name="totalCopies" select="$printAvailable + $onlineCopies" />

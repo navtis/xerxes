@@ -135,7 +135,7 @@
     <xsl:template name="record_actions">
         <div id="record-full-text" class="raised-box record-actions">
     
-        <xsl:for-each select="//mergedHoldings/holdings/holding">
+        <xsl:for-each select="//mergedHolding/holdings">
             <xsl:call-template name="availability">
                 <xsl:with-param name="context">record</xsl:with-param>
             </xsl:call-template>
@@ -146,7 +146,7 @@
     </xsl:template>
 
 	<!-- 	
-		TEMPLATE: AVAILABILITY LOOKUPa OVERRIDEN FROM search/books.xsl
+		TEMPLATE: AVAILABILITY LOOKUP OVERRIDEN FROM search/books.xsl
 	-->
 	
 	<xsl:template name="availability_lookup">
@@ -205,7 +205,7 @@
 						</xsl:choose>
 					
 					</xsl:when>
-		
+	
 					<!-- not here, so need to get it dynamically with ajax -->
 			
 					<xsl:otherwise>

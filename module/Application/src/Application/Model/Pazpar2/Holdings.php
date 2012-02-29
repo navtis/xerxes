@@ -9,7 +9,7 @@ use Application\Model\Search\Holdings as SearchHoldings,
 /**
  * Result Holdings
  *
- * Based on Search\Holdings with addition of target name/title
+ * Based on Search\Holdings with addition of target name/title and links array
  * @author David Walker
  * @copyright 2011 California State University
  * @link http://xerxes.calstate.edu
@@ -22,7 +22,8 @@ class Holdings extends SearchHoldings
 {
     public $target_name;
     public $target_title;
-	
+    public $links = array();
+
 	public function setTargetName($name)
 	{
 		$this->target_name = $name;
@@ -35,10 +36,15 @@ class Holdings extends SearchHoldings
 
     public function hasMembers()
     {
-        return count($this->holdings) + count($this->items) > 0?true:false;
+        return count($this->holdings) + count($this->items) + count($this->links) > 0?true:false;
     }
     public function hasCirculationData()
     {
         return count($this->items) > 0?true:false;
+    }
+
+    public function addLink(\Xerxes\Record\Link $link)
+    {
+        $this->links[] = $link;
     }
 }

@@ -29,7 +29,7 @@ class Result extends SearchResult
 	public $xerxes_record; // record
 	public $original_record; // original xml
 	public $holdings; // NOT USED FOR PZ2
-	public $mergedHoldings; // container for holdings from LMSs
+	public $mergedHolding; // container for holdings from LMSs
 	public $recommendations = array(); // recommendation objects	
 	public $reviews; // reviews
 	
@@ -65,7 +65,7 @@ class Result extends SearchResult
 		
 		// holdings - get data already available from Z Server
 		
-		$this->mergedHoldings = $record->getMergedHoldings();
+		$this->mergedHolding = $record->getMergedHolding();
 		
 	}
 	
@@ -100,12 +100,12 @@ class Result extends SearchResult
     /**
 	 * Return merged holdings
 	 * 
-	 * @return MergedHoldings object
+	 * @return MergedHolding object
 	 */
 	
-	public function getMergedHoldings()
+	public function getMergedHolding()
 	{
-		return $this->mergedHoldings;
+		return $this->mergedHolding;
 	}
 
 
@@ -122,9 +122,9 @@ class Result extends SearchResult
 		//$cache_id = $xerxes_record->getSource() . "." . $id; // to identify this in the cache
 		//$url = $this->config->getConfig("LOOKUP"); // url to availability server
 		
-        $mergedHoldings = $this->mergedHoldings()->getHoldings();
+        $mergedHolding = $this->mergedHolding()->getHoldings();
 
-        foreach($mergedHoldings as $holdings)
+        foreach($mergedHolding as $holdings)
         {
 		    // either electronic only or already have ciculation info
 		

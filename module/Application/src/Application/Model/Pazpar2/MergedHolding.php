@@ -13,7 +13,7 @@ namespace Application\Model\Pazpar2;
  * @package Xerxes
  */
 
-class MergedHoldings
+class MergedHolding
 {
 	public $holdings = array();
 	
@@ -45,4 +45,9 @@ class MergedHoldings
 	{
 		return count($this->holdings);
 	}
+
+    public function toArray()
+    {
+        return $this->holdings;
+    }
 }

@@ -29,6 +29,7 @@
 
 	<xsl:import href="../includes.xsl" />
 	<xsl:import href="../search/results.xsl" />
+	<xsl:import href="includes.xsl" />
     <xsl:import href="eng.xsl" />
 
     <!-- override javascript-include from ../includes.xsl GS -->
@@ -67,11 +68,15 @@
     <div id="progress"><img src="images/progress_small{$progress}.gif" alt="" /></div>	
     </xsl:template>
 -->
-	<xsl:template name="breadcrumb">
-		<!-- TODO: FIX THIS ?   <xsl:call-template name="breadcrumb_worldcat" /> -->
+<!--	<xsl:template name="breadcrumb">
 		<xsl:call-template name="page_name" />
 	</xsl:template>
-	
+-->
+    <xsl:template name="breadcrumb">
+        <xsl:call-template name="breadcrumb_search" />
+        <xsl:value-of select="$text_search_results" />
+    </xsl:template>
+
 	<xsl:template name="page_name">
 		Search Results
 	</xsl:template>
@@ -85,7 +90,7 @@
 	</xsl:template>
 
     <xsl:template name="additional_brief_record_data" >
-        <xsl:variable name="text_results_location">Copies at</xsl:variable>
+        <xsl:variable name="text_results_location">Available from</xsl:variable>
         <xsl:variable name="recid">
             <xsl:value-of select="./record_id" />
         </xsl:variable>

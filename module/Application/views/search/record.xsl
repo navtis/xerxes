@@ -330,6 +330,17 @@
 					</dd>
 				</xsl:if>
 			</xsl:when>
+            <!-- added GS - Journal, not article in journal -->
+			<xsl:when test="format = 'Journal'">
+				<xsl:if test="publisher">
+					<dt><xsl:copy-of select="$text_record_publisher" />:</dt>
+					<dd>
+						<xsl:value-of select="place" /><xsl:text>: </xsl:text>
+						<xsl:value-of select="publisher" /><xsl:text>, </xsl:text>
+						<xsl:value-of select="year" />
+					</dd>
+				</xsl:if>
+			</xsl:when>
 		</xsl:choose>
 		</div>
 	</xsl:template>

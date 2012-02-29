@@ -55,6 +55,7 @@ class Engine extends Search\Engine
         $sid = Pz2Session::getSavedId();
         // and use it to recover the Session from cache
         $session = unserialize( $this->cache()->get($sid) );
+        
         $targets  = $search->fillTargetInfo();
         $start = $start - 1; // allow for pz2 starting from 0
         $max = $max - 1;
@@ -73,7 +74,17 @@ class Engine extends Search\Engine
     {
         // recover sid from Zend session
         $sid = Pz2Session::getSavedId();
-        $session = unserialize( $this->cache()->get($sid) );
+        try
+        {
+            $session = unserialize( $this->cache()->get($sid) );
+        } 
+        catch( \Exception $e )
+        {   // TIMEOUT
+            // put up warning and back to front page
+            trigger_error($e->getMessage(), E_USER_WARNING); // should be js alert on front page
+            $this->_redirect('/');
+            exit(); 
+        }
         return $session->getRecord( $id, $offset, $targets );
     }
 

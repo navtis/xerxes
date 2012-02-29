@@ -124,7 +124,8 @@ class Pz2Session
 	
 	public function merge($start=0, $max=100, $sort = null, $targets)
 	{
-         $results = $this->client->pz2_show($this->getId(), $start, $max, $sort);
+        $results = $this->client->pz2_show($this->getId(), $start, $max, $sort);
+
          //Debug::dump($results);
          
          $this->result_set = new MergedResultSet($results, $targets);
@@ -263,6 +264,7 @@ class Pz2Session
         // recover sid from Zend session
         $sid = Pz2Session::getSavedId();
         $record = $this->client()->pz2_record( $sid, $id, $offset ); 
+
         // need to return a ResultSet, record is a DomDocument
         if ( ! is_null($offset) ) 
         {

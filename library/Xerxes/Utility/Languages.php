@@ -132,6 +132,11 @@ class Languages
 		{
 			$code = Parser::strtolower( $code );
 		}
+
+        if (strlen( $code ) > 3 )
+        {
+            return null;
+        }
 		
 		$elements = $this->xpath->query( "//iso_639_entry[@$type='$code']" ); 
 		

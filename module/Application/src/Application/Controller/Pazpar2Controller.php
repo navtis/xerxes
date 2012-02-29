@@ -12,7 +12,8 @@ use Application\Model\Pazpar2\Engine,
 class Pazpar2Controller extends SearchController
 {
 	protected $id = "pazpar2";
-	
+    protected $_helper;
+
     protected function init(MvcEvent $e)
     {
         parent::init($e);
@@ -58,9 +59,18 @@ class Pazpar2Controller extends SearchController
      
 	public function resultsAction()
 	{
-        $result = parent::resultsAction();
-		$sid = (string) Pz2Session::getSavedId();
-		$status = $this->engine->getSearchStatus();
+        try
+        {
+            $result = parent::resultsAction();
+		    $sid = (string) Pz2Session::getSavedId();
+		    $status = $this->engine->getSearchStatus();
+        }
+        catch( \Exception $e )
+        {
+        // FIXME fails on getting helper: how to get helper in ZF2 ActionController?
+            $this->_helper->flashMessenger->addMessage('Timeout ' . $e->getMessage());
+            $this->_helper->redirector('index');
+        }
         // keep the session number for the AJAX code in the output HTML
 	    $this->request->setSessionData('pz2session', $sid);
         // tell jquery whether to start the timer

@@ -7,6 +7,7 @@ use Xerxes,
 	Xerxes\Utility\Parser,
 	Xerxes\Record\Chapter,
 	Xerxes\Record\Subject,
+    Xerxes\Record\Link,
     Application\Model\Search\Item,
     Application\Model\Search\Holding;
 
@@ -28,14 +29,14 @@ class Record extends Xerxes\Record
 	protected $source = "pazpar2";
     protected $responsible; // munged list of editors etc
     protected $locations; // array of unique target names and titles
-    protected $mergedHoldings; // container for all Holdings for record
+    protected $mergedHolding; // container for all Holdings for record
 
     // add extra fields to parent Record
     public function toXml()
     {
         $objXml = parent::toXml();
 
-//        echo($objXml->saveXML());
+       echo($this->xmlpp($objXml->saveXML(), false));
 /*
         # FIXME put local code like this somewhere local...
         if ($this->database_name == 'COPAC')
@@ -67,7 +68,7 @@ class Record extends Xerxes\Record
             // this is a single 'record' already
             $record = $this->document->documentElement;
         }
-//var_dump($this->document->saveXML());
+var_dump($this->document->saveXML());
 		$this->score = (string) $this->getElementValue($record, "relevance");
        
 		$this->title = (string) $this->getElementValue($record, "md-title");
@@ -75,6 +76,7 @@ class Record extends Xerxes\Record
 		$this->series_title = (string) $this->getElementValue($record, "md-series-title");
 
         $this->isbns = array_unique($this->getElementValues($record, "md-isbn") );
+        $this->issns = array_unique($this->getElementValues($record, "md-issn") );
 		$this->language = (string) $this->getElementValue($record, "md-language");
 
 		// format			
@@ -115,7 +117,7 @@ class Record extends Xerxes\Record
         $this->populateHoldings($locations);
 
 /* this was to provide unique identifiers (offset values) for each
-copy of a book, to be used by pz2_record. Not needed? */
+bib record of a book, to be used by pz2_record. Not needed? */
 /*
 		$this->holdings = array();
         $hs = array_unique($this->getElementValues($record, "location_title") );
@@ -333,9 +335,6 @@ copy of a book, to be used by pz2_record. Not needed? */
 //echo("<br />");
 //echo($this->document->saveXML());
 //echo("<br />");
-//var_dump($this->holdings);
-//echo("<br />");
-//echo("<br />");
 //exit;
 	}
 
@@ -346,7 +345,7 @@ copy of a book, to be used by pz2_record. Not needed? */
      */
     protected function populateHoldings($locations)
     {
-        $this->mergedHoldings = new MergedHoldings();
+        $this->mergedHolding = new MergedHolding();
 
         $domxpath = new \DOMXPath($this->document);
         
@@ -361,11 +360,22 @@ copy of a book, to be used by pz2_record. Not needed? */
             {
                 //if an electronic url, storeit
                 $els = $rec->getElementsByTagname("md-electronic-url");
+                $source = $this->getElementValue($rec, "md-journal-title");
+                $source = is_null($source)?'':"from $source";
+                $display = "Electronic resource $source for $loc_title members";
                 foreach($els as $el)
                 {
-                    $h = new Holding();
-                    $h->setProperty( '856', $el->nodeValue );
-                    $hs->addHolding($h);
+                    $url = $el->nodeValue;
+                    // FIXME could do a lot more here
+                    if (preg_match( '/pdf$/i', $url ) )
+                    {
+                        $l = new Link($url, 'pdf', $display);
+                    }
+                    else
+                    {
+                        $l = new Link($url, 'any', $display);
+                    }
+                    $hs->addLink($l);
                 }
 
                 $els = $rec->getElementsByTagname("md-opacholding");
@@ -392,19 +402,19 @@ copy of a book, to be used by pz2_record. Not needed? */
                     $i->setProperty("callnumber", $el->getAttribute('callnumber'));
                     $hs->addItem($i);
                 }
-                if ($hs->hasMembers())
-                {  // FIXME may be empty if user selected only one location - should weed out
-                   // empties earlier, but for now, kludge
-                    $this->mergedHoldings->addHoldings($hs);
-                }
 
             }    
+            if ($hs->hasMembers())
+            {  // FIXME may be empty if user selected only one location - should weed out
+               // empties earlier, but for now, kludge
+                $this->mergedHolding->addHoldings($hs);
+            }
         }
     }
 
-    public function getMergedHoldings()
+    public function getMergedHolding()
     {
-        return $this->mergedHoldings;
+        return $this->mergedHolding;
     }
 
     protected function parseTOC($table_of_contents)
@@ -498,6 +508,43 @@ copy of a book, to be used by pz2_record. Not needed? */
 		}
 		return $values;
     }
+
+    /** Prettifies an XML string into a human-readable and indented work of art 
+     *  @param string $xml The XML as a string 
+     *  @param boolean $html_output True if the output should be escaped (for use in HTML) 
+     */  
+     function xmlpp($xml, $html_output=false) {  
+         $xml_obj = new \SimpleXMLElement($xml);  
+         $level = 4;  
+         $indent = 0; // current indentation level  
+         $pretty = array();  
+                            
+         // get an array containing each XML element  
+         $xml = explode("\n", preg_replace('/>\s*</', ">\n<", $xml_obj->asXML()));  
+                                   
+         // shift off opening XML tag if present  
+         if (count($xml) && preg_match('/^<\?\s*xml/', $xml[0])) {  
+             $pretty[] = array_shift($xml);  
+         }  
+                                                          
+         foreach ($xml as $el) {  
+            if (preg_match('/^<([\w])+[^>\/]*>$/U', $el)) {  
+                // opening tag, increase indent  
+                $pretty[] = str_repeat(' ', $indent) . $el;  
+                $indent += $level;  
+            } else {  
+                if (preg_match('/^<\/.+>$/', $el)) {              
+                    $indent -= $level;  // closing tag, decrease indent  
+                }  
+                if ($indent < 0) {  
+                    $indent += $level;  
+                }  
+                $pretty[] = str_repeat(' ', $indent) . $el;  
+            }  
+                                                                                                              }     
+                                                                                                              $xml = implode("\n", $pretty);     
+        return ($html_output) ? htmlentities($xml) : $xml;  
+     }  
 }
 
 ?>
