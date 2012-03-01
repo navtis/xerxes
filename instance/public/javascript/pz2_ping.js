@@ -32,8 +32,10 @@ $(document).ready(function(){
             error: function(e, xhr)
             {
                 // no point in pinging if comms down
-                alert("Debug: session incommunicado");
                 clearInterval(pinger);
+                alert('Session timed out - about to restart');
+                var url = '/';
+                window.location = url;
             }
         }) 
     }, 50000); // 50 seconds default between pings 

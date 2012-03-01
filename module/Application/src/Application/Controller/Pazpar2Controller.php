@@ -7,17 +7,20 @@ use Application\Model\Pazpar2\Engine,
     Application\View\Helper\Pazpar2 as SearchHelper,
     Zend\Mvc\MvcEvent,
     Zend\Debug,
+    Zend\Mvc\Controller\Plugin\FlashMessenger,
     Application\Model\Pazpar2\Pz2Session;
 
 class Pazpar2Controller extends SearchController
 {
 	protected $id = "pazpar2";
-    protected $_helper;
+    protected $fm; // flashMessenger
 
     protected function init(MvcEvent $e)
     {
         parent::init($e);
         $this->helper = new SearchHelper($e, $this->id, $this->engine);
+        // FIXME should this use a broker? Can't work out how (or why)
+        $this->fm = new FlashMessenger();
     }
 
 	protected function getEngine()
@@ -27,6 +30,10 @@ class Pazpar2Controller extends SearchController
 
     public function indexAction()
     {
+        // if sent back here by exception, display any message
+        // done automatically?
+        //$this->data['messages'] = $this->fm->getMessages();
+
         $this->data['regions'] = $this->engine->getRegions();
         //echo ($this->data['regions']->toXml()->saveXML() ); exit;
        // Debug::dump($regions ); exit;
@@ -67,9 +74,15 @@ class Pazpar2Controller extends SearchController
         }
         catch( \Exception $e )
         {
-        // FIXME fails on getting helper: how to get helper in ZF2 ActionController?
-            $this->_helper->flashMessenger->addMessage('Timeout ' . $e->getMessage());
-            $this->_helper->redirector('index');
+            // Exception probably a session timeout; go back to front page
+            $fm = new FlashMessenger();
+            $fm->addMessage('Session timeout: ' . $e->getMessage());
+            $params = $this->query->getAllSearchParams();
+		    $params['lang'] = $this->request->getParam('lang');
+	        $params['controller'] = $this->request->getParam('controller');
+	        $params['action'] = 'index';
+		    $url = $this->request->url_for($params);
+		    return $this->redirect()->toUrl($url);
         }
         // keep the session number for the AJAX code in the output HTML
 	    $this->request->setSessionData('pz2session', $sid);

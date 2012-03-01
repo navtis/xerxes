@@ -54,7 +54,7 @@ $(document).ready(function(){
                 error: function(e, xhr)
                 {
                     // no point in getting status if comms down
-                    alert("Debug: status incommunicado: "+e.responseText);
+                    alert("Session error: "+e.responseText);
                     clearInterval(statusfetch);
                  }
             }) 
