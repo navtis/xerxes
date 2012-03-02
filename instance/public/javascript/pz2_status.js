@@ -53,8 +53,7 @@ $(document).ready(function(){
                 }, 
                 error: function(e, xhr)
                 {
-                    // no point in getting status if comms down
-                    alert("Session error: "+e.responseText);
+                    // no point in getting status if comms down (maybe because search completed)
                     clearInterval(statusfetch);
                  }
             }) 

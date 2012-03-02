@@ -336,20 +336,6 @@ class Pz2Session
 	}	
 	
 	/**
-	 * Add target to pz2session
-	 * 
-	 * FIXME rewrite for pazpar2
-	 * @param Target $target_object
-	 */
-	
-	public function addTarget( target $target_object )
-	{
-		$tid = $target_object->target_id;
-		
-		$this->included_targets[$tid] = new TargetResultSet($target_object);
-	}
-	
-	/**
 	 * Calculate search date based on current time
 	 */
 	
@@ -372,7 +358,7 @@ class Pz2Session
         else
         {
             $sess = new Container('pazpar2');
-            $this->sid = $sess->sid; // try/throw here?
+            $this->sid = $sess->sid; 
             return $this->sid;
         }
 	}
@@ -381,6 +367,6 @@ class Pz2Session
 	public static function getSavedId()
 	{
         $sess = new Container('pazpar2');
-        return $sess->sid; // try/throw here?
+        return $sess->sid; 
 	}
 }

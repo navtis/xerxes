@@ -6,6 +6,7 @@ namespace Application\Model\Pazpar2;
  * Result Holdings
  *
  * @author David Walker
+ * @author Graham Seaman
  * @copyright 2011 California State University
  * @link http://xerxes.calstate.edu
  * @license http://www.gnu.org/licenses/

@@ -74,11 +74,14 @@ class Pz2Targets extends DataMap
 		$strSQL = "SELECT * from xerxes_pz2_regions ORDER BY UPPER(name) ASC";
 		
 		$arrResults = $this->select( $strSQL );
-		
+	
+        $position = 0;
+
 		foreach ( $arrResults as $arrResult )
 		{
 			$objRegion = new Pz2Region( );
-			$objRegion->load( $this->getRegion($arrResult['region_key']) );
+
+			$objRegion->load( $this->getRegion($arrResult['region_key']), $position );
 			
 			array_push( $arrRegions, $objRegion );
 		}
@@ -88,14 +91,14 @@ class Pz2Targets extends DataMap
 */ 
     /* fetch the whole subtree for a given node. This would be very
     inneficient for a deep tree, but we expect it to be shallow */
-	public function getRegionTree( $node=null )
+	public function getRegionTree( $node=null, &$position=1 )
 	{
         if ( $node == null ) // only on first pass
         {
 	        $node = new Pz2Region();
             $node->region_key = 'ALL';
 		}    
-        $newRegion = $this->getRegion( $node );
+        $newRegion = $this->getRegion( $node, $position );
         
         if ( $newRegion == null ) return null;
 
@@ -104,7 +107,7 @@ class Pz2Targets extends DataMap
             $subregion = $newRegion->subregions[$i];
             if ( sizeof( $subregion->targets ) == 0 )
             { // no targets, but may have further subregions
-                $branch = $this->getRegionTree($subregion);
+                $branch = $this->getRegionTree( $subregion, $position );
                 //Debug::dump($branch);
                 $newRegion->subregions[$i] = $branch; // may be null
             }
@@ -118,7 +121,7 @@ class Pz2Targets extends DataMap
 	 * @param Region $objRegion     The root node for the tree to populate
 	 * @return Region		        The root object, filled out with subregions and targets. 
 	 */
-	public function getRegion($objRegion)
+	public function getRegion($objRegion, &$position)
 	{
         $arrResults = array();
 
@@ -172,7 +175,7 @@ class Pz2Targets extends DataMap
 				{
 					// get the last target in this subregion first too.
 					
-					if ( $objTarget->target_id != null )
+					if ( $objTarget->target_id != null && $objTarget->enabled == 1 )
 					{
 						array_push( $objSubRegion->targets, $objTarget );
 					}
@@ -193,20 +196,21 @@ class Pz2Targets extends DataMap
 				{
 					// existing one that isn't empty? save it.
 					
-					if ( $objTarget->target_id != null )
+					if ( $objTarget->target_id != null && $objTarget->enabled == 1 ) 
 					{
 						array_push( $objSubRegion->targets, $objTarget );
 					}
 					
 					$objTarget = new Pz2Target( );
 					$objTarget->load( $arrResult ); // so target includes own region info
+					$objTarget->setPosition($position++); // add display position
 				}
 				
 			}
 			
 			// last ones
 			
-			if ( $objTarget->target_id != null )
+			if ( $objTarget->target_id != null && $objTarget->enabled == 1 ) 
 			{
 				array_push( $objSubRegion->targets, $objTarget );
 			}

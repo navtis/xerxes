@@ -119,8 +119,23 @@ class Pazpar2Controller extends SearchController
         $id = $this->request->getParam('id'); 
         $offset = $this->request->getParam('offset', null, true); 
         $targets = $this->query->fillTargetInfo();
-        // get the record 
-        $results = $this->engine->getRawRecord($id, $offset, $targets); 
+        try
+        {
+            // get the record 
+            $results = $this->engine->getRawRecord($id, $offset, $targets); 
+        }
+        catch( \Exception $e )
+        {
+            // Exception probably a session timeout; go back to front page
+            $fm = new FlashMessenger();
+            $fm->addMessage('Session timeout: ' . $e->getMessage());
+            $params = $this->query->getAllSearchParams();
+		    $params['lang'] = $this->request->getParam('lang');
+	        $params['controller'] = $this->request->getParam('controller');
+	        $params['action'] = 'index';
+		    $url = $this->request->url_for($params);
+		    return $this->redirect()->toUrl($url);
+        }
         // set links 
         $this->helper->addRecordLinks($results); 
         // add to response 

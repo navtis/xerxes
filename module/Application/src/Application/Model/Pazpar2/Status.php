@@ -66,19 +66,10 @@ class Status
         {
             $name = $target->getElementsByTagName('name')->item(0)->nodeValue;
             $name = strtoupper($name);
-            # FIXME Get local rule out of here
-            if ($name == 'COPAC')
-            {
-                $node = $s->createElement('title_short', 'COPAC');
-            }
-            else
-            {
-                $node = $s->createElement('title_short', $db_targets[$name]->title_short);
-            }
+            $node = $s->createElement('title_short', $db_targets[$name]->title_short);
             $target->appendChild($node);
         }
         $news['xml'] = $s;
-        //echo($s->saveXML());
 		return $news;
 	}
 

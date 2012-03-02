@@ -32,22 +32,14 @@ class Record extends Xerxes\Record
     protected $mergedHolding; // container for all Holdings for record
 
     // add extra fields to parent Record
+    // Retained just for debugging: convenient place to print out xml record
     public function toXml()
     {
         $objXml = parent::toXml();
 
 //       echo($this->xmlpp($objXml->saveXML(), false));
 /*
-        # FIXME put local code like this somewhere local...
-        if ($this->database_name == 'COPAC')
-        {
-            Parser::addToXML($objXml, 'source', 'COPAC: ' . $this->source);
-        } 
-        else
-        {
-            Parser::addToXML($objXml, 'source', $this->database_name);
-        }
-
+        // Parser::addToXML($objXml, 'source', 'COPAC: ' . $this->source);
 */
         return $objXml;
     }
@@ -133,15 +125,6 @@ bib record of a book, to be used by pz2_record. Not needed? */
         }
         Debug::dump($this->holdings);
 */
-/*
-        if ($this->database_name == 'COPAC' )
-        { // COPAC are an aggregator themselves
-		    $sources = $this->getElementValuesAttributes($record, "md-copaclocation", "code");
-            $this->source = 'COPAC: ' . implode(",", $sources);
-        }
-*/
-            
-		
 		// description
 	    $this->description = implode(' ', $this->getElementValues( $record, "md-xerxes-note") );
 	    $this->snippet = $this->getElementValue( $record, "md-snippet" );
@@ -305,8 +288,14 @@ bib record of a book, to be used by pz2_record. Not needed? */
             array_push($this->subjects, $subject_object);
         }
         */
+
+		// title
+		{
+			$this->title = $this->getElementValue($record,"md-title");
+		}
+		
 		// article data
-        //FIXME 
+        //FIXME Can we use any of this?
         $addata = null;	
 		if ( $addata != null)
 		{
@@ -326,16 +315,6 @@ bib record of a book, to be used by pz2_record. Not needed? */
 			}
 
 	    }	
-		// title
-		
-		{
-			$this->title = $this->getElementValue($record,"md-title");
-		}
-		
-//echo("<br />");
-//echo($this->document->saveXML());
-//echo("<br />");
-//exit;
 	}
 
     /**
@@ -509,7 +488,8 @@ bib record of a book, to be used by pz2_record. Not needed? */
 		return $values;
     }
 
-    /** Prettifies an XML string into a human-readable and indented work of art 
+    /** Prettifies an XML string into a human-readable and indented work of art
+     * FIXME delete this function before release - not mine
      *  @param string $xml The XML as a string 
      *  @param boolean $html_output True if the output should be escaped (for use in HTML) 
      */  

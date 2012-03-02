@@ -74,17 +74,7 @@ class Engine extends Search\Engine
     {
         // recover sid from Zend session
         $sid = Pz2Session::getSavedId();
-        try
-        {
-            $session = unserialize( $this->cache()->get($sid) );
-        } 
-        catch( \Exception $e )
-        {   // TIMEOUT
-            // put up warning and back to front page
-            trigger_error($e->getMessage(), E_USER_WARNING); // should be js alert on front page
-            $this->_redirect('/');
-            exit(); 
-        }
+        $session = unserialize( $this->cache()->get($sid) );
         return $session->getRecord( $id, $offset, $targets );
     }
 
@@ -139,9 +129,6 @@ class Engine extends Search\Engine
         }
      }
 
-    // __construct()
-    // getURL()
-
     /* class-specific functions */
 
 
@@ -167,13 +154,13 @@ class Engine extends Search\Engine
     }
 
 
-    /* called on serialization: not needed? */
+    /* called on serialization */
 	public function __sleep()
 	{
         // nothing to do for now
 	}
 	
-    /* called on unserialization: not needed? */
+    /* called on unserialization */
 	public function __wakeup()
 	{
 		$this->__construct(); // parent constructor
@@ -194,9 +181,7 @@ class Engine extends Search\Engine
         $pz2session->initiateSearch($query);
        
         $sid = $pz2session->getId();
-//FIXME Dying here
-//       $temp = serialize($pz2session);
-//       var_dump($temp); exit;
+
         // cache the session object for later retrieval
         $this->cache()->set($sid, serialize($pz2session));
 
@@ -212,24 +197,9 @@ class Engine extends Search\Engine
 
         $status = $session->getSearchStatus($sid);
 
-//        if ( $status->isFinished() )
-//        {
-//            $status->setResultSet($session->merge());
-//        }
 		return $status;
 	}
-/*
-    public function getSearchResults($sid)
-    {
-        $session = unserialize( $this->cache()->get($sid) );
 
-        $status = $session->getSearchStatus($sid);
-//Debug::dump($this); Debug::dump($status); exit;
-        $status->setResultSet($session->merge());
-        
-		return $status;
-	}
-*/
     /* called from pingAction */
     /* return boolean live or not */
     public function ping($sid)

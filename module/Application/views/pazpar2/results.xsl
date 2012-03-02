@@ -60,18 +60,6 @@
 		</xsl:call-template>
 	</xsl:template>
     
-    <!-- FIXME this isn't called yet GS -->
-<!--
-    <xsl:variable name="progress" select="results/progress" />
-    <xsl:template name="progress-bar">
-        <xsl:param name="progress" />
-    <div id="progress"><img src="images/progress_small{$progress}.gif" alt="" /></div>	
-    </xsl:template>
--->
-<!--	<xsl:template name="breadcrumb">
-		<xsl:call-template name="page_name" />
-	</xsl:template>
--->
     <xsl:template name="breadcrumb">
         <xsl:call-template name="breadcrumb_search" />
         <xsl:value-of select="$text_search_results" />
@@ -104,16 +92,6 @@
         <strong><xsl:copy-of select="$text_results_location" />: </strong>
         <span class="results-holdings">
         <ul>
-        <!--
-        <xsl:for-each select="holdings/*">
-            <xsl:variable name="offsets">
-                <xsl:for-each select="./*">&amp;offset=<xsl:value-of select="."/></xsl:for-each>
-            </xsl:variable>
-            <li>
-                <a href="/pazpar2/record?id={$recid}&amp;target={name(.)}{$offsets}"><xsl:value-of select="name(.)"/></a> 
-            </li>
-        </xsl:for-each>
-        -->
         <xsl:for-each select="locations/*">
             <li>
                 <a href="{../../../url_for_item}&amp;target={name(.)}"><xsl:value-of select="."/></a> 

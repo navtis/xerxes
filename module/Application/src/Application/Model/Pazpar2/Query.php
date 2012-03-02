@@ -137,38 +137,6 @@ class Query extends Search\Query
             
 	}
 	
-	/**
-	 * Get searchable target IDs
-	 * 
-	 * @return array
-	 */
-/*	// FIXME not needed???
-	public function getSearchableTargets()
-	{
-		
-		$targets_to_search = array();
-		
-		foreach ( $this->targets as $target_object )
-		{
-			$targets_to_search[] = $target_object->target_id; 
-		}
-		
-		return $targets_to_search;
-	}
-*/	
-	/**
-	 * Get selected region
-	 */
-/* FIXME query doesn't need to know about regions 	
-	public function getRegion()
-	{
-		return $this->request->getParam('region');
-	}
-*/	
-	/**
-	 * Get selected language
-	 */
-	
 	public function getLanguage()
 	{
 		return $this->request->getParam('lang');
