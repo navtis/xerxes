@@ -6,7 +6,7 @@
 	xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
 
 <xsl:template name="breadcrumb_start">
-    <a href="/">Library selection</a>
+    <a href="{//request/controller}">Library selection</a>
 </xsl:template>
 
 </xsl:stylesheet>
