@@ -152,10 +152,34 @@ abstract class SearchController extends ActionController
 		
 		$total = $results->getTotal();
 		
-		// cache it
+		// track the query
 		
 		$id = $this->helper->getQueryID();
-		$this->request->setSessionData($id, (string) $total);
+		
+		if ( $this->request->getSessionData("stat-$id") == "" ) // first time only, please
+		{
+			// log it
+			// @todo: make this an event
+			
+			try
+			{
+				$log = new \Application\Model\DataMap\Stats();
+				$log->logSearch($this->id, $this->query, $results);
+			}
+			catch ( \Exception $e ) // make it a warning so we don't stop the search
+			{
+				trigger_error('search stats warning: ' . $e->getMessage(), E_USER_WARNING);
+			}
+			
+			// mark we've saved this search log
+			
+			$this->request->setSessionData("stat-$id", (string) $total);
+		
+			// cache it
+			
+			$this->request->setSessionData($id, (string) $total);
+		}
+		
 		
 		// add links
 		
