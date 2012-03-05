@@ -114,7 +114,6 @@ class Xsl
 
 		$distro_path =  $this->distro_xsl_dir . '/' . $path_to_file;
 		$local_path =  $this->local_xsl_dir . '/' . $path_to_file;
-		      
 
 		### check to make sure at least one of the files exists
 		
@@ -159,12 +158,6 @@ class Xsl
 			$output->setAttribute("doctype-system", "http://www.w3.org/TR/html4/loose.dtd");
 		}
 		
-		### add a reference to the distro file
-
-		if ( $distro_exists == true )
-		{	
-			array_push($files_to_import, $distro_path);
-		}
 		
 		### add a refence for files programatically added
 		
@@ -179,7 +172,7 @@ class Xsl
 				
 				// don't include the distro includes.xsl, since this messes things up!
 				// @todo: figure out why includes.xsl is this weird exception
-				
+		
 				if ( file_exists($distro_include) && $strInclude != "includes.xsl")
 				{
 					array_push($files_to_import, $distro_include);
@@ -193,7 +186,6 @@ class Xsl
 				}
 			}
 		}
-		
 		### add a refence to the local file
 		
 		if ( $local_exists )
@@ -218,7 +210,6 @@ class Xsl
 			// find anything include'd or import'ed in original base file
 			
 			$array_merged = array_merge( $distroXml->xpath( "//xsl:include" ), $distroXml->xpath ( "//xsl:import" ) );
-			
 			foreach ( $array_merged as $extra )
 			{
 				// path to local copy
@@ -228,7 +219,6 @@ class Xsl
 				// path to distro copy as a check
 				
 				$distro_check = $this->distro_xsl_dir . '/' . dirname ( $path_to_file ) . '/' . $extra['href'];
-				
 				// make sure local copy exists, and they are both not pointing at the same file 
 				
 				if ( file_exists( $local_candidate ) && realpath($distro_check) != realpath($local_candidate) )
@@ -236,6 +226,12 @@ class Xsl
 					array_push($files_to_import, $local_candidate);
 				}
 			}
+		}
+		### add a reference to the distro file
+
+		if ( $distro_exists == true )
+		{	
+			array_push($files_to_import, $distro_path);
 		}
 		
 		// now make sure no dupes
@@ -250,7 +246,7 @@ class Xsl
 			$this->addImportReference ( $generated_xsl, $import, $output );
 		}
 		
-		// header("Content-type: text/xml"); echo $generated_xsl->saveXML(); exit;
+		//header("Content-type: text/xml"); echo $generated_xsl->saveXML(); exit;
 		
 		return $generated_xsl;
 	}

@@ -317,9 +317,7 @@ xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
 	<xsl:variable name="text_results_next">Next</xsl:variable>
 	
 	<xsl:variable name="text_search_record">Record</xsl:variable>
-    <!-- why cant I override this from my local eng.xsl? -->
-	<!-- <xsl:variable name="text_search_module">Find Books &amp; Articles</xsl:variable> -->
-	<xsl:variable name="text_search_module">Search the Libraries</xsl:variable>
+	<xsl:variable name="text_search_module">Find Books &amp; Articles</xsl:variable> 
 	<xsl:variable name="text_search_results">Search results</xsl:variable>
 	
 	<xsl:variable name="text_searchbox_ada_boolean">Boolean operator: </xsl:variable>

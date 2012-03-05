@@ -22,6 +22,7 @@ xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
 	Keep them in alphabetical order!!
 -->
 	
+	<xsl:variable name="abc">testing</xsl:variable>
 	<xsl:variable name="text_libraries_search">Search by library</xsl:variable>
 	<xsl:variable name="text_search_module">Search the libraries</xsl:variable>
 	<xsl:variable name="text_region_libraries_desc">Select the regions or individual libraries you wish to search</xsl:variable>
