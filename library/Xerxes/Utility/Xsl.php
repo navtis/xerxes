@@ -108,7 +108,9 @@ class Xsl
 	
 	private function generateBaseXsl( $path_to_file, $import_array = array(), $output_type)
 	{
-		$files_to_import = array();
+		$global_files_to_import = array();
+		$application_files_to_import = array();
+		$local_files_to_import = array();
 		
 		### first, set up the paths to the distro and local directories
 
@@ -118,6 +120,7 @@ class Xsl
 		### check to make sure at least one of the files exists
 		
 		$distro_exists = file_exists($distro_path);
+
 		$local_exists = file_exists($local_path);
 
 		// if we don't have either a local or a distro copy, that's a problem.
@@ -127,7 +130,25 @@ class Xsl
 			// throw new Exception("No xsl stylesheet found: $local_path || $distro_path");
 			throw new \Exception("No xsl stylesheet found: $path_to_file");
 		}			
-		
+
+        // Any main distro file must belong to a particular application
+        // so extract the prefix for that
+        if ($distro_exists) // why might it not?
+        {
+		    $prefix = str_replace( $path_to_file, '',  strpos($path_to_file, '/') );
+            $application_path = $distro_path . '/' . $prefix;
+        }
+        else
+        {
+            // what to do if we just have an instance file? How could this happen?
+        }
+
+		### add a reference to the distro file to the front of the application array
+
+		if ( $distro_exists == true )
+		{	
+			array_push($application_files_to_import, $distro_path);
+		}
 		
 		### now create the skeleton XSLT file that will hold references to both
 		### the distro and the local files
@@ -159,35 +180,35 @@ class Xsl
 		}
 		
 		
-		### add a refence for files programatically added
+		### add a reference for files programatically added
 		
 		if ( $import_array != null )
 		{
 			foreach ( $import_array as $strInclude )
 			{
-				// but only if a distro copy exists
-				
 				$distro_include = $this->distro_xsl_dir . '/' . $strInclude;
+				$application_include = $application_path . '/' . $strInclude;
 				$local_include = $this->local_xsl_dir . '/' . $strInclude;
 				
-				// don't include the distro includes.xsl, since this messes things up!
-				// @todo: figure out why includes.xsl is this weird exception
-		
-				if ( file_exists($distro_include) && $strInclude != "includes.xsl")
+				if ( file_exists($distro_include) )
 				{
-					array_push($files_to_import, $distro_include);
+					array_push($global_files_to_import, $distro_include);
+				}
+				
+				if ( file_exists($application_include) )
+				{
+					array_push($application_files_to_import, $application_include);
 				}
 				
 				// see if there is a local version, and include it too
 				
 				if ( file_exists($local_include) )
 				{
-					array_push($files_to_import, $local_include);
+					array_push($local_files_to_import, $local_include);
 				}
 			}
 		}
-		### add a refence to the local file
-		
+		### add a reference to the local file
 		if ( $local_exists )
 		{
 			$this->addIncludeReference( $generated_xsl, $local_path );
@@ -223,21 +244,18 @@ class Xsl
 				
 				if ( file_exists( $local_candidate ) && realpath($distro_check) != realpath($local_candidate) )
 				{
-					array_push($files_to_import, $local_candidate);
+					array_push($local_files_to_import, $local_candidate);
 				}
 			}
 		}
-		### add a reference to the distro file
 
-		if ( $distro_exists == true )
-		{	
-			array_push($files_to_import, $distro_path);
-		}
+		// now make sure no dupes, then merge
 		
-		// now make sure no dupes
+		$local_files_to_import = array_unique($local_files_to_import);
+		$application_files_to_import = array_unique($application_files_to_import);
+		$global_files_to_import = array_unique($global_files_to_import);
 		
-		$files_to_import = array_unique($files_to_import);
-		
+        $files_to_import = array_merge($global_files_to_import, $application_files_to_import, $local_files_to_import);
 		
 		### now the actual mechanics of the import
 		
