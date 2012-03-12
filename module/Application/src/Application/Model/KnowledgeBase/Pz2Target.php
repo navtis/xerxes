@@ -53,6 +53,8 @@ class Pz2Target extends DataValue
         $this->title_short = $this->vars['target_title_short'];
         $this->title_long = $this->vars['target_title_display'];
         $this->enabled = $this->vars['target_enabled'];
+        // SEARCH25 specific variable
+        $this->copac_key = $this->vars['target_copac_key'];
 		parent::load($arrResult);
 	}
 	
@@ -80,6 +82,11 @@ class Pz2Target extends DataValue
 		$xml->loadXML("<target />");
 		$xml->documentElement->setAttribute("target_id", $this->target_id);
 		$xml->documentElement->setAttribute("position", $this->position);
+        if (isset( $this->textValue ) )
+        {
+            // check checkbox
+		    $xml->documentElement->setAttribute("textValue", $this->textValue);
+        }
         foreach( $this->vars as $k => $v )
         {
             if ( preg_match( '/^target_/', $k ) )

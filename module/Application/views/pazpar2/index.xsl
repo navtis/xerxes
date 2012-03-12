@@ -104,7 +104,7 @@
                         <xsl:attribute name="checked">checked</xsl:attribute>
                     </xsl:if>
                     </input>
-				    <span class="subjectDatabaseTitle"> <a href="{./catalogue_url}" title="Go directly to {./title_display}"><xsl:value-of select="./title_display" /></a></span> <span class="subjectDatabaseInfo"><a title="More information about {./title_display}" href="/pazpar2/library/{./pz2_key}"> <img src="images/info.gif" alt="More information about {./title_display}" /></a></span>
+				    <span class="subjectDatabaseTitle"> <a href="{./catalogue_url}" title="Go directly to {./title_display}"><xsl:value-of select="./title_display" /></a></span> <span class="subjectDatabaseInfo"><a title="More information about {./title_display}" href="/pazpar2/library?target={./pz2_key}"> <img src="images/info.gif" alt="More information about {./title_display}" /></a></span>
                 </li>
             </xsl:for-each>
             </ul>

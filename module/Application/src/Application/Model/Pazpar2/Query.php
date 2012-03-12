@@ -42,7 +42,7 @@ class Query extends Search\Query
 	public function fillTargetInfo()
 	{
 		// populate the target information from KB
-		$this->datamap = new Pz2Targets(); // @todo: use KB model instead?
+		$this->datamap = new Pz2Targets($this->targetnames); 
 		
 		if ( count($this->targetnames) >= 0 )
 		{
@@ -84,11 +84,17 @@ class Query extends Search\Query
 		// normalize terms
 		
 		$term = $terms[0];
-		$term->toLower()->andAllTerms();
-		
-	    $phrase = urlencode( trim ( $term->phrase ) );	
+        // ANDing a long list of terms makes this an invalid Z39.50 query
+		//$term->toLower()->andAllTerms();
+	
+        // remove punctuation
+        $phrase = preg_replace('/[\W]+/', ' ', $term->phrase);
+        // tidy multiple spaces
+        $phrase = preg_replace('/[\s]+/', ' ', $term->phrase);
+
+	    $phrase = urlencode( trim ( $phrase ) );	
         
-        if ($term->field_internal == 'any') // default
+        if ($term->field_internal == 'any') 
         {
             $query = $phrase;
         }

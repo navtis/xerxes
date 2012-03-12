@@ -30,6 +30,10 @@
         <!-- max no of records to be returned per target -->
         <config name="maxrecs">100</config>
 
+        <!-- whether to try to take the bibliographic record from COPAC 
+             A SEARCH25-specific option -->
+        <config name="useCopac">true</config>
+
 	</configuration>
 	
 </xerxes>

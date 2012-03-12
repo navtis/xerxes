@@ -27,7 +27,8 @@ xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
 	<xsl:variable name="text_search_module">Search the libraries</xsl:variable>
 	<xsl:variable name="text_region_libraries_desc">Select the regions or individual libraries you wish to search</xsl:variable>
     <xsl:variable name="text_results_edition">Edition</xsl:variable>
-
+    <!-- hide login and account for now -->
+    <xsl:variable name="text_header_myaccount"></xsl:variable>
     <!-- override treatment of language in labels/eng.xsl for results page -->
     <xsl:template name="text_results_language">
         <xsl:if test="language and language != 'English'">

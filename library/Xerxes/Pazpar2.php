@@ -190,7 +190,7 @@ class Pazpar2
 		$this->client->setUri($url);
 		$response = $this->client->send();
         $statusCode = $response->getStatusCode();
-
+  
 		if ( ($response->isClientError() && $statusCode != 417)  || $response->getBody() == "")
 		{
 			throw new \Exception( "Cannot process search at this time." );

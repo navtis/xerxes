@@ -268,6 +268,7 @@ class Pz2Session
         // need to return a ResultSet, record is a DomDocument
         if ( ! is_null($offset) ) 
         {
+            // FIXME MarcRecord and Offset not yet implemented
             $xerxes_record = new MarcRecord(); // convert to xerxes record format first
             $xerxes_record->loadXML( $record );
         } 
@@ -279,7 +280,17 @@ class Pz2Session
             $results['start'] = 0;
             $results['merged'] = 1; 
             $results['hits'][0] = $record->saveXML();
-            $result_set = new MergedResultSet($results, $targets);
+            $this->config = Config::getInstance();
+		    $useCopac = $this->config()->getConfig('USECOPAC', false);
+            if ( $useCopac )
+            {
+                // SEARCH25-specific option
+                $result_set = new CopacMergedResultSet($results, $targets);
+            }
+            else
+            {   // normal default
+                $result_set = new MergedResultSet($results, $targets);
+            }
         }
       
         return $result_set;

@@ -55,11 +55,16 @@ class Engine extends Search\Engine
         $sid = Pz2Session::getSavedId();
         // and use it to recover the Session from cache
         $session = unserialize( $this->cache()->get($sid) );
-        
+        if (! is_object( $session ) ) {
+            throw new \Exception("Session ended, returning to front page"); 
+        }
+
         $targets  = $search->fillTargetInfo();
         $start = $start - 1; // allow for pz2 starting from 0
         $max = $max - 1;
-        return $session->merge($start, $max, $sort, $targets);
+        $results = $session->merge($start, $max, $sort, $targets);
+        
+        return $results;
     }
 
 	/**
@@ -69,12 +74,14 @@ class Engine extends Search\Engine
 	 * @param string	record identifier
 	 * @return Resultset
 	 */
-    // FIXME no error trapping if either sid or cached session has gone away
 	public function getRawRecord( $id, $offset=array(), $targets=null )
     {
         // recover sid from Zend session
         $sid = Pz2Session::getSavedId();
         $session = unserialize( $this->cache()->get($sid) );
+        if (! is_object( $session ) ) {
+            throw new \Exception("Session ended, returning to front page"); 
+        }
         return $session->getRecord( $id, $offset, $targets );
     }
 
@@ -132,10 +139,16 @@ class Engine extends Search\Engine
     /* class-specific functions */
 
 
-    public function getRegions()
+    public function getRegions($targets)
     {
-        $targets = new Pz2Targets();
+        $targets = new Pz2Targets($targets);
         return $targets->getRegionTree();
+    }
+
+    public function getTarget($target)
+    {
+        $pzt = new Pz2Targets();
+        return $pzt->getTarget($target);
     }
 
    /**

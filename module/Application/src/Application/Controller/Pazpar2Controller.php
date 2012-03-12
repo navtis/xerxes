@@ -33,8 +33,10 @@ class Pazpar2Controller extends SearchController
         // if sent back here by exception, display any message
         // done automatically?
         //$this->data['messages'] = $this->fm->getMessages();
-
-        $this->data['regions'] = $this->engine->getRegions();
+        //Debug::dump($this->query); exit;
+        $targets = is_array($this->query->getTargetNames() )?$this->query->getTargetNames(): array();
+        //var_dump($targets); exit;
+        $this->data['regions'] = $this->engine->getRegions( $targets );
         //echo ($this->data['regions']->toXml()->saveXML() ); exit;
        // Debug::dump($regions ); exit;
         return($this->data);
@@ -42,6 +44,10 @@ class Pazpar2Controller extends SearchController
 
     public function libraryAction()
     {
+        
+        $targets = is_array($this->query->getTargetNames() )?$this->query->getTargetNames(): array('GENERAL');
+        $this->data['target'] = $this->engine->getTarget($targets[0]);
+        //echo($this->data['target']->toXML()->saveXML()); exit;
         return($this->data);
     }
 

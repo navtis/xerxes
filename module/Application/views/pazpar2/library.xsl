@@ -16,7 +16,6 @@
 	xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
 
 <xsl:import href="../includes.xsl" />
-<xsl:import href="results.xsl" />
 
 <xsl:output method="html" />
 
@@ -29,16 +28,15 @@
 </xsl:template>
 
 <xsl:template name="breadcrumb">
-	<xsl:call-template name="breadcrumb_start" />
-	<xsl:value-of select="$text_search_module" />
+    <a href="{//request/controller}">
+       <xsl:text>Library selection</xsl:text>
+    </a>
 </xsl:template>
 
 <xsl:template name="main">
 
-		<h1><xsl:value-of select="$text_search_module" /></h1>
-		
-		<xsl:call-template name="searchbox" />
-	
+    <h1><xsl:value-of select="//target/title_display"/></h1>	
+
 </xsl:template>
 
 </xsl:stylesheet>

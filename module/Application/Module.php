@@ -60,7 +60,7 @@ class Module implements AutoloaderProvider
 		// now set it back and return the whole config
 		
 		$config['di']['instance']['alias'] = $aliases;
-		
+	
 		return $config;
 	}
 	
@@ -72,7 +72,6 @@ class Module implements AutoloaderProvider
 		$locator = $app->getLocator();
 		
 		// xerxes request object
-		
 		$app->events()->attach('route', array($this, 'getRequest'), -80);	 
 		
 		// access control
@@ -122,7 +121,6 @@ class Module implements AutoloaderProvider
 			$e->setRequest($this->request);
 			
 			// set the current action for controller map
-			
 			$controller =  $this->request->getParam('controller', 'index');
 			$action =  $this->request->getParam('action', 'index');
 			

@@ -22,7 +22,8 @@ class Pz2Targets extends DataMap
 {
 	protected $primary_language = "eng"; // primary language
 	protected $searchable_fields; // fields that can be searched on for targets
-	
+	protected $targetnames; // targets listed in current query
+
 	/**
 	 * Constructor
 	 * 
@@ -31,7 +32,7 @@ class Pz2Targets extends DataMap
 	 * @param string $password		[optional] password to connect with
 	 */
 	
-	public function __construct($connection = null, $username = null, $password = null)
+	public function __construct($targetnames = null, $connection = null, $username = null, $password = null)
 	{
 		parent::__construct($connection, $username, $password);
 		
@@ -41,6 +42,8 @@ class Pz2Targets extends DataMap
 		{
 			$this->primary_language = (string) $languages->language["code"];
 		}
+
+        $this->targetnames = $targetnames;
 
 		// searchable fields
 		
@@ -198,12 +201,22 @@ class Pz2Targets extends DataMap
 					
 					if ( $objTarget->target_id != null && $objTarget->enabled == 1 ) 
 					{
+                        // set checkbox
+                        if (in_array($objTarget->pz2_key, $this->targetnames))
+                        {
+                            $objTarget->textValue = 'Y';
+                        }
 						array_push( $objSubRegion->targets, $objTarget );
 					}
 					
 					$objTarget = new Pz2Target( );
 					$objTarget->load( $arrResult ); // so target includes own region info
 					$objTarget->setPosition($position++); // add display position
+                    // set checkbox
+                    if (in_array($objTarget->pz2_key, $this->targetnames))
+                    {
+                        $objTarget->textValue = 'Y';
+                    }
 				}
 				
 			}
@@ -233,7 +246,7 @@ class Pz2Targets extends DataMap
 		
 		if ( count( $arrResults ) > 0 )
 		{
-			return $arrResults[0];
+			return array_pop( $arrResults );
 		} 
 		else
 		{

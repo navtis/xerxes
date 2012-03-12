@@ -364,6 +364,7 @@ bib record of a book, to be used by pz2_record. Not needed? */
                     $i = new Item();
                     $i->setProperty("callnumber", $el->getAttribute('callnumber'));
                     $i->setProperty("location", $el->getAttribute('locallocation'));
+                    $i->setProperty("availability", $el->getAttribute('available'));
                     $hs->addItem($i);
                 }                        
                 
@@ -381,6 +382,20 @@ bib record of a book, to be used by pz2_record. Not needed? */
                     $i->setProperty("callnumber", $el->getAttribute('callnumber'));
                     $hs->addItem($i);
                 }
+                // holding records from unicorn
+                $els = $rec->getElementsByTagname("md-holding");
+                foreach($els as $el)
+                {
+                    // circulation data
+                    $i = new Item();
+                    $i->setProperty("availability", $el->getAttribute('available'));
+                    $i->setProperty("status", $el->getAttribute('duration'));
+                    $i->setProperty("location", $el->getAttribute('locallocation'));
+                    $i->setProperty("callnumber", $el->getAttribute('callnumber'));
+                    $i->setProperty("duedate", $el->getAttribute('duedate'));
+                    $hs->addItem($i);
+                }
+
 
             }    
             if ($hs->hasMembers())
