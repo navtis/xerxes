@@ -17,6 +17,7 @@
 
 <xsl:import href="../includes.xsl" />
 <xsl:import href="../search/results.xsl" /> 
+<xsl:import href="includes.xsl" />
 <xsl:import href="eng.xsl" />
 
 <xsl:output method="html" encoding="utf-8" indent="yes" doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN" doctype-system="http://www.w3.org/TR/html4/loose.dtd"/>
