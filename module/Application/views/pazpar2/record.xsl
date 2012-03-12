@@ -18,6 +18,7 @@
 <xsl:import href="../includes.xsl" />
 <xsl:import href="../search/record.xsl" />
 <xsl:import href="../search/books.xsl" />
+<xsl:import href="includes.xsl" />
 
 <xsl:output method="html" />
 
