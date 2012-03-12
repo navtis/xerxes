@@ -9,6 +9,7 @@
             <field id="title" public="title" internal="ti" />
             <field id="author" public="author" internal="au" />
             <field id="subject"  public="subject" internal="su" />
+            <field id="isbn"  public="ISBN" internal="isbn" />
             <field id="keyword" public="all fields" internal="any" />
         </config>
 
@@ -32,7 +33,7 @@
 
         <!-- whether to try to take the bibliographic record from COPAC 
              A SEARCH25-specific option -->
-        <config name="useCopac">true</config>
+        <config name="useCopac">false</config>
 
 	</configuration>
 	
