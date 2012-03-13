@@ -36,6 +36,16 @@
     float: right;
     background-color: white;
 }
+.status li span.working {
+    color: green;
+}
+.status li span.succeeded {
+    color: black;
+}
+
+.status li span.failed {
+    color: red;
+}
 #results li.result {
     float: left;
     width: 70%;

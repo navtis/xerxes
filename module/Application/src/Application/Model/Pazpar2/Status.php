@@ -68,10 +68,30 @@ class Status
             $name = strtoupper($name);
             $node = $s->createElement('title_short', $db_targets[$name]->title_short);
             $target->appendChild($node);
+            $clientstatus = $target->getElementsByTagName('state')->item(0)->nodeValue;
+            $node = $s->createElement('class', $this->classmap($clientstatus) );
+            $target->appendChild($node);
         }
         $news['xml'] = $s;
 		return $news;
 	}
+
+    protected function classmap($cs)
+    {
+        $map = array(
+                'Client_Idle' => 'succeeded',
+                'Client_Working' => 'working',
+                'Client_Connected' => 'working',
+                'Client_Connecting' => 'working',
+                'Client_Searching' => 'working',
+                'Client_Presenting' => 'working',
+                'Client_disconnected' => 'failed',
+                'Client_Stopped' => 'failed',
+                'Client_Error' => 'failed',
+                'Client_Failed' => 'failed'
+              );
+         return $map[$cs];
+    }
 
 	public function SetResultSet( $rs )
 	{

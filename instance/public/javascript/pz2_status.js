@@ -38,16 +38,20 @@ $(document).ready(function(){
                     // if we're still waiting, display the status details
                     // progress bar first
                     $('#progress').width(data['global']['progress']+'%');
-
                     for (var i = 0; i < data['status'].length; i++) 
                     {
                         var target = data['status'][i];
                         //alert(i + ' ' + target['name']);
                         //alert($('#status-'+target['name']+' > li > span .status-state').text());
-                        $('#status-'+target['name']+' > li > span.status-state').text(target['state']);
-                        $('#status-'+target['name']+' > li > span.status-hits').text(target['hits']);
-                        $('#status-'+target['name']+' > li > span.status-records').text(target['records']);
-                        $('#status-'+target['name']+' > li > span.status-diagnostic').text(target['diagnostic']);
+//                        $('#status-'+target['name']+' > li > span.status-state').text(target['state']);
+//                        $('#status-'+target['name']+' > li > span.status-hits').text(target['hits']);
+//                        $('#status-'+target['name']+' > li > span.status-records').text(target['records']);
+//                        $('#status-'+target['name']+' > li > span.status-diagnostic').text(target['diagnostic']);
+//                        
+                        $('#status-'+target['name']+' > span').attr('class', target['class']);
+                        $('#status-'+target['name']+' span.status-state').text(target['state']);
+                        $('#status-'+target['name']+' span.status-hits').text(target['hits']);
+                        $('#status-'+target['name']+' span.status-records').text(target['records']);
                         //$('#status').hide();
                     }
                 }, 

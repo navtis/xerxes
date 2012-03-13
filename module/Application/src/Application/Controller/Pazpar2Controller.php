@@ -65,7 +65,7 @@ class Pazpar2Controller extends SearchController
 	}
 	
     /**
-     * This is called once the search has been initiated and
+     * This is called by searchAction once the search has been initiated and
      * again by javascript via ajaxstatusAction once the search has ended
      * Uses parent (SearchController) resultsAction
      */
@@ -74,7 +74,6 @@ class Pazpar2Controller extends SearchController
 	{
         try
         {
-            $result = parent::resultsAction();
 		    $sid = (string) Pz2Session::getSavedId();
 		    $status = $this->engine->getSearchStatus();
         }
@@ -116,6 +115,15 @@ class Pazpar2Controller extends SearchController
         // needed for the javascript redirect
         $this->request->setSessionData('querystring', $query_string); 
         $this->query->fillTargetInfo();
+
+        if ($status->isFinished())
+        {
+            $result = parent::resultsAction();
+        }
+        else
+        { 
+            $result = array();
+        }
         $result['status'] = $status->getTargetStatuses($this->query->getTargets());
         return $result;
 	}

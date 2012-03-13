@@ -117,7 +117,7 @@
 				<xsl:call-template name="no_hits" />
 			</xsl:when>
             <!-- when not finished and progress less than 1 -->
-            <xsl:when test="//bytarget/progress &lt; 10" >
+            <xsl:when test="//bytarget/progress &lt; 100" >
                 <div id="progress_container">
                     <div id="progress" style="width:0%"></div>
                 </div>
@@ -265,18 +265,79 @@
 		
 	</xsl:template>
 
-    <!-- and the new template GS -->
-    <xsl:template name="status_sidebar">
+    <!-- old version of the new template GS -->
+    <xsl:template name="old_status_sidebar">
         <h2>Libraries Searched</h2>
         <xsl:for-each select="//bytarget/target">
         <h3><xsl:value-of select="./title_short" /></h3>
         <ul id="status-{./name}">
-            <li>State: <span class="status-state"><xsl:value-of select="./state" /></span></li>
-            <li>Hits: <span class="status-hits"><xsl:value-of select="./hits" /></span></li>
-            <li>Records: <span class="status-records"><xsl:value-of select="./records" /></span></li>
-            <li>Diagnostic: <span class="status-diagnostic"><xsl:value-of select="./diagnostic" /></span></li>
+            <xsl:variable name="fc">
+                <xsl:choose>
+                    <xsl:when test="./state='Client_Working'">
+                        <xsl:text>yellow</xsl:text>
+                    </xsl:when>
+                    <xsl:when test="./state='Client_Idle'">
+                        <xsl:text>green</xsl:text>
+                    </xsl:when>
+                    <xsl:when test="./state='Client_Disconnected'">
+                        <xsl:text>red</xsl:text>
+                        </xsl:when>
+                    <xsl:otherwise></xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+            <li>State: <span class="status-state" style="color: {$fc}"><xsl:value-of select="substring(./state, 8)" /></span></li>
+            <li>Fetched/Found 
+                <span class="status-records"><xsl:value-of select="./records" /></span>&nbsp;/&nbsp;
+                <span class="status-hits"><xsl:value-of select="./hits" /></span>
+            </li>
+            <!-- <li>Diagnostic: <span class="status-diagnostic"><xsl:value-of select="./diagnostic" /></span></li> -->
         </ul>
         </xsl:for-each>
+    </xsl:template>
+
+    <!-- and the new template GS -->
+    <xsl:template name="status_sidebar">
+        <h2>Libraries Searched</h2>
+        <h3>Records fetched / found</h3>
+        <ul>
+            <xsl:for-each select="//bytarget/target">
+                <xsl:variable name="fc">
+                    <xsl:choose>
+                        <xsl:when test="./state='Client_Working'">
+                            <xsl:text>working</xsl:text>
+                        </xsl:when>
+                        <xsl:when test="./state='Client_Idle'">
+                            <xsl:text>succeeded</xsl:text>
+                        </xsl:when>
+                        <xsl:when test="./state='Client_Disconnected'">
+                            <xsl:text>failed</xsl:text>
+                        </xsl:when>
+                        <xsl:otherwise></xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
+                <li id="status-{./name}"><xsl:value-of select="./title_short" />
+                    <xsl:text>: </xsl:text>
+                    <span class="{$fc}">
+                    <xsl:choose>
+                        <xsl:when test="$fc = 'failed'">
+                            <xsl:value-of select="substring(./state, 8)"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:choose>
+                                <xsl:when test="./records = ./hits">
+                                    <span class="status-records"><xsl:value-of select="./records" /></span>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <span class="status-records"><xsl:value-of select="./records" /></span>&nbsp;/&nbsp;
+                                    <span class="status-hits"><xsl:value-of select="./hits" /></span>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    </span>
+                </li>
+            </xsl:for-each>
+        </ul>
     </xsl:template>
 
     <!-- TEMPLATE: FACET OPTION -->
