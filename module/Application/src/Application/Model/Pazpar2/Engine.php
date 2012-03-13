@@ -220,6 +220,9 @@ class Engine extends Search\Engine
         $sid = Pz2Session::getSavedId();
         // and use it to recover the Session from cache
         $session = unserialize( $this->cache()->get($sid) );
+        if (! is_object($session) )
+            return false;
+
         return $session->client()->pz2_ping($sid);
 	}
 	
