@@ -50,7 +50,7 @@ $(document).ready(function(){
 //                        
                         $('#status-'+target['name']+' > span').attr('class', target['class']);
                         $('#status-'+target['name']+' span.status-state').text(target['state']);
-                        $('#status-'+target['name']+' span.status-hits').text(target['hits']);
+                        $('#status-'+target['name']+' span.status-hits').text(' / '+target['hits']);
                         $('#status-'+target['name']+' span.status-records').text(target['records']);
                         //$('#status').hide();
                     }

@@ -326,10 +326,11 @@
                             <xsl:choose>
                                 <xsl:when test="./records = ./hits">
                                     <span class="status-records"><xsl:value-of select="./records" /></span>
+                                    <span class="status-hits"></span>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <span class="status-records"><xsl:value-of select="./records" /></span>&nbsp;/&nbsp;
-                                    <span class="status-hits"><xsl:value-of select="./hits" /></span>
+                                    <span class="status-records"><xsl:value-of select="./records" /></span>
+                                    <span class="status-hits">&nbsp;/&nbsp;<xsl:value-of select="./hits" /></span>
                                 </xsl:otherwise>
                             </xsl:choose>
                         </xsl:otherwise>

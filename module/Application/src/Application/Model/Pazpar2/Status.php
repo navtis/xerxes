@@ -31,6 +31,8 @@ class Status
 	
 	public function addTargetStatus( $stat )
 	{
+        // generate CSS class
+        $stat['class'] = $this->classmap($stat['state']);
 		$this->stats[] = $stat;
 	}
 	
@@ -73,6 +75,7 @@ class Status
             $target->appendChild($node);
         }
         $news['xml'] = $s;
+        //echo($s->saveXML()); exit;
 		return $news;
 	}
 

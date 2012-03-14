@@ -207,6 +207,9 @@ class Engine extends Search\Engine
         $sid = Pz2Session::getSavedId();
 
         $session = unserialize( $this->cache()->get($sid) );
+        if (! is_object( $session ) ) {
+            throw new \Exception("Session ended, returning to front page"); 
+        }
 
         $status = $session->getSearchStatus($sid);
 
