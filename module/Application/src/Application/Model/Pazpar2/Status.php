@@ -50,7 +50,6 @@ class Status
 	{
         $news = $this->stats;
         $s = $news['xml'];
-
         $bt = $s->getElementsByTagName('bytarget')->item(0);
         $node = $s->createElement('progress', $this->progress);
         $bt->appendChild($node);
@@ -63,6 +62,7 @@ class Status
             return $news;
         }
         // otherwise...
+
         $targets = $s->getElementsByTagName('target');
         foreach($targets as $target)
         {

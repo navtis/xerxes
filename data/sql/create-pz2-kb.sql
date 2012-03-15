@@ -77,6 +77,9 @@ INSERT INTO xerxes_pz2_targets (target_id, target_enabled, target_title_display,
 INSERT INTO xerxes_pz2_targets (target_id, target_enabled, target_title_display, target_title_short, target_pz2_key, target_copac_key, target_copac_prefix, target_z3950_location, target_catalogue_url, target_has_opac_format, target_description) VALUES(44, 1, 'Kingston University', 'Kingston', 'KINGSTON','', '', '67.134.210.94:9991/PRIMO', 'http://www.kingston.ac.uk/informationservices/',0,'');
 INSERT INTO xerxes_pz2_targets (target_id, target_enabled, target_title_display, target_title_short, target_pz2_key, target_copac_key, target_copac_prefix, target_z3950_location, target_catalogue_url, target_has_opac_format, target_description) VALUES(45, 0, 'St. Mary\'s University College, Twickenham', 'St Mary\'s Twickenham', 'TWICK','', '', '194.80.237.30:210/INNOPAC', 'http://www.smuc.ac.uk/student-life/is/index.htm',0,'');
 INSERT INTO xerxes_pz2_targets (target_id, target_enabled, target_title_display, target_title_short, target_pz2_key, target_copac_key, target_copac_prefix, target_z3950_location, target_catalogue_url, target_has_opac_format, target_description) VALUES(46, 0, 'Wiener Institute of Contemporary History', 'Wiener Library', 'ICH','', '', '87-224-95-244.spitfireuk.net:210', 'http://www.wienerlibrary.co.uk/',0,'');
+INSERT INTO xerxes_pz2_targets (target_id, target_enabled, target_title_display, target_title_short, target_pz2_key, target_copac_key, target_copac_prefix, target_z3950_location, target_catalogue_url, target_has_opac_format, target_description) VALUES(47, 1, 'Lambeth Palace Library', 'Lambeth Palace', 'LAMBETH','lam', '', 'z3950.copac.ac.uk:210/LAM', 'http://www.lambethpalacelibrary.org/',0,'');
+INSERT INTO xerxes_pz2_targets (target_id, target_enabled, target_title_display, target_title_short, target_pz2_key, target_copac_key, target_copac_prefix, target_z3950_location, target_catalogue_url, target_has_opac_format, target_description) VALUES(48, 1, 'British Museum Libraries', 'British Museum', 'BRM','brm', '', 'z3950.copac.ac.uk:210/BRM', 'http://www.britishmuseum.org/research/libraries_and_archives.aspx',0,'');
+INSERT INTO xerxes_pz2_targets (target_id, target_enabled, target_title_display, target_title_short, target_pz2_key, target_copac_key, target_copac_prefix, target_z3950_location, target_catalogue_url, target_has_opac_format, target_description) VALUES(49, 1, 'Imperial War Museum', 'Imperial War Museum', 'IWM','iwm', '', 'z3950.copac.ac.uk:210/IWM', 'http://www.iwm.org.uk/collections/search',0,'');
 
 # A region may be a subset of another region
 CREATE TABLE xerxes_pz2_regions(
@@ -145,6 +148,10 @@ INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (37, 3);
 INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (42, 3); 
 # wiener in CL
 INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (46, 3); 
+# lambeth in CL
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (47, 3); 
+# Brirish Museum in CL
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (48, 3); 
 # UCL in Central London
 INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (6, 3);  
 # Middx in WL
@@ -177,6 +184,8 @@ INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (10, 7);
 INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (38, 7);  
 # Roehampton in SL
 INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (43, 7);  
+# Imperial War Museum in SL (just)
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (49, 7);  
 # RHUL in Surrey
 INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (7, 8);  
 # Surrey in Surrey
