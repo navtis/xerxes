@@ -34,23 +34,18 @@
 
 .status {
     float: right;
+    display: block;
+    width: 25%;
     background-color: white;
 }
 .status li span.working {
     color: #FFAC00; /* amber */
-}
-.status li span.succeeded {
     color: black;
 }
 
 .status li span.failed {
     color: red;
 }
-#results li.result {
-    float: left;
-    width: 70%;
-}
-
 /** progress bar */
 
 div#progress_container {
@@ -72,6 +67,12 @@ div#progress{
 
 /** RESULTS **/
 
+/* allow for target status width of 25% */
+#results-block{
+    width: 70%; 
+}
+
+*/
 .results-title {
 	font-weight: bold;
     color: #003333; 

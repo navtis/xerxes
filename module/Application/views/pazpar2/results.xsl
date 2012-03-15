@@ -238,7 +238,10 @@
                </div>
             </div>
 
+            <div id="results-block">
 				<xsl:call-template name="brief_results" />
+            </div>
+
         <!-- move nav to bottom of page GS -->
         <div style="clear: both" />
 				<xsl:call-template name="paging_navigation" />

@@ -88,7 +88,7 @@ class Status
                 'Client_Connecting' => 'working',
                 'Client_Searching' => 'working',
                 'Client_Presenting' => 'working',
-                'Client_disconnected' => 'failed',
+                'Client_Disconnected' => 'failed',
                 'Client_Stopped' => 'failed',
                 'Client_Error' => 'failed',
                 'Client_Failed' => 'failed'
