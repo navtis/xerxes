@@ -140,7 +140,7 @@ bib record of a book, to be used by pz2_record. Not needed? */
 		
         $this->edition = $this->getElementValue($record, "md-edition");
 
-        $this->parseAuthor();
+        $this->parseAuthor($record);
 
         // publication information
         $this->place = $this->getElementValue($record, "md-publication-place");
@@ -225,7 +225,7 @@ bib record of a book, to be used by pz2_record. Not needed? */
      * Recover authors from Author and Title-responsibility fields
      * Sets $this->authors
      */
-    protected function parseAuthor()
+    protected function parseAuthor($record)
     {
 		// authors 
 		if (! is_null($this->getElementValue($record,"md-author") ) )
