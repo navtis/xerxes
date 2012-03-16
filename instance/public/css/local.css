@@ -79,6 +79,7 @@ div#progress{
 }
 
 .results-holdings ul {
+  margin-top: 0.5em;
   list-style-type: square;
 }
 .results-holdings li {

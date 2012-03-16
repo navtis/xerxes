@@ -61,12 +61,10 @@ class Record extends Xerxes\Record
             $record = $this->document->documentElement;
         }
 //var_dump($this->document->saveXML());
-		$this->score = (string) $this->getElementValue($record, "relevance");
-       
+		$this->score = (string) $this->getElementValue($record, "relevance");       
 		$this->title = (string) $this->getElementValue($record, "md-title");
 		$this->sub_title = (string) $this->getElementValue($record, "md-title-remainder");
 		$this->series_title = (string) $this->getElementValue($record, "md-series-title");
-
         $this->isbns = array_unique($this->getElementValues($record, "md-isbn") );
         $this->issns = array_unique($this->getElementValues($record, "md-issn") );
 		$this->language = (string) $this->getElementValue($record, "md-language");
@@ -75,6 +73,7 @@ class Record extends Xerxes\Record
 		$risformat = $this->getElementValue($record,"md-medium");
 		$this->format->setFormat($risformat);
         $this->format->setPublicFormat($this->format->getConstNameForValue($risformat));
+
         // extent is used in Bibliographic - what for?
 		$this->extent = $this->getElementValue($record,"md-physical-extent");
         
@@ -141,97 +140,7 @@ bib record of a book, to be used by pz2_record. Not needed? */
 		
         $this->edition = $this->getElementValue($record, "md-edition");
 
-		// authors 
-		if (! is_null($this->getElementValue($record,"md-author") ) )
-        {
-		    $author = $this->getElementValue($record,"md-author");
-            $this->authors[] = new Xerxes\Record\Author($author, null, 'personal');
-        }
-		if ( !is_null( $this->getElementValue($record,"md-title-responsibility") ) )
-        {
-		    $responsible = trim( $this->getElementValue($record,"md-title-responsibility") );
-            // remove fully enclosing brackets
-            $responsible = trim( preg_replace( '/^\[([^\]]*)\]$/', '$1', $responsible ) );
-            
-            // try to extract people and their roles
-            $role = ''; $persons='';
-            if ( preg_match('/^\[(.*)\](.*)$/', $responsible, $matches) )
-            {
-                $role = $matches[1];
-                $persons = $matches[2];
-            } 
-            else if ( preg_match('/^(.*) by (.*)$/', $responsible, $matches) )
-            {
-                $role = $matches[1];
-                $persons = $matches[2];
-            } 
-            else if ( preg_match('/^ed. (.*)$/i', $responsible, $matches) )
-            {
-                $role = 'Editor';
-                $persons = $matches[1];
-            } 
-            else if ( preg_match('/^editors?(.*)$/i', $responsible, $matches) )
-            {
-                $role = 'Editor';
-                $persons = $matches[1];
-            }
-            if (preg_match('/edit/i', $role) )
-            {
-                $role = 'Editor';
-            }
-            //echo("<p>role: $role people: $persons</p>");
-            // if we don't have the people in the authors, try to add them
-            // FIXME should have a 'match' function in Author
-            $people = explode(',', $persons); // may be a list
-            $found = false;
-            if ( count($this->authors) > 0 )
-            {
-                foreach ($people as $person)
-                {
-                    $title_parts = preg_split('/\W/', $person);
-                    foreach($this->authors as $author)
-                    { 
-                        // let's hope its not John and Jane Smith
-                        if ( in_array($author->last_name, $title_parts) ) 
-                        { 
-                            $found = true; 
-                            break;
-                        } 
-                    } 
-                }
-            }
-            if (! $found )
-            {
-                $this->responsible = $responsible;
-                /* too dangerous adding to primary author 
-                if ( count($this->authors) > 0 ){
-                    $additional = true;
-                }
-                else
-                {
-                    $additional = false;
-                }
-                foreach ($people as $person)
-                {
-                    $this->authors[] = new Xerxes\Record\Author($person, null, 'personal', $additional);
-                  
-                }
-                */
-            }
-
-        }
-		if (! is_null($this->getElementValue($record,"md-meeting-name") ) )
-        {
-		    $author = $this->getElementValue($record,"md-meeting-name");
-            $author_object = new Xerxes\Record\Author($author, null, 'conference');
-            $this->authors[] = $author_object;
-        }
-		if (! is_null($this->getElementValue($record,"md-corporate-name") ) )
-        {
-		    $author = $this->getElementValue($record,"md-corporate-name");
-            $author_object = new Xerxes\Record\Author($author, null, 'corporate');
-            $this->authors[] = $author_object;
-        }
+        $this->parseAuthor();
 
         // publication information
         $this->place = $this->getElementValue($record, "md-publication-place");
@@ -289,11 +198,6 @@ bib record of a book, to be used by pz2_record. Not needed? */
         }
         */
 
-		// title
-		{
-			$this->title = $this->getElementValue($record,"md-title");
-		}
-		
 		// article data
         //FIXME Can we use any of this?
         $addata = null;	
@@ -317,6 +221,114 @@ bib record of a book, to be used by pz2_record. Not needed? */
 	    }	
 	}
 
+    /**
+     * Recover authors from Author and Title-responsibility fields
+     * Sets $this->authors
+     */
+    protected function parseAuthor()
+    {
+		// authors 
+		if (! is_null($this->getElementValue($record,"md-author") ) )
+        {
+		    $author = $this->getElementValue($record,"md-author");
+            $this->authors[] = new Xerxes\Record\Author($author, null, 'personal');
+        }
+		if ( !is_null( $this->getElementValue($record,"md-title-responsibility") ) )
+        {
+		    $responsible = trim( $this->getElementValue($record,"md-title-responsibility") );
+            // remove fully enclosing brackets
+            $responsible = trim( preg_replace( '/^\[([^\]]*)\]$/', '$1', $responsible ) );
+            
+            // try to extract people and their roles
+            $role = ''; $persons='';
+            if ( preg_match('/^\[(.*)\](.*)$/', $responsible, $matches) )
+            {
+                $role = $matches[1];
+                $persons = $matches[2];
+            } 
+            else if ( preg_match('/^(.*) by (.*)$/', $responsible, $matches) )
+            {
+                $role = $matches[1];
+                $persons = $matches[2];
+            } 
+            else if ( preg_match('/^ed. (.*)$/i', $responsible, $matches) )
+            {
+                $role = 'Editor';
+                $persons = $matches[1];
+            } 
+            else if ( preg_match('/^editors?(.*)$/i', $responsible, $matches) )
+            {
+                $role = 'Editor';
+                $persons = $matches[1];
+            }
+            else if ( preg_match('/^authors?(.*)$/i', $responsible, $matches) )
+            {
+                $role = 'Author';
+                $persons = $matches[1];
+            }
+            if (preg_match('/edit/i', $role) )
+            {
+                $role = 'Editor';
+            }
+            //echo("<p>role: $role people: $persons</p>");
+            // if we don't have the people in the authors, try to add them
+            // FIXME should have a 'match' function in Author
+            $people = explode(',', $persons); // may be a list
+            $found = false;
+            if ( count($this->authors) > 0 )
+            {
+                foreach ($people as $person)
+                {
+                    $title_parts = preg_split('/\W+/', $person);
+                    foreach($this->authors as $author)
+                    { 
+                        // let's hope its not John and Jane Smith
+                        if ( in_array($author->last_name, $title_parts) ) 
+                        { 
+                            $found = true; 
+                            break;
+                        } 
+                    } 
+                }
+            }
+            if (! $found )
+            {
+                $this->responsible = $responsible;
+                /* too dangerous adding to primary author 
+                if ( count($this->authors) > 0 ){
+                    $additional = true;
+                }
+                else
+                {
+                    $additional = false;
+                }
+                foreach ($people as $person)
+                {
+                    $this->authors[] = new Xerxes\Record\Author($person, null, 'personal', $additional);
+                  
+                }
+                */
+            }
+
+        }
+        // maybe a conference proceedings?
+		if (! is_null($this->getElementValue($record,"md-meeting-name") ) )
+        {
+		    $author = $this->getElementValue($record,"md-meeting-name");
+            $author_object = new Xerxes\Record\Author($author, null, 'conference');
+            $this->authors[] = $author_object;
+        }
+        // or a corporate author?
+		if (! is_null($this->getElementValue($record,"md-corporate-name") ) )
+        {
+		    $author = $this->getElementValue($record,"md-corporate-name");
+            $author_object = new Xerxes\Record\Author($author, null, 'corporate');
+            $this->authors[] = $author_object;
+        }
+
+
+    }
+    
     /**
      * Populate mergedHoldings with holding/circulation information returned
      * from Z-Servers
