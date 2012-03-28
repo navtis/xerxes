@@ -35,6 +35,6 @@ xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
             <span class="results-language"> (<xsl:value-of select="language" />)</span>
         </xsl:if>
     </xsl:template>
-
+    <xsl:variable name="text_record_genres">Genres</xsl:variable>
 
 </xsl:stylesheet>

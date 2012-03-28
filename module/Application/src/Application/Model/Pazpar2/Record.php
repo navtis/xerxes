@@ -15,6 +15,7 @@ use Xerxes,
  * Pazpar2 Record
  * 
  * @author David Walker
+ * @author Graham Seaman
  * @copyright 2011 California State University
  * @link http://xerxes.calstate.edu
  * @license http://www.gnu.org/licenses/
@@ -30,6 +31,7 @@ class Record extends Xerxes\Record
     protected $responsible; // munged list of editors etc
     protected $locations; // array of unique target names and titles
     protected $mergedHolding; // container for all Holdings for record
+    protected $genres = array(); // not present in parent
 
     // add extra fields to parent Record
     // Retained just for debugging: convenient place to print out xml record
@@ -197,6 +199,11 @@ bib record of a book, to be used by pz2_record. Not needed? */
             array_push($this->subjects, $subject_object);
         }
         */
+
+        //genres are very similar to Subjects
+		$genres = $this->getElementValues($record, "md-genre");
+        // remove duplicates
+        $this->genres = array_unique($genres); 
 
 		// article data
         //FIXME Can we use any of this?

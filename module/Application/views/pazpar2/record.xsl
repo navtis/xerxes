@@ -19,6 +19,7 @@
 <xsl:import href="../search/record.xsl" />
 <xsl:import href="../search/books.xsl" />
 <xsl:import href="includes.xsl" />
+<xsl:import href="eng.xsl" />
 
 <xsl:output method="html" />
 
@@ -105,6 +106,7 @@
         <xsl:call-template name="record_recommendations" /> 
         <xsl:call-template name="record_toc" /> 
         <xsl:call-template name="record_subjects" /> 
+        <xsl:call-template name="record_genres" /> 
         <div id="record-additional-info"> 
             <h2>Additional details</h2> 
             <dl> 
@@ -118,6 +120,21 @@
         </div> 
     </xsl:template>
 
+	<!--
+		TEMPLATE: RECORD GENRES
+	-->
+	
+	<xsl:template name="record_genres">
+		<xsl:if test="genres">
+			<h2><xsl:copy-of select="$text_record_genres" />:</h2>
+			<ul>
+				<xsl:for-each select="genres/genre">
+					<li><xsl:value-of select="." /></li>
+				</xsl:for-each>
+			</ul>
+		</xsl:if>
+	</xsl:template>
+	
     <xsl:template name="physical"> 
         <xsl:if test="physical"> 
             <div> 
