@@ -3,6 +3,8 @@
 namespace Application\View\Helper;
 
 use Xerxes\Record,
+    Xerxes\Utility\Parser,
+    Application\Model\Search\Query,
     Application\Model\Search\Result;
 
 class Pazpar2 extends Search
@@ -49,7 +51,25 @@ class Pazpar2 extends Search
         $result->url_for_item = $this->request->url_for($arrParams); 
         return $result;
     } 
-   
+  
+   /**
+    * Make removing facet links generate a new search
+    * by overriding links assigned by parent 
+    * @param $query Query object
+    */
+   public function addQueryLinks(Query $query)
+   {
+        parent::addQueryLinks($query);
+
+        foreach ( $query->getLimits() as $limit )
+        {
+            $params = $this->currentParams();
+            $params = Parser::removeFromArray($params, $limit->field, $limit->value);
+            $params['action'] = 'search';
+            $limit->remove_url = $this->request->url_for($params);
+        }
+   }
+
 }
 
 ?>

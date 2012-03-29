@@ -342,7 +342,7 @@ class Pazpar2
 
         if ( !is_null( $maxrecs ) )
             $url .= "&maxrecs=$maxrecs";
-//echo($url); exit;
+//echo($url); exit; 
         $response = $this->getRawResponse( $url, "search", $session );
         
         // this just kicks off the search; nothing to return, yet
@@ -390,7 +390,6 @@ class Pazpar2
             else
                 $url .= '&sort=' . $sorts;
         }
-//echo($url);
         $response = $this->getRawResponse( $url, "show", $session );
 
 //echo( $response->saveXML() ); //exit;
