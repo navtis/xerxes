@@ -107,6 +107,7 @@
         <xsl:call-template name="record_toc" /> 
         <xsl:call-template name="record_subjects" /> 
         <xsl:call-template name="record_genres" /> 
+        <xsl:call-template name="geographic" />
         <div id="record-additional-info"> 
             <h2>Additional details</h2> 
             <dl> 
@@ -115,6 +116,7 @@
                 <xsl:call-template name="record_standard_numbers" /> 
                 <xsl:call-template name="record_notes" /> 
                 <xsl:call-template name="description" /> 
+                <xsl:call-template name="credits" />
                 <xsl:call-template name="additional-title-info" /> 
             </dl> 
         </div> 
@@ -125,10 +127,32 @@
 	-->
 	
 	<xsl:template name="record_genres">
-		<xsl:if test="genres">
+		<xsl:if test="genres/genre">
 			<h2><xsl:copy-of select="$text_record_genres" />:</h2>
 			<ul>
 				<xsl:for-each select="genres/genre">
+					<li><xsl:value-of select="." /></li>
+				</xsl:for-each>
+			</ul>
+		</xsl:if>
+	</xsl:template>
+	
+	<xsl:template name="credits">
+		<xsl:if test="credits/credit">
+			<h2><xsl:copy-of select="$text_record_credits" />:</h2>
+			<ul>
+				<xsl:for-each select="credits/credit">
+					<li><xsl:value-of select="." /></li>
+				</xsl:for-each>
+			</ul>
+		</xsl:if>
+	</xsl:template>
+	
+	<xsl:template name="geographic">
+		<xsl:if test="places/place">
+			<h2><xsl:copy-of select="$text_record_geographic" />:</h2>
+			<ul>
+				<xsl:for-each select="places/place">
 					<li><xsl:value-of select="." /></li>
 				</xsl:for-each>
 			</ul>

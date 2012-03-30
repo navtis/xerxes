@@ -32,6 +32,12 @@ class Record extends Xerxes\Record
     protected $locations; // array of unique target names and titles
     protected $mergedHolding; // container for all Holdings for record
     protected $genres = array(); // not present in parent
+    protected $credits = array(); // not present in parent
+    protected $geographic = array();
+    protected $citation;
+    protected $biography;
+    protected $issuer;
+    protected $physical;
 
     // add extra fields to parent Record
     // Retained just for debugging: convenient place to print out xml record
@@ -39,7 +45,7 @@ class Record extends Xerxes\Record
     {
         $objXml = parent::toXml();
 
-//       echo($this->xmlpp($objXml->saveXML(), false));
+       //echo($this->xmlpp($objXml->saveXML(), false));
 /*
         // Parser::addToXML($objXml, 'source', 'COPAC: ' . $this->source);
 */
@@ -70,6 +76,13 @@ class Record extends Xerxes\Record
         $this->isbns = array_unique($this->getElementValues($record, "md-isbn") );
         $this->issns = array_unique($this->getElementValues($record, "md-issn") );
 		$this->language = (string) $this->getElementValue($record, "md-language");
+		$this->citation = (string) $this->getElementValue($record, "md-citation");
+		$this->biography = (string) $this->getElementValue($record, "md-biography");
+		$this->issuer = (string) $this->getElementValue($record, "md-issuer");
+        $this->places = array_unique($this->getElementValues($record, "md-geographic") );
+        $credits[] = $this->getElementValue($record, "md-credits");
+        $credits[] = $this->getElementValue($record, "md-performers");
+        $this->credits = array_unique($credits);
 
 		// format			
 		$risformat = $this->getElementValue($record,"md-medium");

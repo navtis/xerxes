@@ -36,6 +36,8 @@ xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
         </xsl:if>
     </xsl:template>
     <xsl:variable name="text_record_genres">Genres</xsl:variable>
+    <xsl:variable name="text_record_credits">Credits</xsl:variable>
+    <xsl:variable name="text_record_geographic">Places</xsl:variable>
 
 	<xsl:template name="text_results_format">
 		<xsl:param name="format" />
