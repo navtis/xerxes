@@ -188,7 +188,14 @@ class Engine extends Search\Engine
      */
     public function search(Query $query, $start=0, $max=100) 
     {
-        $pz2session = new Pz2Session();
+        // recover sid from Zend session
+        $sid = Pz2Session::getSavedId();
+
+        $pz2session = unserialize( $this->cache()->get($sid) );
+        if ( (! is_object( $pz2session ) ) || (! $pz2session->client()->pz2_ping($sid) ) ) 
+        {
+            $pz2session = new Pz2Session();
+        }
         
         // after this, $query is stored in the pz2session
         $pz2session->initiateSearch($query);
