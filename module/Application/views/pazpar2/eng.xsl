@@ -39,6 +39,7 @@ xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
     <xsl:variable name="text_record_credits">Credits</xsl:variable>
     <xsl:variable name="text_record_geographic">Places</xsl:variable>
 
+    <!-- Translate medium names from Xerxes internal : Displayable -->
 	<xsl:template name="text_results_format">
 		<xsl:param name="format" />
 		<xsl:choose>
@@ -80,6 +81,7 @@ xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
 			<xsl:when test="$format = 'Journal'">Journal</xsl:when>
 			<xsl:when test="$format = 'LegalRule'">Legal ruling</xsl:when>
 			<xsl:when test="$format = 'Manuscript'">Manuscript</xsl:when>
+			<xsl:when test="$format = 'Map'">Map</xsl:when>
 			<xsl:when test="$format = 'MusicalScore'">Score</xsl:when>
 			<xsl:when test="$format = 'OnlineDatabase'">Database</xsl:when>
 			<xsl:when test="$format = 'OnlineMultimedia'">Multimedia</xsl:when>
@@ -111,4 +113,75 @@ xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
 		</xsl:choose>
 	</xsl:template>
 	
+    <!-- Translate medium names from RIS : Displayable -->
+	<xsl:template name="text_limit_format">
+		<xsl:param name="format" />
+		<xsl:choose>
+			<xsl:when test="$format = 'GEN'">Generic</xsl:when>
+			<xsl:when test="$format = 'ABS'">Abstract</xsl:when>
+			<xsl:when test="$format = 'AGGR'">Aggregated database</xsl:when>
+			<xsl:when test="$format = 'ANCIENT'">Historic text</xsl:when>
+			<xsl:when test="$format = 'EJOUR'">Electronic article</xsl:when>
+			<xsl:when test="$format = 'INPR'">In press</xsl:when>
+			<xsl:when test="$format = 'JOUR'">Journal article</xsl:when>
+			<xsl:when test="$format = 'MGZN'">Magazine article</xsl:when>
+			<xsl:when test="$format = 'NEWS'">Newspaper article</xsl:when>
+			<xsl:when test="$format = 'ART'">Work of art</xsl:when>
+			<xsl:when test="$format = 'ADVS'">Audio-visual</xsl:when>
+			<xsl:when test="$format = 'BILL'">Law</xsl:when>
+			<xsl:when test="$format = 'UNBILL'">Green paper</xsl:when>
+			<xsl:when test="$format = 'BLOG'">Blog</xsl:when>
+			<xsl:when test="$format = 'BOOK'">Book</xsl:when>
+        	<xsl:when test="$format = 'EDBOOK'">Book</xsl:when>
+			<xsl:when test="$format = 'EBOOK'">eBook</xsl:when>
+			<xsl:when test="$format = 'CHAP'">Chapter</xsl:when>
+			<xsl:when test="$format = 'ECHAP'">Chapter (electronic)</xsl:when>
+			<xsl:when test="$format = 'MBCT'">Broadcast</xsl:when>
+			<xsl:when test="$format = 'CASE'">Court case</xsl:when>
+			<xsl:when test="$format = 'CTLG'">Catalogue</xsl:when>
+			<xsl:when test="$format = 'CHART'">Chart</xsl:when>
+			<xsl:when test="$format = 'CLSWK'">Classical work</xsl:when>
+			<xsl:when test="$format = 'COMP'">Electronic work</xsl:when>
+			<xsl:when test="$format = 'CPAPER'">Conference paper</xsl:when>
+			<xsl:when test="$format = 'CONF'">Proceedings</xsl:when>
+			<xsl:when test="$format = 'DATA'">Dataset</xsl:when>
+			<xsl:when test="$format = 'ENCYC'">Encyclopedia article</xsl:when>
+			<xsl:when test="$format = 'EQUA'">Equation</xsl:when>
+			<xsl:when test="$format = 'FIGURE'">Figure</xsl:when>
+			<xsl:when test="$format = 'GOVDOC'">Government Document</xsl:when>
+			<xsl:when test="$format = 'GRNT'">Grant</xsl:when>
+			<xsl:when test="$format = 'HEAR'">Hearing</xsl:when>
+			<xsl:when test="$format = 'ICOMM'">Internet communication</xsl:when>
+			<xsl:when test="$format = 'JFULL'">Journal</xsl:when>
+			<xsl:when test="$format = 'LEGAL'">Legal ruling</xsl:when>
+			<xsl:when test="$format = 'MANSCPT'">Manuscript</xsl:when>
+			<xsl:when test="$format = 'MAP'">Map</xsl:when>
+			<xsl:when test="$format = 'MUSIC'">Score</xsl:when>
+			<xsl:when test="$format = 'DBASE'">Database</xsl:when>
+			<xsl:when test="$format = 'MULTI'">Multimedia</xsl:when>
+			<xsl:when test="$format = 'PAMP'">Pamphlet</xsl:when>
+			<xsl:when test="$format = 'PAT'">Patent</xsl:when>
+			<xsl:when test="$format = 'PCOMM'">Personal communication</xsl:when>
+			<xsl:when test="$format = 'RPRT'">Report</xsl:when>
+			<xsl:when test="$format = 'SER'">Serial</xsl:when>
+			<xsl:when test="$format = 'SLIDE'">Slide</xsl:when>
+			<xsl:when test="$format = 'SOUND'">Sound recording</xsl:when>
+			<xsl:when test="$format = 'STAND'">Standard</xsl:when>
+			<xsl:when test="$format = 'STAT'">Statute</xsl:when>
+			<xsl:when test="$format = 'THES'">Thesis</xsl:when>
+			<xsl:when test="$format = 'UNPD'">Unpublished work</xsl:when>
+			<xsl:when test="$format = 'VIDEO'">Video recording</xsl:when>
+			<xsl:when test="$format = 'ELEC'">Web page</xsl:when>
+			<xsl:when test="$format = 'XERXES_BookReview'">Book review</xsl:when>
+			<xsl:when test="$format = 'XERXES_Image'">Image</xsl:when>
+			<xsl:when test="$format = 'XERXES_Kit'">Kit</xsl:when>
+			<xsl:when test="$format = 'XERXES_MixedMaterial'">Mixed material</xsl:when>
+			<xsl:when test="$format = 'XERXES_PhysicalObject'">Physical object</xsl:when>
+			<xsl:when test="$format = 'XERXES_Review'">Review</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$format" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
 </xsl:stylesheet>

@@ -23,17 +23,20 @@
 
         <!-- facet fields must be specified as termlists in pazpar2 config -->
         <config name="facet_fields" xml="true" pass="true">
-        <facet public="Subject Area" internal="subject" />
+        <!-- name_filters match get[Internal]Name() in Config.php -->
+        <facet public="Source library" internal="server" />
+        <facet public="Subject area" internal="subject" />
         <facet public="Author" internal="author" />
+        <facet public="Format" internal="medium" name_filter="true" />
         <!-- <facet public="Year" internal="date" type="date" /> -->
         </config>
+        <!-- minimum number of items needed to show facet_list -->
+        <config name="facet_limit" xml="true" pass="true">10</config>
+        <!-- number of items to display in facet -->
+        <config name="facet_display" xml="true" pass="true">5</config>
         
         <!-- max no of records to be returned per target -->
-        <config name="maxrecs">100</config>
-
-        <!-- whether to try to take the bibliographic record from COPAC 
-             A SEARCH25-specific option -->
-        <config name="useCopac">false</config>
+        <config name="maxrecs">30</config>
 
 	</configuration>
 	

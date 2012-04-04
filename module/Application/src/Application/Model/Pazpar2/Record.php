@@ -4,6 +4,7 @@ namespace Application\Model\Pazpar2;
 
 use Xerxes,
     Zend\Debug,
+    Xerxes\Format,
 	Xerxes\Utility\Parser,
 	Xerxes\Record\Chapter,
 	Xerxes\Record\Subject,
@@ -45,7 +46,7 @@ class Record extends Xerxes\Record
     {
         $objXml = parent::toXml();
 
-       //echo($this->xmlpp($objXml->saveXML(), false));
+//       echo($this->xmlpp($objXml->saveXML(), false));
 /*
         // Parser::addToXML($objXml, 'source', 'COPAC: ' . $this->source);
 */
@@ -71,7 +72,14 @@ class Record extends Xerxes\Record
 //var_dump($this->document->saveXML());
 		$this->score = (string) $this->getElementValue($record, "relevance");       
 		$this->title = (string) $this->getElementValue($record, "md-title");
+
 		$this->sub_title = (string) $this->getElementValue($record, "md-title-remainder");
+        if ($this->sub_title == '')
+        {
+            // for journals
+		    $this->sub_title = (string) $this->getElementValue($record, "md-publication-name");
+        }
+
 		$this->series_title = (string) $this->getElementValue($record, "md-series-title");
         $this->isbns = array_unique($this->getElementValues($record, "md-isbn") );
         $this->issns = array_unique($this->getElementValues($record, "md-issn") );
@@ -117,6 +125,7 @@ class Record extends Xerxes\Record
         {
             $this->locations[$location->getAttribute('name')] = $this->getElementValue($location, "location_title");
         }
+        //var_dump($this->locations);
         // and now get the holdings information
         // for use on record page
         

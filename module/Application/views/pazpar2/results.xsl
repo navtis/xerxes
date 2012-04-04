@@ -93,12 +93,13 @@
         <strong><xsl:copy-of select="$text_results_location" />: </strong>
         <span class="results-holdings">
         <ul>
-        <xsl:for-each select="locations/*">
             <li>
+                <xsl:for-each select="locations/*">
                 <a href="{../../../url_for_item}&amp;target={name(.)}"><xsl:value-of select="."/></a> 
-                <!-- <xsl:value-of select="."/>  -->
+                <xsl:if test="not(position() = last())">, </xsl:if>
+
+                </xsl:for-each>
             </li>
-        </xsl:for-each>
         </ul>
         </span>
     </xsl:template>
@@ -123,6 +124,7 @@
                 </div>
             </xsl:when>
 			<xsl:otherwise>
+
 	
 				<div id="sort">
 					<div class="yui-g" style="width: 100%">
@@ -224,7 +226,6 @@
 						<xsl:text> first</xsl:text>
 					</xsl:if>
 				</xsl:attribute>	
-			
 				<xsl:call-template name="facets_applied" />
 		
 				<div class="tabs">
@@ -267,6 +268,121 @@
 		</div>	
 		
 	</xsl:template>
+
+	<!-- 
+		TEMPLATE: SEARCH SIDEBAR 
+		the sidebar within the search results
+	-->
+	
+	<xsl:template name="search_sidebar">
+			
+		<xsl:if test="//facets/groups">
+			<div class="box">
+			
+				<h2>Narrow your results</h2>
+				
+				<xsl:for-each select="//facets/groups/group">
+				    <xsl:variable name="facet_type"><xsl:value-of select="name"/></xsl:variable>	
+		
+					<h3><xsl:value-of select="public" /></h3>
+					<!-- only show first 5, unless there are 7 or fewer, in which case show all 7 -->
+					
+					<ul>
+					<xsl:for-each select="facets/facet[position() &lt;= 5 or count(../facet) &lt;= 7]">
+						<xsl:call-template name="facet_option" >
+                            <xsl:with-param name="facet_type"><xsl:value-of select="$facet_type"/></xsl:with-param>
+                        </xsl:call-template>
+
+					</xsl:for-each>
+					</ul>
+					
+					<xsl:if test="count(facets/facet) &gt; 7">
+						
+						<p id="facet-more-{name}" class="facet-option-more"> 
+							[ <a id="facet-more-link-{name}" href="#" class="facet-more-option"> 
+								<xsl:value-of select="count(facets/facet[position() &gt; 5])" /> more
+							</a> ] 
+						</p>
+						
+						<ul id="facet-list-{name}" class="facet-list-more">
+							<xsl:for-each select="facets/facet[position() &gt; 5]">
+								<xsl:call-template name="facet_option" >
+                                    <xsl:with-param name="facet_type"><xsl:value-of select="$facet_type"/></xsl:with-param>
+                                </xsl:call-template>
+							</xsl:for-each>
+						</ul>
+						
+						<p id="facet-less-{name}" class="facet-option-less"> 
+							[ <a id="facet-less-link-{name}" href="#" class="facet-less-option"> 
+								show fewer
+							</a> ] 
+						</p>
+	
+					</xsl:if>
+		
+				</xsl:for-each>
+			</div>
+			
+			<xsl:call-template name="sidebar_additional" />
+		
+		</xsl:if>
+    </xsl:template>
+
+	<!-- 
+		TEMPLATE: FACETS APPLIED
+		A bar across the top of the results showing a limit has been applied
+	-->
+	
+	<xsl:template name="facets_applied">
+		
+		<xsl:if test="query/limits">
+			<div class="results-facets-applied">
+				<ul>
+					<xsl:for-each select="query/limits/limit">
+						<li>
+							<div class="remove">
+								<a href="{remove_url}">
+									<xsl:call-template name="img_facet_remove">
+										<xsl:with-param name="alt">remove limit</xsl:with-param>
+									</xsl:call-template>
+								</a>
+							</div> 
+							Limited to:  
+						<xsl:call-template name="facet_limit_value" >
+                            <xsl:with-param name="facet_type">
+                                <xsl:value-of select="field"/>
+                            </xsl:with-param>
+                            <xsl:with-param name="facet_internal">
+                                <xsl:value-of select="value"/>
+                            </xsl:with-param>
+                        </xsl:call-template>
+						</li>
+					</xsl:for-each>
+				</ul>
+			</div>
+		</xsl:if>
+		
+	</xsl:template>	
+
+    <!-- Show displayable version of facet value in facet limit bar -->
+    <xsl:template name="facet_limit_value">
+        <xsl:param name="facet_type"/>
+        <xsl:param name="facet_internal"/>
+        
+        <xsl:choose>
+            <xsl:when test="$facet_type='facet.medium'">
+                <xsl:call-template name="text_limit_format">
+                    <xsl:with-param name="format" select="$facet_internal" />
+                </xsl:call-template>
+            </xsl:when>
+            <xsl:when test="$facet_type='facet.server'">
+                <xsl:value-of select="//bytarget/target/name[.=$facet_internal]/../title_short"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="$facet_internal"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
 
     <!-- old version of the new template GS -->
     <xsl:template name="old_status_sidebar">
@@ -347,11 +463,28 @@
     <!-- TEMPLATE: FACET OPTION -->
     <!-- Overrides version in ../search/results.xsl to alter link GS -->
 
-    <xsl:template name="facet_option"> 
+    <xsl:template name="facet_option">
+        <xsl:param name="facet_type"/>
         <li> 
             <xsl:choose> 
-                <xsl:when test="url"> 
-                    <a href="{url}"><xsl:value-of select="name" /></a> 
+                <xsl:when test="url">
+                    <xsl:choose>
+                        <xsl:when test="$facet_type='server'">
+                            <xsl:variable name="loc" select="name"/>
+                            <a href="{url}"><xsl:value-of select="//bytarget/target/name[.=$loc]/../title_short"/>
+                            </a>
+                        </xsl:when>
+                        <xsl:when test="$facet_type='medium'">
+                            <a href="{url}">
+                                <xsl:call-template name="text_results_format">
+                                    <xsl:with-param name="format" select="name" />
+                                </xsl:call-template>
+                            </a> 
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <a href="{url}"><xsl:value-of select="name" /></a> 
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </xsl:when> 
                 <xsl:otherwise> 
                     <xsl:value-of select="name" /> 

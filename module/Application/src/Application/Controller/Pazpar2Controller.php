@@ -72,6 +72,7 @@ class Pazpar2Controller extends SearchController
      
 	public function resultsAction()
 	{
+        //Debug::dump($this->query);
         try
         {
 		    $sid = (string) Pz2Session::getSavedId();
@@ -153,7 +154,7 @@ class Pazpar2Controller extends SearchController
         // set links 
         $this->helper->addRecordLinks($results); 
         // add to response 
-        $this->data["results"] = $results; 
+        $this->data["results"] = $results;
         return $this->data; 
     }
 

@@ -97,7 +97,6 @@ class Pz2Session
 		// get latest statuses from pazpar2 as a hash
 	
         $result = $this->client()->pz2_bytarget($this->getId());
-
         $status->setXml( $result['xml'] );
         unset( $result['xml'] );
 		
@@ -131,13 +130,12 @@ class Pz2Session
          $this->result_set = new MergedResultSet($results, $targets);
 
 		// fetch facets
-		// only if we should show facets and there are more than 15 results
-			
-		if ( $this->result_set->total > 15  && $this->config()->getConfig('FACET_FIELDS', false) == true )
+        $conf = $this->config();
+		// only if facets should be shown and there are more than facet_min results
+		if ( $conf->getConfig('FACET_FIELDS', false) == true && $this->result_set->total > $conf->getConfig('FACET_LIMIT', false) )
 		{
-			$terms = array('author', 'subject'); // FIXME put in config 
+            $terms = array_keys( $conf->getFacets() );
 			$xml = $this->client()->pz2_termlist( $this->getId(), $terms );
-            //echo("facets: ".$xml->saveXML());
             $facets = $this->extractFacets($xml);
             $this->result_set->setFacets($facets);
 		}
@@ -145,20 +143,17 @@ class Pz2Session
 		return $this->result_set;
 	}
 
-    // COPY AND PASTE FROM PRIMO ENGINE (with small mods)
-    // AS DONT OTHERWISE KNOW HOW TO MUNGE TERMLIST INTO GENERIC XERXES FACETS
     /**
      * Parse facets out of the response
      *
      * @param DOMDocument $dom  pazpar2 XML
      * @return Facets
      */
-
      protected function extractFacets(\DOMDocument $dom)
      {
         $facets = new Search\Facets();
 
-       // echo $dom->saveXML();
+       //echo $dom->saveXML();
 
         $groups = $dom->getElementsByTagName("list");
 
@@ -201,51 +196,22 @@ class Pz2Session
                 foreach ( $facet_values as $facet_value ) 
                 { 
                     $name = $facet_value->getElementsByTagName("name")->item(0)->nodeValue;
-                    // for some reason pz2 returns authors with a trailing comma
+                    // pz2 returns authors with a trailing comma
                     // sometime also get unwanted fullstop
                     $name = trim($name, ",. "); 
                     $counts = $facet_value->getElementsByTagName("frequency");
                     $count = $counts->item(0)->nodeValue;
                     $facet_array[$name] = $count;
                 } 
-                // date 
-                $decade_display = array(); 
-                $is_date = $this->config->isDateType($group_internal_name); 
-                if ( $is_date == true ) 
-                { 
-                    // FIXME
-                    $date_arrays = $group->luceneDateToDecade($facet_array); 
-                    $decade_display = $date_arrays["display"]; 
-                    $facet_array = $date_arrays["decades"]; 
-                } 
-                else 
-                { 
-                    // not a date, sort by hit count 
-                    arsort($facet_array); 
-                }
 
                 // sort facets into descending order of frequency
                 arsort($facet_array); // assume not date
 
-                // now make them into group facet objects 
-                foreach ( $facet_array as $key => $value ) 
-                { 
-                    $public_value = $this->config->getValuePublicName($group_internal_name, $key); 
-                    $facet = new Search\Facet(); 
-                    $facet->name = $public_value; 
-                    $facet->count = $value;
-                    // dates are different 
-                    if ( $is_date == true ) 
-                    { 
-                        $facet->name = $decade_display[$key]; 
-                        $facet->is_date = true; 
-                        $facet->key = $key; 
-                    } 
-                    $group->addFacet($facet); 
-                } 
+                $group = $this->config->getFacetObjects($group, $group_internal_name, $facet_array);
                 $facets->addGroup($group); 
             } 
-        } 
+        }
+        //var_dump($facets);
         return $facets; 
     } 
 
@@ -280,17 +246,7 @@ class Pz2Session
             $results['start'] = 0;
             $results['merged'] = 1; 
             $results['hits'][0] = $record->saveXML();
-            $this->config = Config::getInstance();
-		    $useCopac = $this->config()->getConfig('USECOPAC', false);
-            if ( $useCopac )
-            {
-                // SEARCH25-specific option
-                $result_set = new CopacMergedResultSet($results, $targets);
-            }
-            else
-            {   // normal default
-                $result_set = new MergedResultSet($results, $targets);
-            }
+            $result_set = new MergedResultSet($results, $targets);
         }
       
         return $result_set;

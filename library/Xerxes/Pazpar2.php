@@ -474,6 +474,7 @@ class Pazpar2
         {
             $url .= "&num=$num";
         }
+        //echo($url);
         $response = $this->getRawResponse( $url, "termlist", $session );
         return $response;
     }
