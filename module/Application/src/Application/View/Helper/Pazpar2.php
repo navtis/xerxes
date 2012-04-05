@@ -99,8 +99,8 @@ class Pazpar2 extends Search
     * by overriding links assigned by parent 
     * @param $query Query object
     */
-   public function addQueryLinks(Query $query)
-   {
+    public function addQueryLinks(Query $query)
+    {
         parent::addQueryLinks($query);
 
         foreach ( $query->getLimits() as $limit )
@@ -110,7 +110,7 @@ class Pazpar2 extends Search
             $params['action'] = 'search';
             $limit->remove_url = $this->request->url_for($params);
         }
-   }
+    }
 
 }
 

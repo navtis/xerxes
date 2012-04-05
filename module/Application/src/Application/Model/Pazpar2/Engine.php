@@ -234,7 +234,7 @@ class Engine extends Search\Engine
     /* return boolean live or not */
     public function ping($sid)
     {
-        $sid = Pz2Session::getSavedId();
+        //$sid = Pz2Session::getSavedId(); // not needed - javascript supplies
         // and use it to recover the Session from cache
         $session = unserialize( $this->cache()->get($sid) );
         if (! is_object($session) )
