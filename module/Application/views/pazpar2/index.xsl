@@ -42,7 +42,7 @@
 
 		<h1>Search25</h1>
 	
-    <form name="form1" method="get" action="{//request/controller}/search" class="metasearchForm"> 
+    <form name="form1" method="get" action="{//request/controller}/startsession" class="metasearchForm"> 
         <input type="hidden" name="lang" value="{//request/lang}" /> 
         <input type="hidden" name="base" value="pazpar2" /> 
         <input type="hidden" name="action" value="search" /> 

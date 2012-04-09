@@ -104,6 +104,37 @@
         </span>
     </xsl:template>
 
+	<!--
+		TEMPLATE: SEARCH BOX
+        Overrides search/results.xsl version to change action url
+	-->
+	
+	<xsl:template name="searchbox">
+	
+		<form action="{//request/controller}/startsession" method="get">
+	
+			<input type="hidden" name="lang" value="{//request/lang}" />
+			
+			<xsl:call-template name="searchbox_hidden_fields_local" />
+	
+			<xsl:if test="request/sort">
+				<input type="hidden" name="sort" value="{request/sort}" />
+			</xsl:if>
+	
+		<xsl:choose>
+			<xsl:when test="$is_mobile = '1'">
+				<xsl:call-template name="searchbox_mobile" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:call-template name="searchbox_full" />
+			</xsl:otherwise>
+		</xsl:choose>
+	
+		</form>	
+		
+	</xsl:template>
+
+
 
 	<!--
 		TEMPLATE: SORT BAR

@@ -3,11 +3,14 @@
 namespace Application\Model\Pazpar2;
 
 use Application\Model\DataMap\Pz2Targets,
+    Zend\Session\Container, // unused for now - use for session data?
     Application\Model\Search,
     Zend\Debug,
 	Xerxes\Pazpar2,
 	Xerxes\Utility\Factory,
 	Xerxes\Utility\Cache,
+	Xerxes\Utility\Parser,
+	Xerxes\Utility\Xsl,
 	Xerxes\Utility\Request;
 
 /**
@@ -24,8 +27,9 @@ use Application\Model\DataMap\Pz2Targets,
 
 class Engine extends Search\Engine
 {
-	protected static $client; // pazpar2 client/driver
+	protected $client; // pazpar2 client/driver
 	protected $cache;
+    protected $config;
 
 	/**
 	 * Return the total number of hits for the search
@@ -51,38 +55,56 @@ class Engine extends Search\Engine
 	
 	public function searchRetrieve( Search\Query $search, $start = 0, $max = 100, $sort = "" )
     {
-        // recover sid from Zend session
-        $sid = Pz2Session::getSavedId();
-        // and use it to recover the Session from cache
-        $session = unserialize( $this->cache()->get($sid) );
-        if (! is_object( $session ) ) {
-            throw new \Exception("Session ended, returning to front page"); 
-        }
-
         $targets  = $search->fillTargetInfo();
         $start = $start - 1; // allow for pz2 starting from 0
         $max = $max - 1;
-        $results = $session->merge($start, $max, $sort, $targets);
-        
-        return $results;
+        $results = $this->client->pz2_show($start, $max, $sort);
+
+        $result_set = new MergedResultSet($results, $targets);
+
+		// fetch facets
+		// only if facets should be shown and there are more than facet_min results
+		if ( $this->conf()->getConfig('FACET_FIELDS', false) == true && $result_set->total > $this->conf()->getConfig('FACET_LIMIT', false) )
+		{
+            $terms = array_keys( $this->conf()->getFacets() );
+			$xml = $this->client->pz2_termlist( $terms );
+            $facets = $this->extractFacets($xml);
+            $result_set->setFacets($facets);
+		}
+		
+		return $result_set;
     }
 
 	/**
 	 * Return an individual record
-	 * Just wraps session getRecord
      *
-	 * @param string	record identifier
+     * @param array     offset values for each holding
+     * @param target    pz2_key for target
 	 * @return Resultset
 	 */
-	public function getRawRecord( $id, $offset=array(), $targets=null )
+	public function getRawRecord( $sid, $id, $offset=null, $targets=null )
     {
-        // recover sid from Zend session
-        $sid = Pz2Session::getSavedId();
-        $session = unserialize( $this->cache()->get($sid) );
-        if (! is_object( $session ) ) {
-            throw new \Exception("Session ended, returning to front page"); 
+        $record = $this->client($sid)->pz2_record( $id, $offset ); 
+
+        // need to return a ResultSet, record is a DomDocument
+        if ( ! is_null($offset) ) 
+        {
+            // FIXME MarcRecord and Offset not yet implemented
+            $xerxes_record = new MarcRecord(); // convert to xerxes record format first
+            $xerxes_record->loadXML( $record );
+        } 
+        else
+        {
+            // keep MergedResultSet happy by making it look like single result
+            $results = array();
+            $results['hits'] = array();
+            $results['start'] = 0;
+            $results['merged'] = 1; 
+            $results['hits'][0] = $record->saveXML();
+            $result_set = new MergedResultSet($results, $targets);
         }
-        return $session->getRecord( $id, $offset, $targets );
+      
+        return $result_set;
     }
 
 	/**
@@ -112,10 +134,18 @@ class Engine extends Search\Engine
      *
 	 * @return Config
 	 */
-	
-	public function getConfig()
+    public function getConfig()
+    {
+       return $this->conf();
+    }
+
+	public function conf()
 	{
-		return Config::getInstance();
+        if ( ! $this->config instanceof Config )
+        {
+            $this->config = Config::getInstance();
+        }
+        return $this->config;
 	}
 
     /**
@@ -153,17 +183,18 @@ class Engine extends Search\Engine
 
    /**
     * Pazpar2 Client
-    * Kept by the engine, used by Pz2Sessions
+    * Created to bundle a new session
     */
-    public static function getPazpar2Client()
+    public function initializePazpar2Client()
     {
 
-        if ( ! self::$client instanceof Pazpar2 )
+        if ( ! $this->client instanceof Pazpar2 )
         {
-            $config = Config::getInstance();
-            self::$client = new Pazpar2($config->getConfig('url', true), false, null, Factory::getHttpClient());
+            $client = new Pazpar2($this->conf()->getConfig('url', true), false, null, $this->client);
+            $this->cache()->set($client->getSessionId(), serialize( $client ) );
+            $this->client = $client;
         }
-        return self::$client;
+        return $this->client->getSessionId();
     }
 
 
@@ -179,71 +210,82 @@ class Engine extends Search\Engine
 		$this->__construct(); // parent constructor
 	}
 	
-	
+
+    
     /**
-     * Return the sid for a pz2 search session it has cached
-     * Overrides parent
+	 * Initiate the search with pazpar2 for this set of targets
      *
      * @return Query
      */
     public function search(Query $query, $start=0, $max=100) 
     {
-        // recover sid from Zend session
-        $sid = Pz2Session::getSavedId();
+		// flesh out target information from the kb
+		$query->fillTargetInfo();
 
-        if ( is_null( $sid ) )
+        if (isset( $query->limits ) && (sizeof( $query->limits ) > 0 ) )
         {
-            $pz2session = new Pz2Session();
+            $terms = array();
+            foreach($query->limits as $limit_term)
+            {
+                $facets[] = urlencode( preg_replace('/facet\./', '', $limit_term->field) . $limit_term->relation . $limit_term->value );    
+            }                                                                    
         }
         else
         {
-            $pz2session = unserialize( $this->cache()->get($sid) );
-            if ( (! is_object( $pz2session ) ) || (! $pz2session->client()->pz2_ping($sid) ) ) 
-            {
-                $pz2session = new Pz2Session();
-            }
+            $facets = null;
         }
-        
-        // after this, $query is stored in the pz2session
-        $pz2session->initiateSearch($query);
-       
-        $sid = $pz2session->getId();
-
-        // cache the session object for later retrieval
-        $this->cache()->set($sid, serialize($pz2session));
-
-        return $sid;
+		$maxrecs = $this->conf()->getConfig('MAXRECS', false);
+		// start the search
+        $sid = $query->sid;
+        $this->client($sid)->search( $query->toQuery(), $query->getTargetIDs(), $facets, $maxrecs );
+		
     }
 
-    public function getSearchStatus()
+	/**
+	 * Check the status of the search
+	 * 
+	 * @return Status
+	*/
+    public function getSearchStatus($sid)
     {
-        // recover sid from Zend session
-        $sid = Pz2Session::getSavedId();
+		$status = new Status();
+		
+		// get latest statuses from pazpar2 as a hash
+        $result = $this->client($sid)->pz2_bytarget();
 
-        $session = unserialize( $this->cache()->get($sid) );
-        if (! is_object( $session ) ) {
-            throw new \Exception("Session ended, returning to front page"); 
-        }
-
-        $status = $session->getSearchStatus($sid);
-
+        $status->setXml( $result['xml'] );
+        unset( $result['xml'] );
+		
+        foreach($result as $k => $v)
+        {
+			$status->addTargetStatus($v);
+		}
+		
+		// see if search is finished
+		// FIXME redundant call to pz2_stat - simplify
+		$status->setFinished($this->client->isFinished());
+		$status->setProgress($this->client->getProgress());
+		
 		return $status;
+	}
+	
+
+
+
+	/**
+	 * Get facets
+     */
+	public function getFacets()
+	{
+		return $this->cache()->get("facets-" . $this->getId());
 	}
 
     /* called from pingAction */
     /* return boolean live or not */
     public function ping($sid)
     {
-        //$sid = Pz2Session::getSavedId(); // not needed - javascript supplies
-        // and use it to recover the Session from cache
-        $session = unserialize( $this->cache()->get($sid) );
-        if (! is_object($session) )
-            return false;
-
-        return $session->client()->pz2_ping($sid);
+        return $this->client($sid)->pz2_ping();
 	}
-	
-	
 	
     /**
     * Lazyload Cache
@@ -256,6 +298,95 @@ class Engine extends Search\Engine
         }
         return $this->cache;
     }
+    /**
+    * Lazyload Pz2 client
+    */
+    protected function client($sid)
+    {
+        if ( ! $this->client instanceof Pazpar2 )
+        {
+            $client = unserialize( $this->cache()->get($sid) );
+            if ( is_object( $client ) ) {
+                $this->client = $client;
+            }
+        }
+        if (! $this->client instanceof Pazpar2 )
+            throw new \Exception("Session $sid lost");
+
+        return $this->client;
+    }
+
+    /**
+     * Parse facets out of the response
+     *
+     * @param DOMDocument $dom  pazpar2 XML
+     * @return Facets
+     */
+     protected function extractFacets(\DOMDocument $dom)
+     {
+        $facets = new Search\Facets();
+
+       //echo $dom->saveXML();
+
+        $groups = $dom->getElementsByTagName("list");
+
+        if ( $groups->length > 0 )
+        {
+            // we'll pass the facets into an array so we can control both which 
+            // ones appear and in what order in the Xerxes config
+
+            $facet_group_array = array();
+
+            foreach ( $groups as $facet_group )
+            {
+                $facet_values = $facet_group->getElementsByTagName("term");
+
+                // if only one entry, then all the results have this same facet, 
+                // so no sense even showing this as a limit 
+                if ( $facet_values->length <= 1 ) 
+                { 
+                    continue;
+                } 
+                $group_internal_name = $facet_group->getAttribute("name"); 
+                $facet_group_array[$group_internal_name] = $facet_values; 
+            } 
+            // now take the order of the facets as defined in xerxes config 
+            foreach ( $this->conf()->getFacets() as $group_internal_name => $facet_values )
+            { 
+                // we defined it, but it's not in the pazpar2 response 
+                if ( ! array_key_exists($group_internal_name, $facet_group_array) ) 
+                { 
+                    continue; 
+                }
+
+                $group = new Search\FacetGroup(); 
+                $group->name = $group_internal_name; 
+                $group->public = $this->conf()->getFacetPublicName($group_internal_name); 
+                // get the actual facets out of the array above 
+                $facet_values = $facet_group_array[$group_internal_name]; 
+                // and put them in their own array so we can mess with them 
+                $facet_array = array(); 
+                foreach ( $facet_values as $facet_value ) 
+                { 
+                    $name = $facet_value->getElementsByTagName("name")->item(0)->nodeValue;
+                    // pz2 returns authors with a trailing comma
+                    // sometime also get unwanted fullstop
+                    $name = trim($name, ",. "); 
+                    $counts = $facet_value->getElementsByTagName("frequency");
+                    $count = $counts->item(0)->nodeValue;
+                    $facet_array[$name] = $count;
+                } 
+
+                // sort facets into descending order of frequency
+                arsort($facet_array); // assume not date
+
+                $group = $this->conf()->getFacetObjects($group, $group_internal_name, $facet_array);
+                $facets->addGroup($group); 
+            } 
+        }
+        //var_dump($facets);
+        return $facets; 
+    } 
 
 }
 

@@ -16,6 +16,8 @@ $(document).ready(function(){
     if (completed != 1)
     {
         var querystring = $('#pz2session').data('querystring');
+        var session = $('#pz2session').data('value');
+        querystring = querystring + '&session=' + session;
 
         var statusfetch = setInterval(function()
         {

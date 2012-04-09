@@ -7,8 +7,7 @@ use Application\Model\Pazpar2\Engine,
     Application\View\Helper\Pazpar2 as SearchHelper,
     Zend\Mvc\MvcEvent,
     Zend\Debug,
-    Zend\Mvc\Controller\Plugin\FlashMessenger,
-    Application\Model\Pazpar2\Pz2Session;
+    Zend\Mvc\Controller\Plugin\FlashMessenger;
 
 class Pazpar2Controller extends SearchController
 {
@@ -23,10 +22,10 @@ class Pazpar2Controller extends SearchController
         $this->fm = new FlashMessenger();
     }
 
-	protected function getEngine()
-	{
-		return new Engine();
-	}
+    protected function getEngine()
+    {
+        return new Engine();
+    }
 
     public function indexAction()
     {
@@ -51,10 +50,30 @@ class Pazpar2Controller extends SearchController
         return($this->data);
     }
 
+    /* called only from the search box - a brand new search */
+	public function startsessionAction()
+    {
+        // initialise the session for a new search
+        $sid = $this->engine->initializePazpar2Client();
+        //$ns = new Zend_Session_Namespace('pazpar2');
+        //$ns->sid = $sid;
+        $_SESSION['pazpar2']['sid'] = $sid;
+		// then  redirect to search action
+        $params = $this->query->getAllSearchParams();
+		$params['lang'] = $this->request->getParam('lang');
+	    $params['controller'] = $this->request->getParam('controller');
+	    $params['action'] = 'search';
+		$url = $this->request->url_for($params);
+		return $this->redirect()->toUrl($url);
+	}
+	
 	public function searchAction()
 	{
-        // initialise the search
-		$session_id = $this->engine->search($this->query);
+        // recover the sid
+        $sid = $_SESSION['pazpar2']['sid'];
+        // kick the search off
+        $this->query->sid = $sid;
+		$this->engine->search($this->query);
 		// then  redirect to results action
         $params = $this->query->getAllSearchParams();
 		$params['lang'] = $this->request->getParam('lang');
@@ -73,10 +92,10 @@ class Pazpar2Controller extends SearchController
 	public function resultsAction()
 	{
         //Debug::dump($this->query);
+        $sid = $_SESSION['pazpar2']['sid'];
         try
         {
-		    $sid = (string) Pz2Session::getSavedId();
-		    $status = $this->engine->getSearchStatus();
+		    $status = $this->engine->getSearchStatus($sid);
         }
         catch( \Exception $e )
         {
@@ -132,12 +151,13 @@ class Pazpar2Controller extends SearchController
     public function recordAction()
     {
         $id = $this->request->getParam('id'); 
+        $sid = $_SESSION['pazpar2']['sid'];
         $offset = $this->request->getParam('offset', null, true); 
         $targets = $this->query->fillTargetInfo();
         try
         {
             // get the record 
-            $results = $this->engine->getRawRecord($id, $offset, $targets); 
+            $results = $this->engine->getRawRecord($sid, $id, $offset, $targets); 
         }
         catch( \Exception $e )
         {

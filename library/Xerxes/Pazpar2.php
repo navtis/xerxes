@@ -2,7 +2,8 @@
 
 namespace Xerxes;
 
-use Zend\Http\Client;
+use Zend\Http\Client,
+    Xerxes\Utility\Parser;
 
 /**
  * Pazpar2 Client
@@ -18,79 +19,70 @@ use Zend\Http\Client;
 
 class Pazpar2
 { 
-	private $baseurl = "";		// pazpar2 server address
-    private $per_session_dbs = false;
-    private $service = null;
+	public $baseurl = "";		    // pazpar2 server address
+    public $per_session_dbs = false;
+    public $service = null;
 
-	public $session = null;		// pazpar2 session id
-	private $finished = false;	// flag indicating pz2 is done searching
-	private $return_quick = false;  // return quick
+	public  $sid = null;		// pazpar2 session id
+	public $finished = false;	    // flag indicating pz2 is done searching
+	public $return_quick = false;  // return quick
 
 	private $client; // http client
 	
 	/**
 	 * Create a new Pazpar2 Client
-	 * 
-	 * @param string $server	the pazpar2 address url
-	 * @param string $session	[optional] current pazpar2 session id
-	 * @param Client $client	[optional] subclass of Zend\Client
+	 * Throws exception if fails to get session
+     *
+	 * @param string $baseurl	        the pazpar2 address url
+	 * @param boolean $per_session_dbs	[optional]
+     * @param string $service           [optional]
+	 * @param Client $client	        [optional] subclass of Zend\Client (defaults to  Http)
 	 */
 	
 	public function __construct( $baseurl, $per_session_dbs = false, $service = null, Client $client = null )
 	{						
 		$this->baseurl = $baseurl;
 		$this->per_session_dbs = $per_session_dbs;
+		$this->service = $service;
 
-		if ( !is_null( $service ) )
-		{
-			$this->service = $service;
-		}
-
-		if ( !is_null( $client ) )
-		{
-			$this->client = $client;
+        if (! is_null($client) )
+        {
+		$this->client = $client;
 		}
 		else
 		{
 			$this->client = new Client();
-		}		
+		}
 
-        $this->ensureSession(); // sets $this->session
+        // if this fails throws an exception
+        $this->sid = $this->pz2_init($this->per_session_dbs, $this->service);
 	}
 
     /**
-     * Recover a session ID or get a new one if the old one expired
-	 * 
-     * @param bool $force   true if ok to force creation of a new session
-	 * @return bool         true if session exists, false if new one needed
-	 */ 
-
-	public function ensureSession() 
-	{
-        if ( ! is_null( $this->session ) )
-        {
-            $pz2_session = $_SESSION["pz2_session"];
-
-            if ($this->pz2_ping($pz2_session) )
-            {
-                // existing session still valid
-                $this->session = $pz2_session;
-            }
-            else
-            {
-                $this->session = $this->pz2_init($this->per_session_dbs, $this->service);
-            }
-         }
-         else
-         {
-            // never had a session so always OK to create one
-            $this->session = $this->pz2_init($this->per_session_dbs, $this->service);
-         }
-        // should always be TRUE
-		return is_null($this->session)?false:true;
-	}
+     * Session id is used as a key to access the Client in a Zend session
+     *
+     * return string $sid
+     */
+    public function getSessionId()
+    {
+        return $this->sid;
+    }
 	
-	/**
+	public function __sleep()
+    {
+        return Parser::removeProperties(get_object_vars($this), array('client'));
+    }
+                    
+    public function __wakeup()
+    {
+		$this->client = new Client();
+        if (! $this->pz2_ping( $this->sid ) )
+        {
+            throw new \Exception( 'Session died - data lost' );
+        }
+    }
+
+    /**
 	 * Initiates metasearch request
 	 *
 	 * @param string $query			metalib formatted query 
@@ -102,11 +94,8 @@ class Pazpar2
 
 	public function search( $query, $targets=null, $facets=null, $maxrecs, $wait = false) 
 	{
-        // FIXME sort out the target list here and add to the query
 
-	    $this->pz2_search( $this->session, $query, $targets, $facets, null, $maxrecs );
-		
-		//$this->status = $this->pz2_stat( $this->session );			
+	    $this->pz2_search( $query, $targets, $facets, null, $maxrecs );
 		
         if ($wait)  // blocking
         {
@@ -114,11 +103,11 @@ class Pazpar2
             {
                 sleep(1);
             }
-            return ( $this->pz2_show($this->session, 0, 500) );
+            return ( $this->pz2_show( 0, 500) );
         }
         else
         {
-		    $this->status = $this->pz2_stat( $this->session );
+		    $this->status = $this->pz2_stat( );
             return($this->status);
             // subsequent calls to pz2_stat come from javascript
             // assuming the search has not finished immediately on this
@@ -131,9 +120,9 @@ class Pazpar2
 	* @return float$maxrecs<= $progress <= 1.0
 	*/ 
 
-	public function getProgress( $sid )
+	public function getProgress()
 	{
-        $status = $this->pz2_stat($this->session);
+        $status = $this->pz2_stat();
         return $status["progress"];
 	}
 	
@@ -145,7 +134,7 @@ class Pazpar2
 
 	public function getStatus( $sid )
 	{
-        return $this->pz2_stat($this->session);
+        return $this->pz2_stat();
 	}
 	
 
@@ -158,9 +147,9 @@ class Pazpar2
 	* @return bool 				true if finished, false if not
 	*/ 
 
-	public function isFinished( $sid )
+	public function isFinished( )
 	{
-        $status = $this->pz2_stat($this->session);
+        $status = $this->pz2_stat();
         //var_dump($status);echo("</br></br>");
         if ( $status["activeclients"] == 0 )
         {
@@ -182,7 +171,7 @@ class Pazpar2
      * @param string command    Name of the comman used
      * @returns DomDocument     pazpar2 response or false if session expired
 	 */
-	protected function getRawResponse( $url, $command, $session=null )
+	protected function getRawResponse( $url, $command )
 	{
 		$doc = new \DOMDocument();
 //echo($url);		
@@ -219,7 +208,7 @@ class Pazpar2
             }
             else 
             {
-                throw new \Exception("Cannot execute command $command for session $session: $msg");
+                throw new \Exception("Cannot execute command $command for session $this->sid: $msg");
             }
         }
 		
@@ -263,13 +252,12 @@ class Pazpar2
 	 * Check pazpar2 session status
 	 *
 	 * Uses per_session_db and service object variables
-     * @param string $session   pazpar2 session id
      * @returns bool true if session exists
 	 */
-	public function pz2_ping( $session )
+	public function pz2_ping( )
     {
-        $url = $this->baseurl . "?command=ping&session=$session";
-        $response = $this->getRawResponse( $url, "ping", $session );
+        $url = $this->baseurl . "?command=ping&session=$this->sid";
+        $response = $this->getRawResponse( $url, "ping" );
 
         if ($response == false)
             return false;
@@ -280,26 +268,24 @@ class Pazpar2
 	/**
 	 * Set pazpar2 target settings
 	 *
-     * @param string $session   pazpar2 session id
      * @param array $settings   array of pazpar2 settings
      * @returns null
 	 */
-	protected function pz2_settings( $session, $settings )
+	protected function pz2_settings( $settings )
     {
-        $url = $this->baseurl . "?command=settings&session=$session";
+        $url = $this->baseurl . "?command=settings&session=$this->sid";
         // FIXME escape settings here?
         foreach ($settings as $setting) 
         {
            $url .= '&' . $setting;
         }
-        $response = $this->getRawResponse( $url, "settings", $session );
+        $response = $this->getRawResponse( $url, "settings" );
     }
 
     
 	/**
 	 * Initialize a pazpar2 search
 	 *
-     * @param string $session   pazpar2 session id
      * @param string $query     user search query
      * @param array $targets    list of targets to use (null = all targets)
      * @param array $facets     array of limiting values for search
@@ -307,19 +293,14 @@ class Pazpar2
      * @param int $maxrecs      Maxmimum records per target (default 100)
      * @returns null
 	 */
-	protected function pz2_search( $session, $query, $targets=null, $facets=null, $startrecs=null, $maxrecs=null )
+	protected function pz2_search( $query, $targets=null, $facets=null, $startrecs=null, $maxrecs=null )
     {
-        $url = $this->baseurl . "?command=search&session=$session";
+        $url = $this->baseurl . "?command=search&session=$this->sid";
         // should already be urlescaped
         $url .= "&query=$query";
 
         if ( !is_null( $targets ) )
         {
-            // we always add COPAC in
-            // FIXME this should be a local setting, not in the main code
- //FIXME TAKEN OUT FOR NOW - DO FOR INDIVIDUAL RECORDS ONLY
- //           $targets[] = 'z3950.copac.ac.uk:210/COPAC';
-
             $alltargs = implode('|', $targets);
             $alltargs = 'pz:id=' . $alltargs;
             $alltargs = urlencode($alltargs);
@@ -343,7 +324,7 @@ class Pazpar2
         if ( !is_null( $maxrecs ) )
             $url .= "&maxrecs=$maxrecs";
 //echo($url); exit; 
-        $response = $this->getRawResponse( $url, "search", $session );
+        $response = $this->getRawResponse( $url, "search" );
         
         // this just kicks off the search; nothing to return, yet
     }
@@ -351,13 +332,12 @@ class Pazpar2
 	/**
 	 * Check pazpar2 search status
 	 *
-     * @param string $session   pazpar2 session id
      * @returns array           status values extracted from xml
 	 */
-	protected function pz2_stat( $session )
+	protected function pz2_stat( )
     {
-        $url = $this->baseurl . "?command=stat&session=$session";
-        $response = $this->getRawResponse( $url, "stat", $session );
+        $url = $this->baseurl . "?command=stat&session=$this->sid";
+        $response = $this->getRawResponse( $url, "stat" );
         $nodes = $response->getElementsByTagName("stat")->item(0)->childNodes;
         $vals = array();
         foreach($nodes as $node)
@@ -370,15 +350,14 @@ class Pazpar2
 	/**
 	 * Show records retrieved from search 
 	 *
-     * @param string $session   pazpar2 session id
      * @param int $start        start record position (default 0)
      * @param int $num          number of records to show (default 20)
      * @param array $sorts      array of sort fields in descending order 
      * @returns array           status values extracted from xml, with an arrays of dom elements for the actual records
 	 */
-	public function pz2_show( $session, $start=null, $num=null, $sorts=null )
+	public function pz2_show( $start=null, $num=null, $sorts=null )
     {
-        $url = $this->baseurl . "?command=show&session=$session";
+        $url = $this->baseurl . "?command=show&session=$this->sid";
         if ( !is_null( $start ) )
             $url .= "&start=$start";
         if ( !is_null( $num ) )
@@ -390,7 +369,7 @@ class Pazpar2
             else
                 $url .= '&sort=' . $sorts;
         }
-        $response = $this->getRawResponse( $url, "show", $session );
+        $response = $this->getRawResponse( $url, "show" );
 
 //echo( $response->saveXML() ); //exit;
         $result = array();
@@ -419,7 +398,6 @@ class Pazpar2
 	/**
 	 * Show single record retrieved from search 
 	 *
-     * @param string $session   pazpar2 session id
      * @param string $recordid  id for a single record 
      * @param integer $offset   target number for raw record
      * @param string $syntax    syntax for raw records
@@ -428,9 +406,9 @@ class Pazpar2
      * @param int $num          number of records to show (default 20)
      * @returns DomDocument     single dom record
 	 */
-	public function pz2_record( $session, $recordid, $offset_arr=null, $syntax=null, $esn=null, $binary=null )
+	public function pz2_record( $recordid, $offset_arr=null, $syntax=null, $esn=null, $binary=null )
     {
-        $url = $this->baseurl . "?command=record&session=$session";
+        $url = $this->baseurl . "?command=record&session=$this->sid";
         $url .= "&id=$recordid";
         if ( !is_null( $offset_arr ) )
         {
@@ -449,7 +427,7 @@ class Pazpar2
                 $url .= "&esn=$esn";
             }
         }
-        $response = $this->getRawResponse( $url, "record", $session );
+        $response = $this->getRawResponse( $url, "record" );
         //var_dump($response->saveXML());
         return $response;
     }
@@ -457,14 +435,13 @@ class Pazpar2
 	/**
 	 * Show term list resulting from a search 
 	 *
-     * @param string $session   pazpar2 session id
      * @param array  $terms     terms to retrieve (default subject)
      * @param integer $num      maximum number of terms to return
      * @returns DomDocument     dom results
 	 */
-	public function pz2_termlist( $session, $terms=null, $num=null )
+	public function pz2_termlist( $terms=null, $num=null )
     {
-        $url = $this->baseurl . "?command=termlist&session=$session";
+        $url = $this->baseurl . "?command=termlist&session=$this->sid";
     
         if ( !is_null( $terms ) )
         {
@@ -475,22 +452,21 @@ class Pazpar2
             $url .= "&num=$num";
         }
         //echo($url);
-        $response = $this->getRawResponse( $url, "termlist", $session );
+        $response = $this->getRawResponse( $url, "termlist" );
         return $response;
     }
 
 	/**
 	 * Show target statuses
 	 *
-     * @param string $session   pazpar2 session id
      * Documentation unclear about 'id' parameter
      * @returns array           status array per active client
 	 */
-	public function pz2_bytarget( $session )
+	public function pz2_bytarget( )
     {
-        $url = $this->baseurl . "?command=bytarget&session=$session";
+        $url = $this->baseurl . "?command=bytarget&session=$this->sid";
     
-        $response = $this->getRawResponse( $url, "bytarget", $session );
+        $response = $this->getRawResponse( $url, "bytarget" );
         $targets = $response->getElementsByTagname("target");
         $results = array();
         foreach( $targets as $target )
