@@ -73,8 +73,22 @@ class Pazpar2Controller extends SearchController
         $sid = $_SESSION['pazpar2']['sid'];
         // kick the search off
         $this->query->sid = $sid;
-		$this->engine->search($this->query);
-		// then  redirect to results action
+        try
+        {
+		    $this->engine->search($this->query);
+        }
+        catch(\Exception $e)
+        {
+            // assume the session died, remove it & initialise a new one
+            $this->engine->clearPazpar2Client( $sid );
+            $params = $this->query->getAllSearchParams();
+		    $params['lang'] = $this->request->getParam('lang');
+	        $params['controller'] = $this->request->getParam('controller');
+	        $params['action'] = 'startsession';
+		    $url = $this->request->url_for($params);
+		    return $this->redirect()->toUrl($url);
+        }
+		// if no exception,  redirect to results action
         $params = $this->query->getAllSearchParams();
 		$params['lang'] = $this->request->getParam('lang');
 	    $params['controller'] = $this->request->getParam('controller');
@@ -227,5 +241,46 @@ class Pazpar2Controller extends SearchController
         // returned to View\Listener
         return $response;
 
+	}
+
+	public function saveAction()
+	{
+		$datamap = new SavedRecords();
+		
+		$username = $this->request->getSessionData("username");
+		$original_id = $this->request->getParam("id");
+
+		$inserted_id = ""; // internal database id
+		
+		// delete command
+		
+		if ( $this->isMarkedSaved( $original_id ) == true )
+		{
+			$datamap->deleteRecordBySource( $username, $this->id, $original_id );
+			$this->unmarkSaved( $original_id );
+			$this->data["delete"] = "1";
+		}
+
+		// add command
+		
+		else
+		{
+			// get record
+			
+			$record = $this->engine->getRawRecord($original_id)->getRecord(0)->getXerxesRecord();
+			
+			// save it
+			
+			$inserted_id = $datamap->addRecord( $username, $this->id, $original_id, $record );
+			
+			// record this in session
+				
+			$this->markSaved( $original_id, $inserted_id );
+			
+			$this->data["savedRecordID"] = $inserted_id;
+		} 
+		
+		return $this->data;
 	}	
+
 }

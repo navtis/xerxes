@@ -38,7 +38,11 @@
         <config name="facet_max" xml="true" pass="true">50</config>
         
         <!-- max no of records to be returned per target -->
-        <config name="maxrecs">30</config>
+        <config name="records_per_target">30</config>
+        <!-- records to display per per page -->
+        <config name="records_per_page">30</config>
+        <!-- allowed upper limit on records_per_page -->
+        <config name="max_records_per_page">100</config>
 
 	</configuration>
 	

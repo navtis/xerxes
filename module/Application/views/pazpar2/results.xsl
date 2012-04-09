@@ -149,7 +149,8 @@
 				<xsl:call-template name="no_hits" />
 			</xsl:when>
             <!-- when not finished and progress less than 1 -->
-            <xsl:when test="//bytarget/progress &lt; 100" >
+            <!-- <xsl:when test="//bytarget/progress &lt; 100" > -->
+            <xsl:when test="//bytarget/finished != '1'" >
                 <div id="progress_container">
                     <div id="progress" style="width:0%"></div>
                 </div>

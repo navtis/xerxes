@@ -8,7 +8,6 @@ use Application\Model\DataMap\Pz2Targets,
     Zend\Debug,
 	Xerxes\Pazpar2,
 	Xerxes\Utility\Factory,
-	Xerxes\Utility\Cache,
 	Xerxes\Utility\Parser,
 	Xerxes\Utility\Xsl,
 	Xerxes\Utility\Request;
@@ -27,7 +26,7 @@ use Application\Model\DataMap\Pz2Targets,
 
 class Engine extends Search\Engine
 {
-	protected $client; // pazpar2 client/driver
+	protected $client = null; // pazpar2 client/driver
 	protected $cache;
     protected $config;
 
@@ -187,16 +186,27 @@ class Engine extends Search\Engine
     */
     public function initializePazpar2Client()
     {
-
-        if ( ! $this->client instanceof Pazpar2 )
-        {
-            $client = new Pazpar2($this->conf()->getConfig('url', true), false, null, $this->client);
-            $this->cache()->set($client->getSessionId(), serialize( $client ) );
-            $this->client = $client;
-        }
+        $client = new Pazpar2($this->conf()->getConfig('url', true), false, null, $this->client);
+        $this->cache()->set($client->getSessionId(), serialize( $client ) );
+        $this->client = $client;
         return $this->client->getSessionId();
     }
 
+    public function clearPazpar2Client($sid = null)
+    {
+        if (! is_null($sid) )
+        {
+            $this->cache()->clear($sid);
+        }
+        else
+        {
+            if ( $this->client instanceof Pazpar2 )
+            {
+                $this->cache()->clear($this->client->getSessionId());
+            }
+        }
+        $this->client = null;
+    }
 
     /* called on serialization */
 	public function __sleep()
@@ -234,7 +244,7 @@ class Engine extends Search\Engine
         {
             $facets = null;
         }
-		$maxrecs = $this->conf()->getConfig('MAXRECS', false);
+		$maxrecs = $this->conf()->getConfig('RECORDS_PER_TARGET', false);
 		// start the search
         $sid = $query->sid;
         $this->client($sid)->search( $query->toQuery(), $query->getTargetIDs(), $facets, $maxrecs );
@@ -263,7 +273,12 @@ class Engine extends Search\Engine
 		
 		// see if search is finished
 		// FIXME redundant call to pz2_stat - simplify
-		$status->setFinished($this->client->isFinished());
+        if ( $this->client->isFinished() )
+        {
+		    $status->setFinished( true );
+            // update cached version with finished flag
+            $this->cache()->set($this->client->getSessionId(), serialize( $this->client ) );
+        }
 		$status->setProgress($this->client->getProgress());
 		
 		return $status;

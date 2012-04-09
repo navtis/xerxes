@@ -142,22 +142,32 @@ class Pazpar2
 		
 	/**
 	* Check if pazpar2 is done searching
-	*
+	* Once a search has finished once, it stays finished
+    * regardless of status of targets (eg for facets, sorting)
     * Use to stop hits page autorefreshing
 	* @return bool 				true if finished, false if not
 	*/ 
 
 	public function isFinished( )
 	{
-        $status = $this->pz2_stat();
-        //var_dump($status);echo("</br></br>");
-        if ( $status["activeclients"] == 0 )
+        if ( $this->finished == true )
         {
             return true;
         }
-        if ( $status["progress"] == "1.0" )
+        else
         {
-            return true;
+            $status = $this->pz2_stat();
+        //var_dump($status);echo("</br></br>");
+            if ( $status["activeclients"] == 0 )
+            {
+                $this->finished = true;
+                return true;
+            }
+            if ( $status["progress"] == "1.0" )
+            {
+                $this->finished = true;
+                return true;
+            }
         }
 		return false; // by default, still running 
 
