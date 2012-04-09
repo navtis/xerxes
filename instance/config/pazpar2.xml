@@ -31,9 +31,11 @@
         <!-- <facet public="Year" internal="date" type="date" /> -->
         </config>
         <!-- minimum number of items needed to show facet_list -->
-        <config name="facet_limit" xml="true" pass="true">10</config>
-        <!-- number of items to display in facet -->
+        <config name="facet_min" xml="true" pass="true">10</config>
+        <!-- number of items to display in unexpanded facet -->
         <config name="facet_display" xml="true" pass="true">5</config>
+        <!-- maximum number of items to show in expanded facet_list -->
+        <config name="facet_max" xml="true" pass="true">50</config>
         
         <!-- max no of records to be returned per target -->
         <config name="maxrecs">30</config>

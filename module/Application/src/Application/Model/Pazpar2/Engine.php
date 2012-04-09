@@ -64,10 +64,10 @@ class Engine extends Search\Engine
 
 		// fetch facets
 		// only if facets should be shown and there are more than facet_min results
-		if ( $this->conf()->getConfig('FACET_FIELDS', false) == true && $result_set->total > $this->conf()->getConfig('FACET_LIMIT', false) )
+		if ( $this->conf()->getConfig('FACET_FIELDS', false) == true && $result_set->total > $this->conf()->getConfig('FACET_MIN', false) )
 		{
             $terms = array_keys( $this->conf()->getFacets() );
-			$xml = $this->client->pz2_termlist( $terms );
+			$xml = $this->client->pz2_termlist( $terms, $this->conf()->getConfig('FACET_MAX', false) );
             $facets = $this->extractFacets($xml);
             $result_set->setFacets($facets);
 		}
