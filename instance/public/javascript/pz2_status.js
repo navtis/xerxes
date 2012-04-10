@@ -11,6 +11,18 @@
  */
 $(document).ready(function(){
 
+    // end the search early if requested by user
+    $("#terminator").click(function() {
+        $.ajax(
+        { 
+            url: "pazpar2/ajaxterminate",
+            data: "session=" + $('#pz2session').data('value'),
+            cache: false,
+            datatype: "json"
+        })
+        return false;
+    });
+
     var completed = $('#pz2session').data('completed');
 
     if (completed != 1)
@@ -59,4 +71,4 @@ $(document).ready(function(){
         }, 1000); // 1 seconds default between status fetches
     } // end conditional timer
 });  
- 
+

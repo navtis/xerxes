@@ -139,7 +139,13 @@ class Pazpar2
 	
 
     /**
-		
+    * User is terminating a search early
+    */
+    public function setFinished()
+    {
+        $this->finished = true;
+    }
+
 	/**
 	* Check if pazpar2 is done searching
 	* Once a search has finished once, it stays finished

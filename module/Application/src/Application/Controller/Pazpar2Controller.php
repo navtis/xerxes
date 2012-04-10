@@ -44,7 +44,6 @@ class Pazpar2Controller extends SearchController
 
     public function libraryAction()
     {
-        
         $targets = is_array($this->query->getTargetNames() )?$this->query->getTargetNames(): array('GENERAL');
         $this->data['target'] = $this->engine->getTarget($targets[0]);
         //echo($this->data['target']->toXML()->saveXML()); exit;
@@ -208,6 +207,21 @@ class Pazpar2Controller extends SearchController
         // returned to View\Listener
         return $response;
 	}
+
+    /**
+     * Terminate a search early when the user has lost patience
+     */
+	public function ajaxterminateAction()
+	{
+		$sid = $this->request->getParam("session");
+        $this->engine->setFinished($sid);
+        $this->request->setParam("format", "json");
+        $this->request->setParam("render", "false");
+        $response = $this->getResponse(); 
+        $arr['sid'] = $sid;
+        $response->setContent(json_encode($arr));
+        return $response;
+    }
 
     /**
      *  Called repeatedly by AJAX from results page until session is finished.

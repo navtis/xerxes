@@ -53,6 +53,7 @@ div#progress_container {
     width: 200px;
     margin-top: 15px;
     padding: 0;
+    float: left;
 }
 div#progress{ 
     color: #FFF;
@@ -62,7 +63,13 @@ div#progress{
     font-size: 12px;
     text-align: center;
     overflow: hidden;
-    line-height: 1.2em
+    line-height: 1.2em;
+}
+
+#terminator {
+    margin-left: 5px;
+    margin-top: 15px;
+    float:left;
 }
 
 /** RESULTS **/

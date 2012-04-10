@@ -150,8 +150,11 @@
             <!-- when not finished and progress less than 1 -->
             <!-- <xsl:when test="//bytarget/progress &lt; 100" > -->
             <xsl:when test="//bytarget/finished != '1'" >
-                <div id="progress_container">
-                    <div id="progress" style="width:0%"></div>
+                <div id="progress_outer">
+                    <div id="progress_container">
+                        <div id="progress" style="width:0%"></div>
+                    </div>
+                    <form><button id="terminator">Halt search early</button></form>
                 </div>
             </xsl:when>
 			<xsl:otherwise>
@@ -416,7 +419,7 @@
     </xsl:template>
 
     <!-- old version of the new template GS -->
-    <xsl:template name="status_sidebar">
+    <xsl:template name="old_status_sidebar">
         <h2>Libraries Searched</h2>
         <xsl:for-each select="//bytarget/target">
         <h3><xsl:value-of select="./title_short" /></h3>
@@ -446,7 +449,7 @@
     </xsl:template>
 
     <!-- and the new template GS -->
-    <xsl:template name="new_status_sidebar">
+    <xsl:template name="status_sidebar">
         <h2>Libraries Searched</h2>
         <h3>Records fetched / found</h3>
         <ul>

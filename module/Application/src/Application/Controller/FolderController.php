@@ -47,7 +47,7 @@ class FolderController extends SearchController
 	public function resultsAction()
 	{
 		$total = $this->engine->getHits($this->query)->getTotal();
-		
+
 		// user is not logged in, and has no temporary saved records, so nothing to show here;
 		// force them to login
 		

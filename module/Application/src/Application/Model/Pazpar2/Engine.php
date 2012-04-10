@@ -251,6 +251,16 @@ class Engine extends Search\Engine
 		
     }
 
+    /**
+     * User has decided to end a search early
+     */
+    public function setFinished($sid)
+    {
+        $this->client($sid)->setFinished();
+        // update cached version with finished flag
+        $this->cache()->set($sid, serialize( $this->client ) );
+    }
+
 	/**
 	 * Check the status of the search
 	 * 
@@ -272,12 +282,11 @@ class Engine extends Search\Engine
 		}
 		
 		// see if search is finished
-		// FIXME redundant call to pz2_stat - simplify
         if ( $this->client->isFinished() )
         {
 		    $status->setFinished( true );
             // update cached version with finished flag
-            $this->cache()->set($this->client->getSessionId(), serialize( $this->client ) );
+            $this->cache()->set($sid, serialize( $this->client ) );
         }
 		$status->setProgress($this->client->getProgress());
 		
