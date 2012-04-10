@@ -28,6 +28,7 @@
 </xsl:template>
 
 <xsl:template name="main">
+    <xsl:call-template name="session-data"/>
     <xsl:call-template name="record" />
 </xsl:template>
 

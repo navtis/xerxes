@@ -43,14 +43,13 @@
 
     <!--  hidden field setting called from ../includes.xsl GS -->
     <xsl:template name="searchbox_hidden_fields_local">
-        <!-- see http://www.w3.org/TR/html5/elements.html#embedding-custom-non-visible-data-with-the-data-attributes -->
-        <!-- this is used by javascript and not a real hidden field -->
-        <span id="pz2session" data-value="{//request/session/pz2session}" data-completed="{//request/session/completed}" data-querystring="{//request/session/querystring}" />
+        <xsl:call-template name="session-data"/>
         <xsl:for-each select="//request/session/targetnames">
             <input type="hidden" name="target" value="{.}" />
         </xsl:for-each>
     </xsl:template>
 
+    
 	<xsl:output method="html" encoding="utf-8" indent="yes" doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN" doctype-system="http://www.w3.org/TR/html4/loose.dtd"/>
 
 	<xsl:template match="/*">

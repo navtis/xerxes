@@ -17,6 +17,13 @@
         <xsl:text>Library selection</xsl:text>
     </a>
 </xsl:template>
+    
+    <!-- include the current session values -->
+    <xsl:template name="session-data">
+        <!-- see http://www.w3.org/TR/html5/elements.html#embedding-custom-non-visible-data-with-the-data-attributes -->
+        <!-- this is used by javascript and not a real hidden field -->
+        <span id="pz2session" data-value="{//request/session/pz2session}" data-completed="{//request/session/completed}" data-querystring="{//request/session/querystring}" />
+    </xsl:template>
 
     <!-- account dropped for now - original in views/includes -->
 	<xsl:template name="account_sidebar">
