@@ -23,7 +23,7 @@ class MergedResultSet extends ResultSet
     public $num; // number of hits in this MergedResultSet
     protected $config; // local config
 
-    public function __construct($results, $targets)
+    public function __construct($results, $targets=null)
     {
     //var_dump($results);
     //Debug::dump($targets);

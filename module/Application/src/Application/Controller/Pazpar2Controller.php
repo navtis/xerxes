@@ -4,6 +4,7 @@ namespace Application\Controller;
 
 use Application\Model\Pazpar2\Engine,
     Application\Model\DataMap\Pz2Targets,
+    Application\Model\DataMap\SavedRecords,
     Application\View\Helper\Pazpar2 as SearchHelper,
     Zend\Mvc\MvcEvent,
     Zend\Debug,
@@ -267,7 +268,9 @@ class Pazpar2Controller extends SearchController
 		{
 			// get record
 			
-			$record = $this->engine->getRawRecord($original_id)->getRecord(0)->getXerxesRecord();
+            $sid = $_SESSION['pazpar2']['sid'];
+            
+			$record = $this->engine->getRawRecord($sid, $original_id)->getRecord(0)->getXerxesRecord();
 			
 			// save it
 			

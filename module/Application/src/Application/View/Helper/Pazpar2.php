@@ -52,7 +52,7 @@ class Pazpar2 extends Search
         $result->url_for_item = $this->request->url_for($arrParams); 
         return $result;
     } 
-  
+
 	/**
 	 * Add links to facets
 	 * 

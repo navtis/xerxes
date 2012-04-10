@@ -125,11 +125,13 @@ class Record extends Xerxes\Record
         {
             $this->locations[$location->getAttribute('name')] = $this->getElementValue($location, "location_title");
         }
-        //var_dump($this->locations);
+        // var_dump($this->locations);
         // and now get the holdings information
-        // for use on record page
-        
-        $this->populateHoldings($locations);
+        // for use on record page (location list is empty if saving the record)
+        if ( is_array( $this->locations ) )
+        {
+            $this->populateHoldings($locations);
+        }
 
 /* this was to provide unique identifiers (offset values) for each
 bib record of a book, to be used by pz2_record. Not needed? */
