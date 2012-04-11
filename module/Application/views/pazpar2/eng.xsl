@@ -38,7 +38,7 @@ xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
     <xsl:variable name="text_record_genres">Genres</xsl:variable>
     <xsl:variable name="text_record_credits">Credits</xsl:variable>
     <xsl:variable name="text_record_geographic">Places</xsl:variable>
-
+    
     <!-- Translate medium names from Xerxes internal : Displayable -->
 	<xsl:template name="text_results_format">
 		<xsl:param name="format" />

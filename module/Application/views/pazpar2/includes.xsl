@@ -54,11 +54,11 @@
 						<xsl:with-param name="test" select="//navbar/element[@id='saved_records']/@numSessionSavedRecords &gt; 0" />
 					</xsl:call-template>
 					<xsl:text> </xsl:text>
-					<a>
+			<!--		<a>
 					<xsl:attribute name="href"><xsl:value-of select="//navbar/my_account_link" /></xsl:attribute>
-						<xsl:copy-of select="$text_header_savedrecords" />
-					</a>
-				</li>
+			-->			<xsl:copy-of select="$text_header_savedrecords" />
+			<!--		</a>
+			-->	</li>
 				
 			</ul>
 		</div>

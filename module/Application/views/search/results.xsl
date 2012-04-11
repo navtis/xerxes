@@ -706,8 +706,9 @@
 					
 					<!-- save record -->
 					
-					<xsl:call-template name="save_record" />
-								
+                <!-- FIXME local SEARCH25 changes GS - FIXME -->
+				<!--	<xsl:call-template name="save_record" />
+				-->				
 				</div>
 				
 			</div>
@@ -834,9 +835,8 @@
 			</a>
 			
 			<!-- temporary save note -->
-			
 			<xsl:if test="$is_already_saved and //request/session/role != 'named'"> 
-				<span class="temporary-login-note">
+				 <span class="temporary-login-note">
 					(<xsl:text> </xsl:text><a href="{//navbar/element[@id = 'login']/url}">
 						<xsl:copy-of select="$text_results_record_saved_perm" />
 					</a><xsl:text> </xsl:text>)
