@@ -71,7 +71,7 @@
 					<td><xsl:value-of select="primary_author" /></td> 
 					<td>
 						<xsl:call-template name="text_results_format">
-							<xsl:with-param name="format" select="format" />
+							<xsl:with-param name="format" select="format/public" />
 						</xsl:call-template>
 					</td>
 					<td>

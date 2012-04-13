@@ -63,20 +63,9 @@ class Record extends Xerxes\Record
 		
 		$format = $this->extractValue($document, "ContentType/0");
 		
-		
-		
-		// @todo: proper format mapping
-		
-		if ( $format == "Journal Article") $format = "Article";
-		
-		$this->format->setFormat($format);
-		
-		$this->format->setInternalFormat(Format::Article);
-		if ( $format == "Conference Proceeding") $this->format->setInternalFormat(Format::ConferenceProceeding);
-		if ( $format == "Dissertation") $this->format->setInternalFormat(Format::Thesis);
-		
-		
-		
+		$this->format->setPublicFormat($format);
+		$this->format->setInternalFormat($format);
+		$this->format->setNormalizedFormat($this->normalizeFormat($format));
 		
 		// summary
 		
@@ -99,24 +88,13 @@ class Record extends Xerxes\Record
 		$this->doi = $this->extractValue($document, "DOI/0");
 		
 		$openurl = $this->extractValue($document, "openUrl");
-		$direct_link = $this->extractValue($document, "url/0");
+		$direct_link = $this->extractValue($document, "link");
 		$uri = $this->extractValue($document, "URI/0");
 		
-		/*
-		echo " <a href='$direct_link'>direct</a>: " . strlen($direct_link) .
-			" openurl: " . strlen($openurl) .
-			" id: " . strlen($this->record_id) . 
-			" uri: " . strlen($uri) . 
-			"<br />";
-		*/
 		
-		// the length of the fields gives an indication if the direct link field
-		// goes directly to an external link, or simply the link resolver
+		// @todo: figure out black magic for direct linking
 		
-		if ( 100 + strlen($openurl) - strlen($direct_link) > 0 )
-		{
-			$this->links[] = new Xerxes\Record\Link($direct_link, Xerxes\Record\Link::ONLINE);
-		}
+		// $this->links[] = new Xerxes\Record\Link($direct_link, Xerxes\Record\Link::ONLINE);
 		
 		// peer reviewed
 		
@@ -191,7 +169,7 @@ class Record extends Xerxes\Record
 	}
 	
 	/**
-	 * Conventience function for extracting data from Summon json
+	 * Convenience function for extracting data from Summon json
 	 * 
 	 * @param array	$document
 	 * @param string $path		path to the value
@@ -222,104 +200,125 @@ class Record extends Xerxes\Record
 		}
 	}
 	
-	protected function convertFormatToInternal()
+	/**
+	 * Convert to Xerxes normalized format
+	 * 
+	 * @param string $format Summon format designation
+	 */
+	
+	protected function normalizeFormat($format)
 	{
-		/*
-		 	Journal Article
-			Book Review
-			Dissertation
-			Patent
-			Newsletter
-			Trade Publication Article
-			Book Chapter
-			Conference Proceeding
-			Standard
-			Publication
-			Government Document
-			Image
-			Report
-			Audio Recording
-			Data Set
-			Photograph
-			Archival Material
-			Technical Report
-			Journal / eJournal
-			Music Recording
-			Electronic Resource
-			Manuscript
-			Paper
-			Map
-			Sheet Music
-			Music Score
-			Video Recording
-			Special Collection
-			Play
-			Personal Narrative
-			Microform
-			Newspaper
-			Student Thesis
-			Market Research
-			Pamphlet
-			Presentation
-			Poem
-			Art
-			Artifact
-			Architectural Drawing
-			Realia
-			Magazine
-			Exam
-			Poster
-			Magazine Article
-			Transcript
-			Archival Material/Manuscripts
-			Computer File
-			Compact Disc
-			Publication Article
-			Postcard
-			Library Holding
-			Sound Recording
-			Spoken Word Recording
-			Slide
-			Print
-			Drawing
-			Painting
-			Course Reading
-			Library Research Guide
-			Film Script
-			Blueprints
-			Kit
-			Finding Aid
-			Case
-			Ceremonial Object
-			Mixed
-			Catalog
-			Houseware
-			Text
-			Film
-			Equipment
-			Performance
-			Learning Object
-			Album
-			Model
-			Furnishing
-			Personal Article
-			Tool
-			Atlas
-			Musical Instrument
-			Clothing
-			Article
-			Database
-			Graphic Arts
-			Implements
-			Microfilm
-			Newspaper Article
-			Book / eBook
-			Reference
-			Web Resource
-			Research Guide		
-		 */
+		$map = array(
+			'Album' => 'SoundRecording',
+			'Architectural Drawing' => 'Artwork',
+			'Archival Material' => 'ArchivalMaterial',
+			'Archival Material/Manuscripts' => 'ArchivalMaterial',
+			'Art' => 'Artwork',
+			'Article' => 'ArticleJournal',
+			'Artifact' => 'PhysicalObject',
+			'Atlas' => 'Map',
+			'Audio Recording' => 'SoundRecording',
+			'Blueprints' => 'Artwork',
+			'Book' => 'Book',
+			'eBook' => 'Book',
+			'Book Chapter' => 'BookSection',
+			'Book Review' => 'BookReview',
+			'Case' => 'LegalRule',
+			'Catalog' => 'Manuscript',
+			'Ceremonial Object' => 'PhysicalObject',
+			'Citation' => 'Unknown',
+			'Clothing' => 'PhysicalObject',
+			'Compact Disc' => 'ComputerProgram',
+			'Computer File' => 'ComputerProgram',
+			'Conference Proceeding' => 'ConferenceProceeding',
+			'Course Reading' => 'Manuscript',
+			'Data Set' => 'Dataset',
+			'Database' => 'OnlineDatabase',
+			'Dissertation' => 'Thesis',
+			'Drawing' => 'Artwork',
+			'Electronic Resource' => 'WebPage',
+			'Equipment' => 'PhysicalObject',
+			'Exam' => 'Manuscript',
+			'Film' => 'VideoRecording',
+			'Film Script' => 'Manuscript',
+			'Finding Aid' => 'ArchivalMaterial',
+			'Furnishing' => 'PhysicalObject',
+			'Government Document' => 'GovernmentDocument',
+			'Graphic Arts' => 'Artwork',
+			'Houseware' => 'PhysicalObject',
+			'Image' => 'Image',
+			'Implements' => 'PhysicalObject',
+			'Interactive Media' => 'OnlineMultimedia',
+			'Journal' => 'Journal',
+			'eJournal' => 'Journal',
+			'Journal Article' => 'ArticleJournal',
+			'Learning Object' => 'OnlineMultimedia',
+			'Library Holding' => 'Unknown',
+			'Magazine' => 'Periodical',
+			'Magazine Article' => 'ArticleMagazine',
+			'Manuscript' => 'Manuscript',
+			'Map' => 'Map',
+			'Market Research' => 'Report',
+			'Microfilm' => 'Unknown',
+			'Microform' => 'Unknown',
+			'Mixed' => 'MixedMaterial',
+			'Model' => 'Artwork',
+			'Music Recording' => 'SoundRecording',
+			'Music Score' => 'MusicalScore',
+			'Musical Instrument' => 'PhysicalObject',
+			'Newsletter' => 'ArticleMagazine',
+			'Newspaper' => 'Periodical',
+			'Newspaper Article' => 'ArticleNewspaper',
+			'Painting' => 'Artwork',
+			'Pamphlet' => 'Pamphlet',
+			'Paper' => 'Manuscript',
+			'Patent' => 'Patent',
+			'Performance' => 'Unknown',
+			'Personal Article' => 'PersonalCommunication',
+			'Personal Narrative' => 'PersonalCommunication',
+			'Photograph' => 'Image',
+			'Play' => 'Manuscript',
+			'Poem' => 'Manuscript',
+			'Postcard' => 'Image',
+			'Poster' => 'Artwork',
+			'Presentation' => 'OnlineMultimedia',
+			'Print' => 'Manuscript',
+			'Publication' => 'Manuscript',
+			'Publication Article' => 'ArticleJournal',
+			'Realia' => 'PhysicalObject',
+			'Reference' => 'EncyclopediaArticle',
+			'Report' => 'Report',
+			'Research Guide' => 'WebPage',
+			'Sheet Music' => 'MusicalScore',
+			'Slide' => 'Image',
+			'Sound Recording' => 'SoundRecording',
+			'Special Collection' => 'ArchivalMaterial',
+			'Spoken Word Recording' => 'SoundRecording',
+			'Standard' => 'Standard',
+			'Streaming Audio' => 'OnlineMultimedia',
+			'Streaming Video' => 'OnlineMultimedia',
+			'Student Thesis' => 'Thesis',
+			'Technical Report' => 'Report',
+			'Text' => 'Manuscript',
+			'Tool' => 'PhysicalObject',
+			'Trade Publication Article' => 'ArticleJournal',
+			'Transcript' => 'Manuscript',
+			'Video Recording' => 'VideoRecording',
+			'Web Resource' => 'WebPage'
+		);
+		
+		if ( array_key_exists($format, $map) )
+		{
+			$const = constant('\Xerxes\Record\Format::' . $map[$format]);
+			
+			if ( $const != null )
+			{
+				return $const;
+			}
+			
+		}
+			
+		return Format::Unknown;
 	}
 	
-	
 }
-	

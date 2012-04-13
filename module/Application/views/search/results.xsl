@@ -611,7 +611,7 @@
 					<!-- format -->
 				
 					<xsl:call-template name="text_results_format">
-						<xsl:with-param name="format" select="format" />
+						<xsl:with-param name="format" select="format/public" />
 					</xsl:call-template>
 					
 					<!-- language note -->
@@ -802,7 +802,15 @@
 		
 		<xsl:variable name="is_already_saved" select="//request/session/resultssaved[@key = $record_id]" />
 	
-		<div id="save-record-option-{$source}-{$record_id}" class="record-action save-record">
+		<div id="save-record-option-{$source}-{$record_id}" class="record-action save-record-action">
+			
+			<xsl:call-template name="img_save_record">
+				<xsl:with-param name="id" select="concat('folder-', $source, '-', $record_id)" />
+				<xsl:with-param name="class">mini-icon save-record-link</xsl:with-param>
+				<xsl:with-param name="test" select="$is_already_saved" />
+			</xsl:call-template>
+						
+			<xsl:text> </xsl:text>	
 			
 			<a id="link-{$source}-{$record_id}" href="{../url_save_delete}" class="save-record">				
 				
@@ -810,15 +818,7 @@
 				<xsl:if test="$is_already_saved">
 					<xsl:attribute name="class">saved</xsl:attribute>
 				</xsl:if>
-				
-				<xsl:call-template name="img_save_record">
-					<xsl:with-param name="id" select="concat('folder-', $source, '-', $record_id)" />
-					<xsl:with-param name="class">mini-icon save-record-link</xsl:with-param>
-					<xsl:with-param name="test" select="$is_already_saved" />
-				</xsl:call-template>
-				
-				<xsl:text> </xsl:text>
-				
+							
 				<xsl:choose>
 					<xsl:when test="$is_already_saved">
 						<xsl:choose>

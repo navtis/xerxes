@@ -127,11 +127,11 @@ class Languages
 	 */
 	
 	public function getNameFromCode( $type, $code, $override_locale = null )
-	{
-		if ($type != 'name')
-		{
-			$code = Parser::strtolower( $code );
-		}
+    {
+        if ($type != 'name')
+        {
+            $code = Parser::strtolower( $code );
+        }
 
         if (strlen( $code ) > 3 )
         {

@@ -111,6 +111,11 @@ class Summon
 			$options['s.sort'] = $sortBy;
 		}
 		
+		// spell check
+		
+		$options['s.dym'] = 'true';
+		
+		
 		// paging
 		
 		$options['s.ps'] = $limit;
@@ -132,7 +137,7 @@ class Summon
 	 * @return array
 	 */
 	
-	private function send( array $params, $service = 'search' )
+	private function send( array $params, $service = '2.0.0/search' )
 	{
 		// build querystring
 		

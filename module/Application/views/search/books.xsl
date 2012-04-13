@@ -160,7 +160,7 @@
 					<!-- format -->
 					
 					<div class="results-type">
-						<xsl:value-of select="format" />
+						<xsl:value-of select="format/public" />
 					</div>
 					
 					<!-- abstract -->
@@ -183,7 +183,7 @@
                         <!-- FIXME author chunk rewritten for pz2 -->
                         
 							<div class="results-book-summary">
-								<xsl:if test="format != 'Journal' and format != 'Newspaper'">
+								<xsl:if test="format/internal != 'JFULL'">
 								
 									<!-- author -->
 						            <xsl:if test="primary_author">

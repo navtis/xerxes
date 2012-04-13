@@ -239,10 +239,10 @@
 			<dt><xsl:copy-of select="$text_record_format_label" />:</dt>
 			<dd>
 				<xsl:call-template name="text_results_format">
-					<xsl:with-param name="format" select="format" />
+					<xsl:with-param name="format" select="format/public" />
 				</xsl:call-template>
 
-				<xsl:if test="refereed = 1 and not(contains(format,'Review'))">
+				<xsl:if test="refereed = 1 and not(contains(format/internal,'Review'))">
 					<xsl:text> </xsl:text><xsl:call-template name="img_refereed" />
 					<xsl:text> </xsl:text><strong><xsl:copy-of select="$text_results_refereed" /></strong>
 				</xsl:if>
@@ -309,7 +309,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</dd>
-				<xsl:if test="format = 'Book Chapter'">
+				<xsl:if test="format/internal = 'CHAP'">
 					<xsl:if test="publisher">
 						<dt><xsl:copy-of select="$text_record_publisher" />:</dt>
 						<dd>
@@ -320,7 +320,7 @@
 					</xsl:if>
 				</xsl:if>
 			</xsl:when>
-			<xsl:when test="format = 'Book'">
+			<xsl:when test="format/internal = 'BOOK'">
 				<xsl:if test="publisher">
 					<dt><xsl:copy-of select="$text_record_publisher" />:</dt>
 					<dd>
@@ -433,7 +433,7 @@
 						<div class="results-info">
 							<div class="results-type">
 								<xsl:call-template name="text_results_format">
-									<xsl:with-param name="format" select="format" />
+									<xsl:with-param name="format" select="format/public" />
 								</xsl:call-template>
 							</div>
 							
@@ -455,7 +455,7 @@
 		<xsl:if test="toc">
 			<h2>
 				<xsl:choose>
-					<xsl:when test="format = 'Book'">
+					<xsl:when test="format/internal = 'BOOK'">
 						<xsl:copy-of select="$text_record_chapters" />:
 					</xsl:when>
 					<xsl:otherwise>
@@ -826,7 +826,7 @@
 			<h2>
 				<xsl:copy-of select="$text_record_cite_this" /><xsl:text> </xsl:text>
 				<xsl:call-template name="text_results_format">
-					<xsl:with-param name="format" select="format" />
+					<xsl:with-param name="format" select="format/public" />
 				</xsl:call-template>
 				<xsl:text> :</xsl:text>
 			</h2>
