@@ -99,11 +99,13 @@ class Pazpar2
 		
         if ($wait)  // blocking
         {
-            while ( ! $this->checkFinished())
+            while ( ! $this->isFinished())
             {
                 sleep(1);
             }
-            return ( $this->pz2_show( 0, 500) );
+            // AIM25 uses the totals only
+            return ( $this->pz2_bytarget() );
+            //return ( $this->pz2_show( 0, 500) );
         }
         else
         {

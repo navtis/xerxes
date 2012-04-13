@@ -39,7 +39,6 @@
             <script src="javascript/results.js" language="javascript" type="text/javascript"></script>
             <script src="javascript/pz2_status.js" language="javascript" type="text/javascript"></script>
             <script src="javascript/pz2_ping.js" language="javascript" type="text/javascript"></script>
-            <script src="javascript/aim25.js" language="javascript" type="text/javascript"></script>
     </xsl:template>
 
     <!--  hidden field setting called from ../includes.xsl GS -->
@@ -220,7 +219,7 @@
 			</div>
 			<div class="yui-u">
 				<div class="sidebar">
-					<xsl:call-template name="sidebar_box" />
+					<xsl:call-template name="account_sidebar" />
 				</div>
 			</div>
 		</div>

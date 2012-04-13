@@ -9,6 +9,11 @@
 
 /* experimental additions for pazpar2 */
 
+/* AIM25 hits */
+li.hidden {
+    display: none;
+}
+
 /* new short record field */
 
 .results-edition {

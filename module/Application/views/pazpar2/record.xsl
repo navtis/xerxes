@@ -32,6 +32,15 @@
     <xsl:call-template name="record" />
 </xsl:template>
 
+    <!-- 
+         TEMPLATE: SIDEBAR 
+    --> 
+    <xsl:template name="sidebar"> 
+        <!-- <xsl:call-template name="account_sidebar" /> -->
+        <xsl:call-template name="citation" /> 
+    </xsl:template>
+
+
 <!-- override javascript-include from ../includes.xsl GS -->
 <xsl:template name="javascript_include"> 
     <xsl:call-template name="jslabels" /> 
@@ -184,7 +193,7 @@
             </xsl:call-template>
         </xsl:for-each>
 
-            <xsl:call-template name="save_record" />
+<!--            <xsl:call-template name="save_record" /> -->
         </div>
     </xsl:template>
 

@@ -59,25 +59,9 @@
 			-->			<xsl:copy-of select="$text_header_savedrecords" />
 			<!--		</a>
 			-->	</li>
+				
 			</ul>
 		</div>
 	</xsl:template>
-
-	<xsl:template name="sidebar_box">
-		<div id="account" class="box">
-			<h2><xsl:copy-of select="$text_header_myaccount" /></h2>
-			<ul>
-                <xsl:if test="//config/aim25_hits = 'true'">
-		            <xsl:call-template name="aim25_hits"/>
-                </xsl:if>
-            </ul>
-        </div>
-    </xsl:template>
-
-    <xsl:template name="aim25_hits">
-        <li class="hidden" id="aim25-hits">
-            <p>Also found: AIM25 <a href="" target="_new">archive collections</a> that may relate to your search</p>
-        </li>
-    </xsl:template>
 
 </xsl:stylesheet>

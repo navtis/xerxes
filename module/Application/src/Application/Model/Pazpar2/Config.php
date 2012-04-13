@@ -30,7 +30,6 @@ class Config extends Search\Config
 			$object = self::$instance;
 			$object->init();			
 		}
-		
 		return self::$instance;
 	}
 

@@ -352,7 +352,10 @@
 			if left blank, then the base url of the application will be used -->
 		
 		<config name="logout_url" />
-		
+
+        <!-- pazpar2 option used by m25 FIXME move into local config GS -->
+        <config name="aim25_hits" pass="true">true</config> 
+
 	</configuration>
 	
 </xerxes>

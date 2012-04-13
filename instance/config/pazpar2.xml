@@ -44,6 +44,12 @@
         <!-- allowed upper limit on records_per_page -->
         <config name="max_records_per_page">100</config>
 
+        <!-- include AIM25 links for M25 -->
+        <!-- doesn't work here (why?) copied to confg.xml, where it does -->
+        <!-- <config name="aim25_hits" pass="true">true</config> -->
+        <config name="aim25_zurl">128.86.236.71:2100/aim25</config>
+        <config name="aim25_httpurl">http://www.aim25.ac.uk/cgi-bin/</config>
+
 	</configuration>
 	
 </xerxes>

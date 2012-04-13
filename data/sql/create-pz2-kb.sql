@@ -80,6 +80,7 @@ INSERT INTO xerxes_pz2_targets (target_id, target_enabled, target_title_display,
 INSERT INTO xerxes_pz2_targets (target_id, target_enabled, target_title_display, target_title_short, target_pz2_key, target_copac_key, target_copac_prefix, target_z3950_location, target_catalogue_url, target_has_opac_format, target_description) VALUES(47, 1, 'Lambeth Palace Library', 'Lambeth Palace', 'LAMBETH','lam', '', 'z3950.copac.ac.uk:210/LAM', 'http://www.lambethpalacelibrary.org/',0,'');
 INSERT INTO xerxes_pz2_targets (target_id, target_enabled, target_title_display, target_title_short, target_pz2_key, target_copac_key, target_copac_prefix, target_z3950_location, target_catalogue_url, target_has_opac_format, target_description) VALUES(48, 1, 'British Museum Libraries', 'British Museum', 'BRM','brm', '', 'z3950.copac.ac.uk:210/BRM', 'http://www.britishmuseum.org/research/libraries_and_archives.aspx',0,'');
 INSERT INTO xerxes_pz2_targets (target_id, target_enabled, target_title_display, target_title_short, target_pz2_key, target_copac_key, target_copac_prefix, target_z3950_location, target_catalogue_url, target_has_opac_format, target_description) VALUES(49, 1, 'Imperial War Museum', 'Imperial War Museum', 'IWM','iwm', '', 'z3950.copac.ac.uk:210/IWM', 'http://www.iwm.org.uk/collections/search',0,'');
+INSERT INTO xerxes_pz2_targets (target_id, target_enabled, target_title_display, target_title_short, target_pz2_key, target_copac_key, target_copac_prefix, target_z3950_location, target_catalogue_url, target_has_opac_format, target_description) VALUES(50, 0, 'Aim25', 'Aim25', 'AIM25','', '', '128.86.236.71:2100/aim25', 'http://www.aim25.ac.uk',0,'');
 
 # A region may be a subset of another region
 CREATE TABLE xerxes_pz2_regions(
@@ -208,3 +209,5 @@ INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (31, 13);
 INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (33, 14);  
 # Beds in Beds
 INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (39, 15);  
+# JUST TESTING AIM25 - REMEMBER TO REMOVE
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (50, 15);  
