@@ -24,6 +24,8 @@ $(document).ready(function(){
             if (data['hits'] > 0)
             {
                 $('#aim25-hits > p > a').attr("href", data['url']);
+                if (data['engine'] == 'HttpEngine')
+                    $('#aim25-hitcount').text(data['hits']);
                 $('#aim25-hits').show();
             }
             else

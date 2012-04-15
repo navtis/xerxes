@@ -58,7 +58,6 @@ class Registry
 			$this->arrConfig = array ();
 			
 			// check if the config file has an .xml or .php extension
-			
 			if ( file_exists( $file_xml ) )
 			{
 				$file = $file_xml;
