@@ -80,11 +80,15 @@ class Pazpar2Controller extends SearchController
         catch(\Exception $e)
         {
             // assume the session died, remove it & initialise a new one
+            // FIXME NO, can be circular if not just a dead session
+            // Need to generate an error message
+            // Routing back to index for now
             $this->engine->clearPazpar2Client( $sid );
             $params = $this->query->getAllSearchParams();
 		    $params['lang'] = $this->request->getParam('lang');
 	        $params['controller'] = $this->request->getParam('controller');
-	        $params['action'] = 'startsession';
+	        //$params['action'] = 'startsession';
+	        $params['action'] = 'index';
 		    $url = $this->request->url_for($params);
 		    return $this->redirect()->toUrl($url);
         }

@@ -4,7 +4,7 @@ namespace Application\Model\Pazpar2;
 
 use Xerxes,
     Zend\Debug,
-    Xerxes\Format,
+    //Xerxes\Record\Format,
 	Xerxes\Utility\Parser,
 	Xerxes\Record\Chapter,
 	Xerxes\Record\Subject,
@@ -74,12 +74,6 @@ class Record extends Xerxes\Record
 		$this->title = (string) $this->getElementValue($record, "md-title");
 
 		$this->sub_title = (string) $this->getElementValue($record, "md-title-remainder");
-        if ($this->sub_title == '')
-        {
-            // for journals
-		    $this->sub_title = (string) $this->getElementValue($record, "md-publication-name");
-        }
-
 		$this->series_title = (string) $this->getElementValue($record, "md-series-title");
         $this->isbns = array_unique($this->getElementValues($record, "md-isbn") );
         $this->issns = array_unique($this->getElementValues($record, "md-issn") );
@@ -88,6 +82,7 @@ class Record extends Xerxes\Record
 		$this->biography = (string) $this->getElementValue($record, "md-biography");
 		$this->issuer = (string) $this->getElementValue($record, "md-issuer");
         $this->places = array_unique($this->getElementValues($record, "md-geographic") );
+        $this->periods = array_unique($this->getElementValues($record, "md-period") );
         $credits[] = $this->getElementValue($record, "md-credits");
         $credits[] = $this->getElementValue($record, "md-performers");
         $this->credits = array_unique($credits);
@@ -97,7 +92,7 @@ class Record extends Xerxes\Record
 		$this->format->setFormat($risformat);
         $this->format->setPublicFormat($this->format->getConstNameForValue($risformat));
 
-        // extent is used in Bibliographic - what for?
+        // extent is used in Bibliographic 
 		$this->extent = $this->getElementValue($record,"md-physical-extent");
         
         // Xerxes doesn't seem to use this info by default, so this is a new field
@@ -229,27 +224,6 @@ bib record of a book, to be used by pz2_record. Not needed? */
         // remove duplicates
         $this->genres = array_unique($genres); 
 
-		// article data
-        //FIXME Can we use any of this?
-        $addata = null;	
-		if ( $addata != null)
-		{
-			$this->journal_title = $this->start_page = $this->getElementValue($addata,"jtitle");
-			$this->volume = $this->getElementValue($addata,"volume");
-			$this->issue = $this->getElementValue($addata,"issue");
-			$this->start_page = $this->getElementValue($addata,"spage");
-			$this->end_page = $this->getElementValue($addata,"epage");
-			
-			// abstract 
-			
-			$abstract = $this->getElementValue($addata,"abstract");
-			
-			if ( $this->abstract == "" )
-			{
-				$this->abstract = strip_tags($abstract);
-			}
-
-	    }	
 	}
 
     /**
@@ -356,6 +330,15 @@ bib record of a book, to be used by pz2_record. Not needed? */
             $author_object = new Xerxes\Record\Author($author, null, 'corporate');
             $this->authors[] = $author_object;
         }
+        // or an organization with a journal? 
+		if (! is_null($this->getElementValue($record,"title-reponsibility") ) )
+        {
+		    $author = $this->getElementValue($record,"title-responsibility");
+            $author_object = new Xerxes\Record\Author($author, null, 'corporate');
+            $this->authors[] = $author_object;
+        }
+
+
 
 
     }
@@ -438,9 +421,18 @@ bib record of a book, to be used by pz2_record. Not needed? */
                     $i->setProperty("duedate", $el->getAttribute('duedate'));
                     $hs->addItem($i);
                 }
-
-
-            }    
+                // If it's a journal we want to treat the issues available
+                // in the same way
+                // FIXME allow for separate Vol/Issue/year data
+                // FIXME use new holdings fields
+                $els = $rec->getElementsByTagname("md-issues"); //ULS format
+                foreach($els as $el)
+                {
+                    $i = new Item();
+                    $i->setProperty( "callnumber", $el->nodeValue );
+                    $hs->addItem($i);
+                }
+            }
             if ($hs->hasMembers())
             {  // FIXME may be empty if user selected only one location - should weed out
                // empties earlier, but for now, kludge

@@ -15,6 +15,7 @@ use Application\Model\Bx\Engine as BxEngine,
  * Search Record
  *
  * @author David Walker
+ * @author Graham Seaman
  * @copyright 2011 California State University
  * @link http://xerxes.calstate.edu
  * @license http://www.gnu.org/licenses/
@@ -204,7 +205,7 @@ class Result extends SearchResult
 */
     return null;
     }
-	
+
 	/**
 	 * Add reviews from Good Reads
 	 */
