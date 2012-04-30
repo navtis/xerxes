@@ -224,7 +224,7 @@
 				</div>
 			</div>
 		</div>
-		
+	
 		<xsl:call-template name="tabs" />
 		
 		<xsl:variable name="sidebar">

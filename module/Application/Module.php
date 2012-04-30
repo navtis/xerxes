@@ -19,13 +19,13 @@ class Module implements AutoloaderProvider
 	protected $viewListener; // application view listener
 	protected $request; // xerxes request object
 	protected $controller_map; // xerxes controller map
-	
+
 	public function init(Manager $moduleManager)
 	{
 		$events = StaticEventManager::getInstance();
 		$events->attach('bootstrap', 'bootstrap', array($this, 'initialize'), 100);
 	}
-	
+
 	public function getAutoloaderConfig()
 	{
 		return array(

@@ -50,6 +50,12 @@
         <config name="aim25_zurl">128.86.236.71:2100/aim25</config>
         <config name="aim25_httpurl">http://www.aim25.ac.uk/cgi-bin/</config>
 
+        <config name="spell_checker" xml="true" pass="true">Suggestion</config>
+
+        <config name="search" xml="true" pass="true">
+            <option id="pazpar2" public="Catalogues" current="1" />
+            <option id="uls" public="Serials list" current="0" />
+        </config>
 	</configuration>
 	
 </xerxes>
