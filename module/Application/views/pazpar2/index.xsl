@@ -81,7 +81,7 @@
     <xsl:param name="prefix" value="" />
     <ul>
         <li>
-            <xsl:if test="$root_node/@region_key != 'ALL'">
+            <xsl:if test="$root_node/@region_key != 'ULS_PARENT'">
                 <span class="title">
                    <input type="checkbox" name="region[]" id="{concat($prefix, '_', $root_node/@region_key)}" value="{$root_node/@region_key}" class="subjectDatabaseCheckbox" >
                     <xsl:if test="@textValue='Y'">  
@@ -90,7 +90,6 @@
                     </input>
                     <xsl:value-of select="$root_node/@name" />
                 </span>
-            </xsl:if>
             <xsl:for-each select="$root_node/region">
                 <xsl:call-template name="region_tree">
                     <xsl:with-param name="root_node" select="."/>
@@ -109,6 +108,7 @@
                 </li>
             </xsl:for-each>
             </ul>
+            </xsl:if>
         </li>
     </ul>
 
