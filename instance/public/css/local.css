@@ -27,6 +27,13 @@ li.hidden {
     background-image: url("../images/tabs/left_on.png");
 }
 
+.tabs .results-pager{
+    float: right;
+    position: relative;
+    margin-top: -40px;
+    margin-bottom: 0;
+}
+
 /* new short record field */
 
 .results-edition {

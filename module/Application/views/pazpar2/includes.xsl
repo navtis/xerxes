@@ -80,4 +80,26 @@
         </li>
     </xsl:template>
 
+    <!-- override search/results tab so no count unless live -->
+    <xsl:template name="tab"> 
+        <xsl:for-each select="option"> 
+            <li id="tab-{@id}">
+                <xsl:choose>
+                    <xsl:when test="@current = 1"> 
+                        <xsl:attribute name="class">here</xsl:attribute> 
+                        <a href="{@url}"> 
+                            <xsl:value-of select="@public" /> <xsl:text> </xsl:text> 
+                        <!-- count is wrong anyway! -->
+                        <!--    <xsl:call-template name="tab_hit" /> -->
+                        </a> 
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <a href="{@url}"> 
+                            <xsl:value-of select="@public" />  
+                        </a> 
+                    </xsl:otherwise>
+                </xsl:choose>
+            </li> 
+        </xsl:for-each> </xsl:template>
+
 </xsl:stylesheet>

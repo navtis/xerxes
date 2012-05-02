@@ -68,6 +68,25 @@
 			<view>pazpar2/record.xsl</view>
 		</action>
 	</controller>
+	<controller name="uls" class="Application\Controller\ULSController" inherits="pazpar2" >
+		<action name="">
+			<view>uls/index.xsl</view>
+		</action>
+		<action name="index">
+			<view>uls/index.xsl</view>
+		</action>
+		<action name="record">
+			<view>uls/record.xsl</view>
+		</action>
+	</controller>
+	<controller name="static" class="Application\Controller\StaticController" >
+		<action name="">
+			<view>static/index.xsl</view>
+		</action>
+		<action name="index">
+			<view>static/index.xsl</view>
+		</action>
+    </controller>
 	<controller name="aim25" class="Application\Controller\Aim25Controller" inherits="search" >
 		<action name="">
 			<view>aim25/index.xsl</view>

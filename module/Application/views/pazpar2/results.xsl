@@ -104,6 +104,21 @@
         </span>
     </xsl:template>
 
+    <!-- override search/results to include pager in tab -->
+    <xsl:template name="tabs"> 
+        <xsl:if test="config/search"> 
+            <div class="tabs"> 
+                <xsl:for-each select="config/search"> 
+                    <ul id="tabnav"> 
+                        <xsl:call-template name="tab" /> 
+                    </ul> 
+                    <xsl:call-template name="paging_navigation" /> 
+                    <div style="clear:both"></div> 
+                 </xsl:for-each> 
+             </div> 
+         </xsl:if> 
+     </xsl:template> 
+
 	<!--
 		TEMPLATE: SEARCH BOX
         Overrides search/results.xsl version to change action url

@@ -40,7 +40,7 @@ class Query extends Search\Query
 	 */
 	
 	public function fillTargetInfo()
-	{
+    {
 		// populate the target information from KB
 		$this->datamap = new Pz2Targets($this->targetnames); 
 		

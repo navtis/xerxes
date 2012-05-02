@@ -77,7 +77,6 @@ class Pz2Target extends DataValue
 		{
 			throw new \Exception("Cannot access data, it has not been loaded");
 		}
-	
 		$xml = new \DOMDocument();
 		$xml->loadXML("<target />");
 		$xml->documentElement->setAttribute("target_id", $this->target_id);

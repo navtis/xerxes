@@ -132,6 +132,8 @@ INSERT INTO xerxes_pz2_regions (region_id, name, region_key, parent_id) VALUES (
 INSERT INTO xerxes_pz2_regions (region_id, name, region_key, parent_id) VALUES (15,'Bedfordshire', 'BEDS', '1');  
 
 INSERT INTO xerxes_pz2_regions (region_id, name, region_key, parent_id) VALUES (100,'General', 'GENERAL', '1');  
+INSERT INTO xerxes_pz2_regions (region_id, name, region_key, parent_id) VALUES (150,'ULS_PARENT', 'ULS_PARENT', '1');  
+INSERT INTO xerxes_pz2_regions (region_id, name, region_key, parent_id) VALUES (200,'ULS', 'ULS', '150');  
 
 CREATE TABLE xerxes_pz2_regions_targets(
 	target_id	    MEDIUMINT,
@@ -240,26 +242,27 @@ INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (39, 15);
 #INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (50, 100);  
 
 # Testing ULS
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1000, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1001, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1002, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1003, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1004, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1005, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1006, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1007, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1008, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1009, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1010, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1011, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1012, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1013, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1014, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1015, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1016, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1017, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1018, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1019, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1020, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1021, 100);  
-INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1022, 100);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (200, 150);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1000, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1001, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1002, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1003, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1004, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1005, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1006, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1007, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1008, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1009, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1010, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1011, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1012, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1013, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1014, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1015, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1016, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1017, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1018, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1019, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1020, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1021, 200);  
+INSERT INTO xerxes_pz2_regions_targets (target_id, region_id) VALUES (1022, 200);  

@@ -22,22 +22,28 @@ xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
 	Keep them in alphabetical order!!
 -->
 	
-	<xsl:variable name="abc">testing</xsl:variable>
-	<xsl:variable name="text_libraries_search">Search by library</xsl:variable>
-	<xsl:variable name="text_search_module">Search the libraries</xsl:variable>
-	<xsl:variable name="text_region_libraries_desc">Select the regions or individual libraries you wish to search</xsl:variable>
-    <xsl:variable name="text_results_edition">Edition</xsl:variable>
     <!-- hide login and account for now -->
     <xsl:variable name="text_header_myaccount"></xsl:variable>
+	<xsl:variable name="text_libraries_search">Search by library</xsl:variable>
+    <xsl:variable name="text_record_genres">Genres</xsl:variable>
+    <xsl:variable name="text_record_credits">Credits</xsl:variable>
+    <xsl:variable name="text_record_frequency_label">Frequency</xsl:variable>
+    <xsl:variable name="text_record_geographic">Places</xsl:variable>
+    <xsl:variable name="text_record_organization_label">Organization</xsl:variable>
+    <xsl:variable name="text_record_publisher_label">Publisher</xsl:variable>
+    <xsl:variable name="text_record_place_label">Place</xsl:variable>
+	<xsl:variable name="text_region_libraries_desc">Select the regions or individual libraries you wish to search</xsl:variable>
+    <xsl:variable name="text_results_edition">Edition</xsl:variable>
+    <xsl:variable name="text_results_publisher">Published by</xsl:variable>
+	<xsl:variable name="text_search_module">Search the libraries</xsl:variable>
+
+
     <!-- override treatment of language in labels/eng.xsl for results page -->
     <xsl:template name="text_results_language">
         <xsl:if test="language and language != 'English'">
             <span class="results-language"> (<xsl:value-of select="language" />)</span>
         </xsl:if>
     </xsl:template>
-    <xsl:variable name="text_record_genres">Genres</xsl:variable>
-    <xsl:variable name="text_record_credits">Credits</xsl:variable>
-    <xsl:variable name="text_record_geographic">Places</xsl:variable>
     
     <!-- Translate medium names from Xerxes internal : Displayable -->
 	<xsl:template name="text_results_format">

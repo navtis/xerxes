@@ -39,6 +39,9 @@ class Record extends Xerxes\Record
     protected $biography;
     protected $issuer;
     protected $physical;
+    protected $frequency;
+    protected $issue;
+    protected $organization;
 
     // add extra fields to parent Record
     // Retained just for debugging: convenient place to print out xml record
@@ -46,7 +49,7 @@ class Record extends Xerxes\Record
     {
         $objXml = parent::toXml();
 
-//       echo($this->xmlpp($objXml->saveXML(), false));
+       echo($this->xmlpp($objXml->saveXML(), false));
 /*
         // Parser::addToXML($objXml, 'source', 'COPAC: ' . $this->source);
 */
@@ -69,7 +72,7 @@ class Record extends Xerxes\Record
             // this is a single 'record' already
             $record = $this->document->documentElement;
         }
-//var_dump($this->document->saveXML());
+var_dump($this->document->saveXML());
 		$this->score = (string) $this->getElementValue($record, "relevance");       
 		$this->title = (string) $this->getElementValue($record, "md-title");
 
@@ -166,6 +169,9 @@ bib record of a book, to be used by pz2_record. Not needed? */
         // publication information
         $this->place = $this->getElementValue($record, "md-publication-place");
 		$this->publisher = $this->getElementValue($record, "md-publication-name");
+		$this->organization = $this->getElementValue($record, "md-organization");
+		$this->frequency = (string) $this->getElementValue($record, "md-publication-frequency");
+		$this->issue = (string) $this->getElementValue($record, "md-issues");
         if ( is_null($this->year) )
         {
 		    $this->year = $this->getElementValue($record, "md-publication-date");
@@ -179,6 +185,8 @@ bib record of a book, to be used by pz2_record. Not needed? */
 
         //subjects
 		$subjects = $this->getElementValues($record, "md-subject-long");
+        if ( sizeof( $subjects ) == 0 )
+		    $subjects = $this->getElementValues($record, "md-subject");
         // remove duplicates
         $subjects = array_unique($subjects); 
         // sort into ascending length

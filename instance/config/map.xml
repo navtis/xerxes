@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xerxes>
-    <default>pazpar2</default>
+    <default>static</default>
 	<!-- 
 	<controller name="databases" class="Application\Controller\DatabasesController">	
 		

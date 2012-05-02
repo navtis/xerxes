@@ -143,7 +143,6 @@ class Pz2Targets extends DataMap
 			ORDER BY rmain.name, rsub.name, xerxes_pz2_targets.target_title_short";
 		  
 		$args = array (":value" => $objRegion->region_key );
-		
 		$arrResults = $this->select( $strSQL, $args );
 		
         //Debug::dump($arrResults);

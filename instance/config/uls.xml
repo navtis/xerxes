@@ -7,16 +7,14 @@
 
         <config name="basic_search_fields" xml="true" pass="true">
             <field id="title" public="title" internal="ti" />
-            <field id="author" public="author" internal="au" />
             <field id="subject"  public="subject" internal="su" />
-            <field id="isbn"  public="ISBN" internal="isbn" />
+            <field id="issn"  public="ISSN" internal="issn" />
             <field id="keyword" public="all fields" internal="any" />
         </config>
 
         <!-- sort fields must match pazpar2 config fields -->
         <config name="sort_options" xml="true" pass="true">
             <option id="title" public="Title" internal="title:1" />
-            <option id="author" public="Author" internal="author:1" />
             <option id="date" public="Latest" internal="date:0" />
             <option id="relevance" public="Relevance" internal="relevance" />
         </config>
@@ -26,8 +24,6 @@
         <!-- name_filters match get[Internal]Name() in Config.php -->
         <facet public="Source library" internal="server" />
         <facet public="Subject area" internal="subject" />
-        <facet public="Author" internal="author" />
-        <facet public="Format" internal="medium" name_filter="true" />
         <!-- <facet public="Year" internal="date" type="date" /> -->
         </config>
         <!-- minimum number of items needed to show facet_list -->
@@ -44,17 +40,11 @@
         <!-- allowed upper limit on records_per_page -->
         <config name="max_records_per_page">100</config>
 
-        <!-- include AIM25 links for M25 -->
-        <!-- doesn't work here (why?) copied to confg.xml, where it does -->
-        <!-- <config name="aim25_hits" pass="true">true</config> -->
-        <config name="aim25_zurl">128.86.236.71:2100/aim25</config>
-        <config name="aim25_httpurl">http://www.aim25.ac.uk/cgi-bin/</config>
-
         <config name="spell_checker" xml="true" pass="true">Suggestion</config>
 
         <config name="search" xml="true" pass="true">
-            <option id="pazpar2" public="Catalogues" url="#" current="1" />
-            <option id="uls" public="Serials list" url="/uls/index" current="0" />
+            <option id="pazpar2" public="Catalogues" url="/pazpar2/index" current="0" />
+            <option id="uls" public="Serials list" url="#" current="1" />
         </config>
 	</configuration>
 	
