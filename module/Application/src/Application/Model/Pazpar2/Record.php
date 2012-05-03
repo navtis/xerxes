@@ -441,11 +441,14 @@ bib record of a book, to be used by pz2_record. Not needed? */
                     $hs->addItem($i);
                 }
             }
-            if ($hs->hasMembers())
-            {  // FIXME may be empty if user selected only one location - should weed out
-               // empties earlier, but for now, kludge
-                $this->mergedHolding->addHoldings($hs);
+            if (! $hs->hasMembers())
+            {  
+                $i = new Item();
+                $i->setProperty("location", "Holdings information not available");
+                $hs->addItem($i);
             }
+            
+            $this->mergedHolding->addHoldings($hs);
         }
     }
 
