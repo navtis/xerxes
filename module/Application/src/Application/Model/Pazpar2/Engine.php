@@ -76,9 +76,10 @@ class Engine extends Search\Engine
 
 	/**
 	 * Return an individual record
-     *
+     * @param string    pz2 session identifier
+     * @param string    record identifier
      * @param array     offset values for each holding
-     * @param target    pz2_key for target
+     * @param array     pz2_keys for targets
 	 * @return Resultset
 	 */
 	public function getRawRecord( $sid, $id, $offset=null, $targets=null )

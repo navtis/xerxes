@@ -460,7 +460,6 @@ class Pazpar2
 	public function pz2_termlist( $terms=null, $num=null )
     {
         $url = $this->baseurl . "?command=termlist&session=$this->sid";
-    
         if ( !is_null( $terms ) )
         {
             $url .= "&name=" . implode( ',', $terms );

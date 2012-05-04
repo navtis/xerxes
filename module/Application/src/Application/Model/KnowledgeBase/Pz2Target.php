@@ -25,6 +25,7 @@ class Pz2Target extends DataValue
 	public $target_id; 
     public $pz2_key;
     public $pz2_zurl;
+    public $linkback_url;
     public $title_short;
     public $title_long;
     public $position; // display order
@@ -53,6 +54,7 @@ class Pz2Target extends DataValue
         $this->title_short = $this->vars['target_title_short'];
         $this->title_long = $this->vars['target_title_display'];
         $this->enabled = $this->vars['target_enabled'];
+        $this->linkback_url = $this->vars['target_record_linkback'];
         // SEARCH25 specific variable
         $this->copac_key = $this->vars['target_copac_key'];
 		parent::load($arrResult);

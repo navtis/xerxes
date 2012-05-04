@@ -50,6 +50,9 @@ class MergedResultSet extends ResultSet
                     // insert displayed target title in record
                     $node = $doc->createElement('location_title', $targets[$name]->title_short);
                     $loc->appendChild($node);
+                    // and the linkback url
+                    $node = $doc->createElement('linkback_url', $targets[$name]->linkback_url);
+                    $loc->appendChild($node);
                 }
                 else
                 {

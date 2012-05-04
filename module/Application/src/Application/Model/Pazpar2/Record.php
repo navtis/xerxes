@@ -24,16 +24,17 @@ use Xerxes,
  * @package Xerxes
  */
 
-/* FIXME inherits huge list of fields from parent; make sure these are
-populated as far as possible GS */
+/* inherits huge list of fields from parent; make sure these are
+populated as far as possible */
 class Record extends Xerxes\Record
 {
 	protected $source = "pazpar2";
     protected $responsible; // munged list of editors etc
     protected $locations; // array of unique target names and titles
     protected $mergedHolding; // container for all Holdings for record
-    protected $genres = array(); // not present in parent
-    protected $credits = array(); // not present in parent
+    // new fields not present in parent
+    protected $genres = array(); 
+    protected $credits = array();
     protected $geographic = array();
     protected $citation;
     protected $biography;
