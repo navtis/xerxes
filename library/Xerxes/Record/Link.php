@@ -86,6 +86,10 @@ class Link
 		{
 			return self::HTML;
 		}
+		elseif ( stristr( $data, "ORIGINAL" ) )
+		{
+			return self::ORIGINAL_RECORD;
+		}
 		else
 		{
 			return self::ONLINE;
