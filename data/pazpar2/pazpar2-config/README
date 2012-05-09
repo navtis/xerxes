@@ -1,0 +1,8 @@
+These are a demonstration set of configuration files for Pazpar2 used with
+Xerxes. The settings files can be replaced as desired, but the service file
+outputs data with the field names expected by the Pazpar2 Record map function.
+If these field names are changed, the map function will need to be changed
+to match.
+
+G.Seaman 2012-05-08
+graham@theseamans.net

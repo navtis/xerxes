@@ -70,8 +70,20 @@
                 <xsl:if test="//config/aim25_hits = 'true'">
 		            <xsl:call-template name="aim25_hits"/>
                 </xsl:if>
+                <xsl:if test="//config/search_copac = 'true'">
+		            <xsl:call-template name="search_copac"/>
+                </xsl:if>
             </ul>
         </div>
+    </xsl:template>
+
+
+    <xsl:template name="search_copac">
+      <xsl:if test="//externalLinks/COPAC">
+        <li id="search_copac">
+            <p>Try outside the M25 libraries with <a href="{//externalLinks/COPAC}" target="_new">the same search in COPAC</a></p>
+        </li>
+      </xsl:if>
     </xsl:template>
 
     <xsl:template name="aim25_hits">

@@ -50,6 +50,9 @@
         <config name="aim25_zurl">128.86.236.71:2100/aim25</config>
         <config name="aim25_httpurl">http://www.aim25.ac.uk/cgi-bin/</config>
 
+        <config name="search_copac" pass="true">true</config>
+        <config name="search_suncat" pass="true">false</config>
+
         <config name="spell_checker" xml="true" pass="true">Suggestion</config>
 
         <config name="search" xml="true" pass="true">

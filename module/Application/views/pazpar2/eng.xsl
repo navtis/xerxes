@@ -29,6 +29,10 @@ xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
     <xsl:variable name="text_record_credits">Credits</xsl:variable>
     <xsl:variable name="text_record_frequency_label">Frequency</xsl:variable>
     <xsl:variable name="text_record_geographic">Places</xsl:variable>
+    <xsl:variable name="text_record_no_holdings">Holdings information not available</xsl:variable>
+    <xsl:variable name="text_record_linkback">Original library catalogue entry</xsl:variable>
+    <xsl:variable name="text_record_availability">Available from</xsl:variable>
+    <xsl:variable name="text_record_catalogue_entry">catalogue entry</xsl:variable>
     <xsl:variable name="text_record_organization_label">Organization</xsl:variable>
     <xsl:variable name="text_record_publisher_label">Publisher</xsl:variable>
     <xsl:variable name="text_record_place_label">Place</xsl:variable>

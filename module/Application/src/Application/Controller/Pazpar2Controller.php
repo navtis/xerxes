@@ -164,6 +164,7 @@ class Pazpar2Controller extends SearchController
             $result = array();
         }
         $result['status'] = $status->getTargetStatuses($this->query->getTargets());
+        $result['externalLinks'] = $this->helper->addExternalLinks($this->config);
         return $result;
 	}
 
@@ -192,7 +193,9 @@ class Pazpar2Controller extends SearchController
         }
         // set links 
         $this->helper->addRecordLinks($results); 
+        $this->helper->addExternalRecordLinks($results, $this->config); 
         // add to response 
+        //var_dump($results);
         $this->data["results"] = $results;
         return $this->data; 
     }

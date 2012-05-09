@@ -368,10 +368,26 @@ bib record of a book, to be used by pz2_record. Not needed? */
             $hs = new Holdings();
             $hs->setTargetName($loc_name);
             $hs->setTargetTitle($loc_title);
-           
             $recs = $domxpath->query("//location[@name='$loc_name']");
+
             foreach( $recs as $rec ) 
             {
+                $linkback = $this->getElementValue($rec, "linkback_url");
+                if ( strlen( $linkback ) > 0 )
+                {
+                    $rid = $this->getElementValue($rec, "md-id");
+                    if ( strlen( $rid ) > 1 )
+                    {
+                        $linkback = preg_replace( '/____/', $rid, $linkback ); 
+                        $link = new Link($linkback, 'original', "Holdings information in $loc_title Library catalogue");
+                        $hs->addLink($link);
+                    }
+                    else
+                    {
+                        // can't create a link without an id
+                    }
+                }
+
                 //if an electronic url, storeit
                 $els = $rec->getElementsByTagname("md-electronic-url");
                 $source = $this->getElementValue($rec, "md-journal-title");
@@ -442,10 +458,17 @@ bib record of a book, to be used by pz2_record. Not needed? */
                     $hs->addItem($i);
                 }
             }
-            if (! $hs->hasMembers())
+            if (! $hs->hasCirculationData())
             {  
                 $i = new Item();
-                $i->setProperty("location", "Holdings information not available");
+                if ( $hs->hasLinks() )
+                {
+                    $i->setProperty("location", "linkback");
+                }
+                else
+                {
+                    $i->setProperty("location", "none");
+                }
                 $hs->addItem($i);
             }
             
@@ -483,6 +506,19 @@ bib record of a book, to be used by pz2_record. Not needed? */
         //Debug::dump($this->toc);
     }
 
+    public function getStandardNumbers()
+    {
+        if (sizeof( $this->issns ) > 0)
+            return $this->issns;
+        else if (sizeof( $this->isbns ) > 0)
+            return $this->isbns;
+        else return array();
+    }
+
+    public function getIsbn()
+    {
+        return $this->isbns;
+    }
 	protected function getElement($node, $name)
 	{
 		$elements = $node->getElementsByTagName($name);

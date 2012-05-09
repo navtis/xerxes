@@ -37,8 +37,20 @@
     --> 
     <xsl:template name="sidebar"> 
         <!-- <xsl:call-template name="account_sidebar" /> -->
+        <xsl:if test="//config/search_suncat = 'true'">
+		    <xsl:call-template name="search_suncat"/>
+        </xsl:if>
     </xsl:template>
 
+    <xsl:template name="search_suncat">
+      <xsl:if test="//suncat_link">
+      <ul>
+        <li id="search_suncat">
+            <p>Find the same item in <a href="{//suncat_link}" target="_new">the SunCat libraries</a></p>
+        </li>
+      </ul>
+      </xsl:if>
+    </xsl:template>
 
 <!-- override javascript-include from ../includes.xsl GS -->
 <xsl:template name="javascript_include"> 

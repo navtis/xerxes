@@ -20,6 +20,102 @@ class Pazpar2 extends Search
     }
 
     /** 
+    * URLs for the external searches (configurable)
+    * The searches are mapped onto the current search
+    * This version is very M25 specific
+    * @param config Engine configuration
+    * @return array key => url 
+    */ 
+    public function addExternalLinks($config)
+    {
+        $urls = array();
+        // gather the information
+        // we are ignoring target libraries 
+        // since there is no point limiting the search
+        // and formats
+        // since the format mapping is not 1=>1
+        $field = $this->request->getParam('field', null, true); 
+        $query = $this->request->getParam('query', null, true);
+        $facet_subject = $this->request->getParam('facet.subject', null, true);
+        $facet_author = $this->request->getParam('facet.author', null, true);
+        if ( $config->getConfig('search_copac', false) == 'true' )
+        {
+            $map = array(
+                'title' => 'title',
+                'author' => 'author',
+                'isbn' => 'isn',
+                'issn' => 'isn',
+                'subject' => 'sub',
+                'keyword' => 'keyword',
+            );
+            $url = 'http://copac.ac.uk/search?';
+            $url .= $map[$field[0]] .'=' . urlencode( $query[0] );
+            if ( $facet_subject[0] )
+            {
+                $url .= '&sub=' . urlencode( $facet_subject[0] );
+            }
+            if ( $facet_author[0] )
+            {
+                $url .= '&author=' . urlencode( $facet_author[0] );
+            }
+            $urls['COPAC'] = $url;
+        }
+        if (( $config->getConfig('search_suncat', false) == 'true' )
+            && ($field[0] != 'author') && ($field[0] != 'isbn') )
+        {
+            $map = array(
+                'title' => 'WTI',
+                'subject' => 'WSU',
+                'keyword' => 'WRD',
+                'issn' => 'ISSN',
+             );
+
+            $url = 'http://suncat.edina.ac.uk/F?func=find-b&';
+            $url .= 'request=' . urlencode( $query[0] ) . '&';
+            $url .= 'find_code=' . $map[$field[0]] . '&';
+            $url .= 'filter_code2=WGO&filter_request2=England+SouthEast';
+            $urls['SUNCAT'] = $url;
+        }
+        return $urls;
+    }
+
+    /** 
+    * URLs for the external versions of a single item
+    * identified by IS[B,S]N
+    * @param ResultSet $results
+    * @param config Engine configuration
+    * @return array key => url 
+    */ 
+    public function addExternalRecordLinks( ResultSet &$results, $config )
+    {
+        // dummy foreach - there should only ever be one
+		foreach ( $results->getRecords() as $result )
+		{
+            $isn = null;
+			$xerxes_record = $result->getXerxesRecord();
+            $isns = $xerxes_record->getStandardNumbers();
+            if ( isset($isns[0] ) )
+            {
+                $isn = $isns[0];
+                if ( $config->getConfig('search_copac', false) == 'true' )
+                {
+                    $url = "http://copac.ac.uk/search?isn=$isn";
+                    $result->copac_link = $url;
+                }
+                if ( $config->getConfig('search_suncat', false) == 'true' )
+                {
+                    // FIXME if someone misconfigures they could end
+                    // up with an ISBN here
+                    $url = 'http://suncat.edina.ac.uk/F?func=find-b&';
+                    $url .= "request=$isn&";
+                    $url .= 'find_code=ISSN';
+                    $result->suncat_link = $url;
+                }
+            }
+        }
+    }
+
+    /** 
     * URL for the full record display, including targets 
     * 
     * @param $result Record object 

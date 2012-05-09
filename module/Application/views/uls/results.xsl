@@ -203,5 +203,23 @@
 	
 	</xsl:template>
 
+	<xsl:template name="sidebar_box">
+		<div id="account" class="box">
+			<h2><xsl:copy-of select="$text_header_myaccount" /></h2>
+			<ul>
+                <xsl:if test="//config/search_suncat = 'true'">
+		            <xsl:call-template name="search_suncat"/>
+                </xsl:if>
+            </ul>
+        </div>
+    </xsl:template>
+
+    <xsl:template name="search_suncat">
+      <xsl:if test="//externalLinks/SUNCAT">
+        <li id="search_suncat">
+            <p>Try outside the ULS libraries with <a href="{//externalLinks/SUNCAT}" target="_new">the same search in SunCat</a></p>
+        </li>
+      </xsl:if>
+    </xsl:template>
 
 </xsl:stylesheet>

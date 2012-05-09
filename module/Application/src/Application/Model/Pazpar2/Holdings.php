@@ -38,6 +38,12 @@ class Holdings extends SearchHoldings
     {
         return count($this->holdings) + count($this->items) + count($this->links) > 0?true:false;
     }
+
+    public function hasLinks()
+    {
+        return count($this->links) > 0?true:false;
+    }
+
     public function hasCirculationData()
     {
         return count($this->items) > 0?true:false;

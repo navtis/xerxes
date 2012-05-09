@@ -37,9 +37,21 @@
     --> 
     <xsl:template name="sidebar"> 
         <!-- <xsl:call-template name="account_sidebar" /> -->
+        <xsl:if test="//config/search_copac = 'true'">
+		    <xsl:call-template name="search_copac"/>
+        </xsl:if>
         <xsl:call-template name="citation" /> 
     </xsl:template>
 
+    <xsl:template name="search_copac">
+    <xsl:if test="//copac_link">
+      <ul>
+        <li id="search_copac">
+            <p>Find the same item in <a href="{//copac_link}" target="_new">the COPAC libraries</a></p>
+        </li>
+      </ul>
+    </xsl:if>
+    </xsl:template>
 
 <!-- override javascript-include from ../includes.xsl GS -->
 <xsl:template name="javascript_include"> 
@@ -289,7 +301,7 @@
 	
 	<xsl:template name="availability_lookup_full">
 		<xsl:param name="totalCopies" />
-	
+
 		<xsl:if test="count(items/item) != '0'">
 			<xsl:call-template name="availability_item_table" />
 		</xsl:if>
@@ -318,7 +330,15 @@
 			<table class="holdings-table" width="100%">
 				<xsl:if test="target_title">
                     <tr>
-					    <th colspan="5">Institution: <span style="font-weight: bold"><xsl:value-of select="target_title"/></span></th>
+                        <xsl:choose>
+                            <xsl:when test="links/link[@type='original']">
+					            <th colspan="1">Institution: <span style="font-weight: bold"><xsl:value-of select="target_title"/></span></th>
+					            <th colspan="4"><a href="{links/link/url}" target="_new"><xsl:value-of select="$text_record_linkback"/></a></th>
+                            </xsl:when>
+                            <xsl:otherwise>
+					            <th colspan="5">Institution: <span style="font-weight: bold"><xsl:value-of select="target_title"/></span></th>
+                            </xsl:otherwise>
+                        </xsl:choose>
                     </tr>
 				</xsl:if>
 			<tr>
@@ -329,8 +349,21 @@
 				<th>Due date</th>
 			</tr>
 			<xsl:for-each select="items/item">
+                <xsl:variable name="loc">
+                    <xsl:value-of select="location"/>
+                </xsl:variable>
 				<tr>
-					<td><xsl:value-of select="location" /></td>
+                    <xsl:choose>
+                        <xsl:when test="$loc='none'">
+					        <td><xsl:value-of select="$text_record_no_holdings" /></td>
+                        </xsl:when>
+                        <xsl:when test="$loc='linkback'">
+                            <td> <xsl:value-of select="$text_record_availability"/><xsl:text> </xsl:text><a href="{../../links/link/url}" target="_new"><xsl:value-of select="../../target_title"/><xsl:text> </xsl:text><xsl:value-of select="$text_record_catalogue_entry"/></a> </td>
+                        </xsl:when>
+                        <xsl:otherwise>
+					        <td><xsl:value-of select="location" /></td>
+                        </xsl:otherwise>
+                    </xsl:choose>
 					<td><xsl:value-of select="callnumber" /></td>
 					<td><xsl:value-of select="availability" /></td>
 					<td><xsl:value-of select="status" /></td>
