@@ -91,25 +91,49 @@ class Pazpar2 extends Search
         // dummy foreach - there should only ever be one
 		foreach ( $results->getRecords() as $result )
 		{
-            $isn = null;
+            $issn = $isbn = null;
 			$xerxes_record = $result->getXerxesRecord();
-            $isns = $xerxes_record->getStandardNumbers();
-            if ( isset($isns[0] ) )
+            $issns = $xerxes_record->getISSNs();
+            $isbns = $xerxes_record->getISBNs();
+            /* we will just work with the first one of each */
+            if ( isset($issns[0] ) )
             {
-                $isn = $isns[0];
-                if ( $config->getConfig('search_copac', false) == 'true' )
+                $issn = $issns[0];
+            }
+            if ( isset($isbns[0] ) )
+            {
+                $isbn = $isbns[0];
+            }
+            $settings = $config->getConfig("external_isn_link", 'false');
+            if ( $settings != null )
+            {
+                if ( $issn != null )
                 {
-                    $url = "http://copac.ac.uk/search?isn=$isn";
-                    $result->copac_link = $url;
+                    foreach ( $settings->option as $option )
+                    {
+                        if ($option['active'] == 'true'
+                                && ( ( $option['type'] == 'issn' ) 
+                                    || ( $option['type'] == 'isn' ) )
+                           )
+                        {
+                            $url = preg_replace( '/____/', $issn, $option['url'] );
+                            $result->isn_links[(string)$option['public']] = $url;
+                        }
+                    }
                 }
-                if ( $config->getConfig('search_suncat', false) == 'true' )
+                if ( $isbn != null )
                 {
-                    // FIXME if someone misconfigures they could end
-                    // up with an ISBN here
-                    $url = 'http://suncat.edina.ac.uk/F?func=find-b&';
-                    $url .= "request=$isn&";
-                    $url .= 'find_code=ISSN';
-                    $result->suncat_link = $url;
+                    foreach ( $settings->option as $option )
+                    {
+                        if ($option['active'] == 'true'
+                                &&  (  ( $option['type'] == 'isbn' ) 
+                                    || ( $option['type'] == 'isn' ) )
+                           )
+                        {
+                            $url = preg_replace( '/____/', $isbn, $option['url'] );
+                            $result->isn_links[(string)$option['public']] = $url;
+                        }
+                    }
                 }
             }
         }

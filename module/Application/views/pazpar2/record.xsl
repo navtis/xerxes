@@ -37,19 +37,26 @@
     --> 
     <xsl:template name="sidebar"> 
         <!-- <xsl:call-template name="account_sidebar" /> -->
-        <xsl:if test="//config/search_copac = 'true'">
-		    <xsl:call-template name="search_copac"/>
+        <xsl:if test="//config/external_isn_link">
+		    <xsl:call-template name="external_links"/>
         </xsl:if>
         <xsl:call-template name="citation" /> 
     </xsl:template>
 
-    <xsl:template name="search_copac">
-    <xsl:if test="//copac_link">
-      <ul>
-        <li id="search_copac">
-            <p>Find the same item in <a href="{//copac_link}" target="_new">the COPAC libraries</a></p>
-        </li>
-      </ul>
+    <xsl:template name="external_links">
+    <xsl:if test="//isn_links">
+    <div id="isn_links" class="box">
+        <h2>
+            <xsl:copy-of select="$text_record_find_more" /><xsl:text> </xsl:text>
+        </h2>
+        <ul>
+            <xsl:for-each select="//isn_links/*">
+                <li>
+                    <a href="{.}" target="_blank"><xsl:value-of select="name(.)"/></a>
+                </li>
+            </xsl:for-each>
+        </ul>
+    </div>
     </xsl:if>
     </xsl:template>
 
@@ -333,7 +340,7 @@
                         <xsl:choose>
                             <xsl:when test="links/link[@type='original']">
 					            <th colspan="1">Institution: <span style="font-weight: bold"><xsl:value-of select="target_title"/></span></th>
-					            <th colspan="4"><a href="{links/link/url}" target="_new"><xsl:value-of select="$text_record_linkback"/></a></th>
+					            <th colspan="4"><a href="{links/link/url}" target="_blank"><xsl:value-of select="$text_record_linkback"/></a></th>
                             </xsl:when>
                             <xsl:otherwise>
 					            <th colspan="5">Institution: <span style="font-weight: bold"><xsl:value-of select="target_title"/></span></th>
@@ -358,7 +365,7 @@
 					        <td><xsl:value-of select="$text_record_no_holdings" /></td>
                         </xsl:when>
                         <xsl:when test="$loc='linkback'">
-                            <td> <xsl:value-of select="$text_record_availability"/><xsl:text> </xsl:text><a href="{../../links/link/url}" target="_new"><xsl:value-of select="../../target_title"/><xsl:text> </xsl:text><xsl:value-of select="$text_record_catalogue_entry"/></a> </td>
+                            <td> <xsl:value-of select="$text_record_availability"/><xsl:text> </xsl:text><a href="{../../links/link/url}" target="_blank"><xsl:value-of select="../../target_title"/><xsl:text> </xsl:text><xsl:value-of select="$text_record_catalogue_entry"/></a> </td>
                         </xsl:when>
                         <xsl:otherwise>
 					        <td><xsl:value-of select="location" /></td>

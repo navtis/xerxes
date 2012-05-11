@@ -81,14 +81,14 @@
     <xsl:template name="search_copac">
       <xsl:if test="//externalLinks/COPAC">
         <li id="search_copac">
-            <p>Try outside the M25 libraries with <a href="{//externalLinks/COPAC}" target="_new">the same search in COPAC</a></p>
+            <p>Try outside the M25 libraries with <a href="{//externalLinks/COPAC}" target="_blank">the same search in COPAC</a></p>
         </li>
       </xsl:if>
     </xsl:template>
 
     <xsl:template name="aim25_hits">
         <li class="hidden" id="aim25-hits">
-            <p>Also found: <span id="aim25-hitcount"></span> AIM25 <a href="" target="_new">archive collections</a> that may relate to your search</p>
+            <p>Also found: <span id="aim25-hitcount"></span> AIM25 <a href="" target="_blank">archive collections</a> that may relate to your search</p>
         </li>
     </xsl:template>
 

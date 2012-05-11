@@ -28,8 +28,6 @@
 	xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
 
 	<xsl:import href="../pazpar2/results.xsl" />
-	<xsl:import href="../pazpar2/includes.xsl" />
-    <xsl:import href="../pazpar2/eng.xsl" />
 
     <!-- override javascript-include from ../includes.xsl GS -->
     <xsl:template name="javascript_include"> 
@@ -217,7 +215,7 @@
     <xsl:template name="search_suncat">
       <xsl:if test="//externalLinks/SUNCAT">
         <li id="search_suncat">
-            <p>Try outside the ULS libraries with <a href="{//externalLinks/SUNCAT}" target="_new">the same search in SunCat</a></p>
+            <p>Try outside the ULS libraries with <a href="{//externalLinks/SUNCAT}" target="_blank">the same search in SunCat</a></p>
         </li>
       </xsl:if>
     </xsl:template>

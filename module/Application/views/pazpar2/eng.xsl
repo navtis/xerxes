@@ -27,6 +27,7 @@ xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
 	<xsl:variable name="text_libraries_search">Search by library</xsl:variable>
     <xsl:variable name="text_record_genres">Genres</xsl:variable>
     <xsl:variable name="text_record_credits">Credits</xsl:variable>
+    <xsl:variable name="text_record_find_more">Find elsewhere</xsl:variable>
     <xsl:variable name="text_record_frequency_label">Frequency</xsl:variable>
     <xsl:variable name="text_record_geographic">Places</xsl:variable>
     <xsl:variable name="text_record_no_holdings">Holdings information not available</xsl:variable>

@@ -378,13 +378,33 @@ bib record of a book, to be used by pz2_record. Not needed? */
                     $rid = $this->getElementValue($rec, "md-id");
                     if ( strlen( $rid ) > 1 )
                     {
+                        // FIXME get me out of here
+                        if ( preg_match('/^UCL/', $rid) )
+                        {
+                            $rid = substr( $rid, -9);
+                        }
+
                         $linkback = preg_replace( '/____/', $rid, $linkback ); 
                         $link = new Link($linkback, 'original', "Holdings information in $loc_title Library catalogue");
                         $hs->addLink($link);
                     }
                     else
                     {
-                        // can't create a link without an id
+                        $rid = $this->getElementValue($rec, "md-iii-id");
+                        // is this an innopac library?
+                        if ( strlen( $rid ) > 1 )
+                        {
+                            // remove leading . and trailing digit
+                            $rid = preg_replace('/^\./', '', $rid);
+                            $rid = substr($rid, 0 , -1);
+                            $linkback = preg_replace( '/____/', $rid, $linkback ); 
+                            $link = new Link($linkback, 'original', "Holdings information in $loc_title Library catalogue");
+                            $hs->addLink($link);
+                        }
+                        else
+                        {
+                            // can't create a link without an id
+                        }
                     }
                 }
 
@@ -515,10 +535,16 @@ bib record of a book, to be used by pz2_record. Not needed? */
         else return array();
     }
 
-    public function getIsbn()
+    public function getISBNs()
     {
         return $this->isbns;
     }
+
+    public function getISSNs()
+    {
+        return $this->issns;
+    }
+
 	protected function getElement($node, $name)
 	{
 		$elements = $node->getElementsByTagName($name);

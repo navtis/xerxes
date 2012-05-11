@@ -40,6 +40,12 @@
         <!-- allowed upper limit on records_per_page -->
         <config name="max_records_per_page">100</config>
 
+        <config name="external_isn_link" xml="true" pass="true">
+            <option id="suncat" public="SunCat" type="issn" url="http://suncat.edina.ac.uk/F?func=find-b&amp;find_code=ISSN&amp;request=____" active="true"/>
+            <option id="copac" public="Copac" type="isn" url="http://copac.ac.uk/search?isn=____" active="true" />
+            <option id="worldcat" public="WorldCat" type="isn" url="http://www.worldcat.org/search?qt=worldcat_org_all&amp;q=____" active="true"/>
+        </config>
+
         <config name="search_suncat" pass="true">true</config>
         <config name="search_copac" pass="true">false</config>
 

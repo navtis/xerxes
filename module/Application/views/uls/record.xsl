@@ -15,11 +15,7 @@
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:php="http://php.net/xsl" exclude-result-prefixes="php">
 
-<xsl:import href="../includes.xsl" />
-<xsl:import href="../search/record.xsl" />
-<xsl:import href="../search/books.xsl" />
-<xsl:import href="../pazpar2/includes.xsl" />
-<xsl:import href="../pazpar2/eng.xsl" />
+<xsl:import href="../pazpar2/record.xsl" />
 
 <xsl:output method="html" />
 
@@ -37,19 +33,9 @@
     --> 
     <xsl:template name="sidebar"> 
         <!-- <xsl:call-template name="account_sidebar" /> -->
-        <xsl:if test="//config/search_suncat = 'true'">
-		    <xsl:call-template name="search_suncat"/>
+        <xsl:if test="//config/external_isn_link">
+		    <xsl:call-template name="external_links"/>
         </xsl:if>
-    </xsl:template>
-
-    <xsl:template name="search_suncat">
-      <xsl:if test="//suncat_link">
-      <ul>
-        <li id="search_suncat">
-            <p>Find the same item in <a href="{//suncat_link}" target="_new">the SunCat libraries</a></p>
-        </li>
-      </ul>
-      </xsl:if>
     </xsl:template>
 
 <!-- override javascript-include from ../includes.xsl GS -->
