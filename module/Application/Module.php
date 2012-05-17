@@ -73,10 +73,9 @@ class Module implements AutoloaderProvider
 		// access control
 		
 		$app->events()->attach('route', array($this, 'checkAuthentication'), -100);
-		
 		// xerxes view listener
 		
-		$app->events()->attach('render', array($this, 'registerViewStrategy'), 100);
+	    $app->events()->attach('render', array($this, 'registerJsonStrategy'), 110);	
 	}
 	
 	public function getRequest(MvcEvent $e)
@@ -216,5 +215,6 @@ class Module implements AutoloaderProvider
 
 		$view->events()->attach( $strategy, 100 );
 	}	
+
 }
 

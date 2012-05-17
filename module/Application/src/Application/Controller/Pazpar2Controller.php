@@ -7,6 +7,7 @@ use Application\Model\Pazpar2\Engine,
     Application\Model\DataMap\SavedRecords,
     Application\View\Helper\Pazpar2 as SearchHelper,
     Zend\Mvc\MvcEvent,
+    Zend\View\Model\ViewModel,
     Zend\Debug,
     Zend\Mvc\Controller\Plugin\FlashMessenger;
 
@@ -238,14 +239,13 @@ class Pazpar2Controller extends SearchController
      */
 	public function ajaxstatusAction()
 	{
-		$sid = $this->request->getParam("session");
+/*		$sid = $this->request->getParam("session");
 		$status = $this->engine->getSearchStatus($sid);
-        $mystatus = array();
-        $mystatus['status'] = $status->getTargetStatuses();
-        unset($mystatus['status']['xml']);
-        $mystatus['global'] = array();
-        $mystatus['global']['finished'] = false;
-        $mystatus['global']['progress'] = $status->getProgress();
+        $target_status = $status->getTargetStatuses();
+        unset($target_status['xml']);
+        $global = array();
+        $global['finished'] = false;
+        $global['progress'] = $status->getProgress();
         // set status to finished and add redirect address if needed
         if ($status->isFinished())
         {
@@ -253,12 +253,42 @@ class Pazpar2Controller extends SearchController
 			$params['lang'] = $this->request->getParam('lang');
 	        $params['controller'] = $this->request->getParam('controller');
 	        $params['action'] = 'results';
-            $mystatus['global']['finished'] = true;
-		    $mystatus['global']['reload_url'] = $this->request->url_for($params);
+            $global['finished'] = true;
+		    $global['reload_url'] = $this->request->url_for($params);
+        }
+        
+        $view = new ViewModel(array(
+            'pz2status' => $target_status,
+            'global' => $global
+        ));
+
+        // Disable layouts; use this view model in the MVC event instead
+        $view->setTerminal(true);
+
+        return $view;
+ */
+
+		$sid = $this->request->getParam("session");
+		$status = $this->engine->getSearchStatus($sid);
+        $mystatus = array();
+        $mystatus['pz2status'] = $status->getTargetStatuses();
+        unset($mystatus['pz2status']['xml']);
+        $mystatus['pz2status']['global'] = array();
+        $mystatus['pz2status']['global']['finished'] = false;
+        $mystatus['pz2status']['global']['progress'] = $status->getProgress();
+        // set status to finished and add redirect address if needed
+        if ($status->isFinished())
+        {
+            $params = $this->query->getAllSearchParams();
+			$params['lang'] = $this->request->getParam('lang');
+	        $params['controller'] = $this->request->getParam('controller');
+	        $params['action'] = 'results';
+            $mystatus['pz2status']['global']['finished'] = true;
+		    $mystatus['pz2status']['global']['reload_url'] = $this->request->url_for($params);
         }
         $this->request->setParam("format", "json");
         $this->request->setParam("render", "false");
-        $response = $this->getResponse(); 
+        $response = $this->getResponse();
         $response->setContent(json_encode($mystatus)); 
         //Debug::dump($response->getContent()); exit;
         // returned to View\Listener

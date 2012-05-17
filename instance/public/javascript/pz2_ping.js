@@ -19,9 +19,10 @@ $(document).ready(function(){
             url: "pazpar2/ajaxping",
             data: "session=" + session,
             cache: false,
-            datatype: "json",
+            datatype: "html",
             success: function(data)
             {
+                //var data = JSON.parse(data);
                 // carry on pinging unless session dead
                 if (data['live'] == 'false')
                 {

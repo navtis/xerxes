@@ -38,23 +38,25 @@ $(document).ready(function(){
                 url: "pazpar2/ajaxstatus",
                 data: querystring,
                 cache: false,
-                datatype: "json",
+                datatype: "html",
                 success: function(data)
                 {
+//                var data = JSON.parse(data);
+
                     // turn off the timer if no longer needed
                     // and loop back to the same page to show the results
-                    if (data['global']['finished'])
+                    if (data.pz2status.global.finished)
                     {
                         clearInterval(statusfetch);
-                        var url = data['global']['reload_url'];
+                        var url = data.pz2status.global.reload_url;
                         window.location = url;
                     }
                     // if we're still waiting, display the status details
                     // progress bar first
-                    $('#progress').width(data['global']['progress']+'%');
-                    for (var i = 0; i < data['status'].length; i++) 
+                    $('#progress').width(data.pz2status.global.progress+'%');
+                    for (var i = 0; i < data.pz2status.length - 1; i++) 
                     {
-                        var target = data['status'][i];
+                        var target = data['pz2status'][i];
                         $('#status-'+target['name']+' > span').attr('class', target['class']);
                         $('#status-'+target['name']+' span.status-state').text(target['state']);
                         $('#status-'+target['name']+' span.status-hits').text(' / '+target['hits']);
