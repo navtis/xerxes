@@ -91,6 +91,14 @@ class Strategy implements ListenerAggregate
 			$request = $e->getRequest();
 			$model = $e->getModel();
 			
+			// this happens if the route is not matched properly
+			
+			if ( ! $request instanceof Request )
+			{
+				$request = new Request();
+				$e->setRequest($request);
+			}
+			
 			// add base elements
 			
 			$model->setVariable("base_url", $request->getServerUrl() . $request->getBaseUrl());
@@ -159,6 +167,10 @@ class Strategy implements ListenerAggregate
 		if ( $renderer->getFormat() == "xml" )
 		{
 			$response->headers()->addHeaderLine("Content-type", "text/xml");
+		}
+		elseif ( $renderer->getFormat() == "json" )
+		{
+			$response->headers()->addHeaderLine("Content-type", "application/json");
 		}
 		
 		### return the result
